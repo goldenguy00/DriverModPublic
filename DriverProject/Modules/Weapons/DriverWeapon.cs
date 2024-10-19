@@ -1,48 +1,13 @@
-﻿using EntityStates;
-using R2API;
-using RobDriver.Modules.Survivors;
+﻿using RobDriver.Modules.Survivors;
 using RoR2.Skills;
 using System;
-using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 
 namespace RobDriver.Modules.Weapons
 {
-    public abstract class BaseWeapon<T> : DriverWeapon<T> where T : BaseWeapon<T>
-    {
-        public abstract string weaponNameToken { get; }
-        public abstract string weaponName { get; }
-        public abstract string weaponDesc { get; }
-        public abstract string iconName { get; }
-
-        public override string nameToken => "ROB_DRIVER_WEAPON_" + weaponNameToken + "_NAME";
-        public override string descriptionToken => "ROB_DRIVER_WEAPON_" + weaponNameToken + "_DESC";
-        public override Texture icon
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(iconName))
-                {
-                    return Assets.mainAssetBundle.LoadAsset<Texture>(iconName);
-                }
-                return null;
-            }
-        }
-
-        protected void CreateLang()
-        {
-            LanguageAPI.Add(nameToken, weaponName);
-            LanguageAPI.Add(descriptionToken, weaponDesc);
-        }
-
-        public override void Init()
-        {
-            CreateLang();
-            CreateWeapon();
-        }
-    }
-
+    /// <summary>
+    /// the real base weapon class. name changed so that BaseWeapon and its uses could remain unchanged
+    /// </summary>
     public abstract class DriverWeapon<T> where T: DriverWeapon<T>
     {
         public DriverWeapon()
@@ -72,7 +37,7 @@ namespace RobDriver.Modules.Weapons
         public abstract float dropChance { get; }
         public abstract bool addToPool { get; }
         public abstract string uniqueDropBodyName { get; }
-
+        
         public abstract void Init();
 
         protected void CreateWeapon()
