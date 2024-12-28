@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Linq;
+using HG;
 using RoR2;
 using RoR2.Orbs;
 using RoR2.Projectile;
@@ -9,8 +11,6 @@ namespace RobDriver.Modules.Components
 {
     public class CoinController : NetworkBehaviour, IProjectileImpactBehavior, IOnIncomingDamageServerReceiver
     {
-        public HealthComponent projectileHealthComponent;
-        public ProjectileController controller;
         public DriverController iDrive;
 
         public NetworkSoundEventDef ricochetSound;
@@ -25,9 +25,9 @@ namespace RobDriver.Modules.Components
 
         public void OnIncomingDamageServer(DamageInfo damageInfo)
         {
-            if (damageInfo.attacker && 
-               (damageInfo.attacker.TryGetComponent<DriverController>(out _) ||
-                damageInfo.attacker.TryGetComponent<CoinController>(out _)))
+            if (damageInfo.attacker && iDrive &&
+               (damageInfo.attacker == iDrive.gameObject ||
+                damageInfo.attacker.GetComponent<CoinController>()))
             {
                 RicochetBullet(damageInfo);
             }
@@ -50,16 +50,35 @@ namespace RobDriver.Modules.Components
 
         private void Start()
         {
+            this.gameObject.layer = LayerIndex.fakeActor.intVal;
             float speed = UnityEngine.Random.Range(500f, 2000f);
             this.rotationSpeed = new Vector3(speed, 0f, 0f);
 
-            iDrive = controller.owner.GetComponent<DriverController>();
+            this.StartCoroutine(nameof(SwitchLayer));
         }
 
-        private IEnumerator SwapBack()
+        private IEnumerator SwitchLayer()
         {
-            yield return new WaitForSeconds(0.25f);
-            this.gameObject.layer = LayerIndex.entityPrecise.intVal;
+            yield return null;
+
+            if (this.TryGetComponent<ProjectileController>(out var pc))
+                iDrive = pc.owner.GetComponent<DriverController>();
+
+            if (this.TryGetComponent<HealthComponent>(out var hc))
+            {
+                IOnIncomingDamageServerReceiver value = this;
+
+                if (!hc.onIncomingDamageReceivers.Contains(value))
+                    ArrayUtils.ArrayAppend(ref hc.onIncomingDamageReceivers, in value);
+            }
+
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+
+            this.gameObject.layer = LayerIndex.defaultLayer.intVal;
+            var hurtBox = this.GetComponentInChildren<HurtBox>();
+            if (hurtBox)
+                hurtBox.gameObject.layer = LayerIndex.entityPrecise.intVal;
         }
 
         private void FixedUpdate()
@@ -73,7 +92,7 @@ namespace RobDriver.Modules.Components
                     this.canRicochet = false;
                     TeamComponent teamComponent = damageInfo.attacker.GetComponent<TeamComponent>();
                     float co = damageInfo.damage / teamComponent.body.damage;
-                    CoinRicochetOrb orb = new CoinRicochetOrb
+                    var orb = new CoinRicochetOrb
                     {
                         coinPosition = base.transform.position,
                         origin = base.transform.position,

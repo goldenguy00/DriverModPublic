@@ -1249,27 +1249,26 @@ namespace RobDriver.Modules
             tracer.tailTransform = coinTracer.transform.GetChild(2).GetChild(0);
             tracer.length = 20f;
 
-            var destroyOnTimer = coinTracer.AddComponent<DestroyOnTimer>();
-            destroyOnTimer.duration = 2;
+            coinTracer.AddComponent<DestroyOnTimer>().duration = 2;
             var trailChildObject = coinTracer.transform.GetChild(2).gameObject;
 
             var beamPoints = trailChildObject.AddComponent<BeamPointsFromTransforms>();
             beamPoints.target = trailChildObject.GetComponent<LineRenderer>();
-            Transform[] bleh = new Transform[2];
-            bleh[0] = coinTracer.transform.GetChild(1);
-            bleh[1] = trailChildObject.transform.GetChild(0);
-            beamPoints.pointTransforms = bleh;
+            beamPoints.pointTransforms = [coinTracer.transform.GetChild(1), trailChildObject.transform.GetChild(0)];
+
             trailChildObject.GetComponent<LineRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Captain/matCaptainTracerTrail.mat").WaitForCompletion();
             trailChildObject.GetComponent<LineRenderer>().material.SetColor("_TintColor", Color.yellow);
+
             var animateShader = trailChildObject.AddComponent<AnimateShaderAlpha>();
-            var curve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(0.675f, 0.8f), new Keyframe(1, 0.3f));
-            curve.preWrapMode = WrapMode.Clamp;
-            curve.postWrapMode = WrapMode.Clamp;
-            animateShader.alphaCurve = curve;
             animateShader.timeMax = 0.5f;
             animateShader.pauseTime = false;
             animateShader.destroyOnEnd = true;
             animateShader.disableOnEnd = false;
+            animateShader.alphaCurve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(0.675f, 0.8f), new Keyframe(1, 0.3f))
+            {
+                preWrapMode = WrapMode.Clamp,
+                postWrapMode = WrapMode.Clamp
+            };
 
             AddNewEffectDef(coinTracer);
 
@@ -1284,26 +1283,30 @@ namespace RobDriver.Modules
             var eff = coinImpact.transform.Find("Streaks_Ps").GetComponent<ParticleSystemRenderer>();
             eff.material = twinkleMat;
             eff.material.SetColor("_TintColor", Color.yellow);
+
             eff = coinImpact.transform.Find("Flash_Ps").GetComponent<ParticleSystemRenderer>();
             eff.material = Addressables.LoadAssetAsync<Material>("RoR2/Base/LunarSkillReplacements/matBirdHeartRuin.mat").WaitForCompletion();
             eff.material.SetColor("_TintColor", Color.yellow);
+
             AddNewEffectDef(coinImpact);
 
             coinOrbEffect = mainAssetBundle.LoadAsset<GameObject>("CoinOrbEffect");
             coinOrbEffect.AddComponent<EventFunctions>();
+
             var effectComp = coinOrbEffect.AddComponent<EffectComponent>();
             effectComp.applyScale = true;
+
             var orbEffect = coinOrbEffect.AddComponent<CoinOrbEffect>();
-
-            curve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-            curve.preWrapMode = WrapMode.Clamp;
-            curve.postWrapMode = WrapMode.Clamp;
-
-            orbEffect.movementCurve = curve;
+            orbEffect.duration = 1f;
             orbEffect.faceMovement = true;
             orbEffect.callArrivalIfTargetIsGone = true;
             orbEffect.endEffect = coinOrbEffect;
             orbEffect.endEffectCopiesRotation = false;
+            orbEffect.movementCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1))
+            {
+                preWrapMode = WrapMode.Clamp,
+                postWrapMode = WrapMode.Clamp
+            };
 
             attr = coinOrbEffect.AddComponent<VFXAttributes>();
             attr.vfxPriority = VFXAttributes.VFXPriority.Always;
@@ -1313,26 +1316,23 @@ namespace RobDriver.Modules
             coinOrbEffect.transform.GetChild(0).gameObject.GetComponent<TrailRenderer>().material.SetColor("_TintColor", Color.yellow);
 
             var pscfed = coinOrbEffect.AddComponent<ParticleSystemColorFromEffectData>();
-            pscfed.particleSystems = new ParticleSystem[1];
-            pscfed.particleSystems[0] = coinOrbEffect.transform.Find("Head").GetComponent<ParticleSystem>();
+            pscfed.particleSystems = [coinOrbEffect.transform.Find("Head").GetComponent<ParticleSystem>()];
             pscfed.effectComponent = effectComp;
 
             var trcfed = coinOrbEffect.AddComponent<TrailRendererColorFromEffectData>();
-            trcfed.renderers = new TrailRenderer[1];
-            trcfed.renderers[0] = coinOrbEffect.transform.Find("Trail").GetComponent<TrailRenderer>();
+            trcfed.renderers = [coinOrbEffect.transform.Find("Trail").GetComponent<TrailRenderer>()];
             trcfed.effectComponent = effectComp;
 
             var shaderAlpha = coinOrbEffect.transform.Find("Trail").gameObject.AddComponent<AnimateShaderAlpha>();
-
-            curve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 0));
-            curve.preWrapMode = WrapMode.Clamp;
-            curve.postWrapMode = WrapMode.Clamp;
-
-            shaderAlpha.alphaCurve = curve;
             shaderAlpha.timeMax = 0.75f;
             shaderAlpha.pauseTime = false;
             shaderAlpha.destroyOnEnd = true;
             shaderAlpha.disableOnEnd = false;
+            shaderAlpha.alphaCurve = new AnimationCurve(new Keyframe(0, 1), new Keyframe(1, 0))
+            {
+                preWrapMode = WrapMode.Clamp,
+                postWrapMode = WrapMode.Clamp
+            };
 
             var effect = coinOrbEffect.transform.Find("Head").GetComponent<ParticleSystemRenderer>();
             effect.material = twinkleMat;
@@ -1344,7 +1344,6 @@ namespace RobDriver.Modules
 
             ammoPickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlAmmoPickup").InstantiateClone("mdlAmmoPickup", false);
             // i hate this but i dont care enough to fix it properly
-            ammoPickupModel.transform.Find("ammoBox").localScale = new Vector3(500, 500, 500);
 
             GameObject textShit5 = GameObject.Instantiate(RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/BearProc"));
             MonoBehaviour.Destroy(textShit5.GetComponent<EffectComponent>());

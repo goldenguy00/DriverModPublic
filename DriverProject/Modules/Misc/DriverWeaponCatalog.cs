@@ -84,22 +84,32 @@ namespace RobDriver
 
             if (autoComplete)
             {
-                if (!bodyName.Contains("Body")) bodyName += "Body";
-                if (!bodyName.Contains("(Clone)")) bodyName += "(Clone)";
+                if (!bodyName.Contains("Body"))
+                    bodyName += "Body";
+
+                bodyName = bodyName.Replace("(Clone)", "");
             }
             if (weaponDrops.ContainsKey(bodyName)) return;
             weaponDrops.Add(bodyName, weaponDef);
+        }
+
+        public static bool HasWeaponDrop(string bodyNameToken, out DriverWeaponDef weaponDef)
+        {
+            //TODO
+            if (weaponDrops.TryGetValue(bodyNameToken, out weaponDef))
+                return true;
+            return false;
         }
 
         public static bool IsWeaponPistol(DriverWeaponDef weaponDef)
         {
             // These are all the pistol options that are forced upgrades with steadyaim
             // beetle shield doesnt count since it's dropped instead of reloaded
-            return weaponDef.nameToken == Pistol.nameToken ||
-                weaponDef.nameToken == LunarPistol.nameToken ||
-                weaponDef.nameToken == VoidPistol.nameToken ||
-                weaponDef.nameToken == Needler.nameToken ||
-                weaponDef.nameToken == PyriteGun.nameToken;
+            return weaponDef == Pistol ||
+                weaponDef == LunarPistol ||
+                weaponDef == VoidPistol ||
+                weaponDef == Needler ||
+                weaponDef == PyriteGun;
         }
 
         public static DriverWeaponDef GetWeaponFromIndex(int index)

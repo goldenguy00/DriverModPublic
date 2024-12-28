@@ -65,12 +65,11 @@ namespace RobDriver.Modules.Components
 
         public GameObject crosshairPrefab;
 
-        private int lysateCellCount = 0;
-
         private GameObject muzzleTrail;
         public GameObject weaponEffectInstance;
 
         public ParticleSystem machineGunVFX;
+        public PrimarySkillShurikenBehavior shurikenComponent;
 
         private bool hasPickedUpHammer;
         public bool pickedUpRavSword;
@@ -86,6 +85,7 @@ namespace RobDriver.Modules.Components
         public bool isWallClinging;
         public bool clingReady;
         public float featherTimer;
+        private EntityStateMachine ravStateMachine;
 
         private DriverWeaponTracker weaponTracker
         {
@@ -104,12 +104,12 @@ namespace RobDriver.Modules.Components
 
         private void Awake()
         {
-            // this was originally used for gun jamming
-            /*foreach (EntityStateMachine i in this.GetComponents<EntityStateMachine>())
+            foreach (var i in this.GetComponents<EntityStateMachine>())
             {
-                if (i && i.customName == "Weapon") this.weaponStateMachine = i;
-            }*/
-            // probably won't be used but who knows
+                // this was originally used for gun jamming
+                //if (i && i.customName == "Weapon") this.weaponStateMachine = i;
+                if (i && i.customName == "Passive") this.ravStateMachine = i;
+            }
 
             this.arsenal = this.GetComponent<DriverArsenal>();
             this.passive = this.GetComponent<DriverPassive>();
@@ -180,11 +180,11 @@ namespace RobDriver.Modules.Components
             this.childLocator.FindChild("SkateboardModel").gameObject.SetActive(false);
 
             // enable all the renderers...
-            this.childLocator.FindChild("KnifeModel").gameObject.GetComponent<SkinnedMeshRenderer>().enabled = true;
-            this.childLocator.FindChild("ButtonModel").gameObject.GetComponent<SkinnedMeshRenderer>().enabled = true;
-            this.childLocator.FindChild("BackWeaponModel").gameObject.GetComponent<MeshRenderer>().enabled = true;
-            this.childLocator.FindChild("SkateboardBackModel").gameObject.GetComponent<SkinnedMeshRenderer>().enabled = true;
-            this.childLocator.FindChild("SkateboardModel").gameObject.GetComponent<SkinnedMeshRenderer>().enabled = true;
+            this.childLocator.FindChild("KnifeModel").GetComponent<SkinnedMeshRenderer>().enabled = true;
+            this.childLocator.FindChild("ButtonModel").GetComponent<SkinnedMeshRenderer>().enabled = true;
+            this.childLocator.FindChild("BackWeaponModel").GetComponent<MeshRenderer>().enabled = true;
+            this.childLocator.FindChild("SkateboardBackModel").GetComponent<SkinnedMeshRenderer>().enabled = true;
+            this.childLocator.FindChild("SkateboardModel").GetComponent<SkinnedMeshRenderer>().enabled = true;
 
             // swag
             if (this.skillLocator.utility.skillDef.skillNameToken == Driver.skateboardSkillDef.skillNameToken)
@@ -196,11 +196,11 @@ namespace RobDriver.Modules.Components
             // Do you have cool config -> are you currently ramboing it -> if not nvm go away cool shit
             if (Config.enableRevengence.Value && skillLocator.special.skillDef.skillNameToken == Driver.knifeSkillDef.skillNameToken)
             {
-                this.childLocator.FindChild("BackWeaponModel").gameObject.GetComponent<MeshRenderer>().forceRenderingOff = false;
+                this.childLocator.FindChild("BackWeaponModel").GetComponent<MeshRenderer>().forceRenderingOff = false;
             }
             else
             {
-                this.childLocator.FindChild("BackWeaponModel").gameObject.GetComponent<MeshRenderer>().forceRenderingOff = true;
+                this.childLocator.FindChild("BackWeaponModel").GetComponent<MeshRenderer>().forceRenderingOff = true;
             }
 
             if (this.characterBody && this.characterBody.master && this.characterBody.master.inventory)
@@ -269,6 +269,8 @@ namespace RobDriver.Modules.Components
 
         private void Inventory_onInventoryChanged()
         {
+            this.shurikenComponent = this.GetComponent<PrimarySkillShurikenBehavior>();
+
             this.CheckForNeedler();
         }
 
@@ -294,7 +296,7 @@ namespace RobDriver.Modules.Components
 
         private bool TryUpgradeWeapon(DriverWeaponDef newWeaponDef)
         {
-            if (newWeaponDef.nameToken == defaultWeaponDef.nameToken) return true;
+            if (newWeaponDef == defaultWeaponDef) return true;
             if (!DriverWeaponCatalog.IsWeaponPistol(defaultWeaponDef)) return false;
             if (this.characterBody && this.characterBody.inventory && this.characterBody.inventory.GetItemCount(RoR2Content.Items.LunarPrimaryReplacement) > 0) return false;
 
@@ -465,7 +467,7 @@ namespace RobDriver.Modules.Components
                     }
                 }
 
-                if (weaponDef.nameToken == defaultWeaponDef.nameToken && weaponDef.animationSet != DriverWeaponDef.AnimationSet.BigMelee)
+                if (weaponDef == defaultWeaponDef && weaponDef.animationSet != DriverWeaponDef.AnimationSet.BigMelee)
                 {
                     if (!needReload)
                     {
@@ -579,7 +581,7 @@ namespace RobDriver.Modules.Components
                 else
                 {
                     // keep the current ammo fraction
-                    if (this.HasSpecialBullets && ammo == -1 && weaponDef.nameToken != newWeapon.nameToken)
+                    if (this.HasSpecialBullets && ammo == -1 && weaponDef != newWeapon)
                     {
                         // get rid of remaining ammo if you only have a few shots left
                         var ammoPercent = weaponTimer / maxWeaponTimer;
@@ -611,20 +613,22 @@ namespace RobDriver.Modules.Components
         {
             this.weaponDef = newWeapon;
 
-            if (newWeapon.nameToken == DriverWeaponCatalog.LunarHammer.nameToken)
+            if (newWeapon == DriverWeaponCatalog.LunarHammer)
             {
                 this.hasPickedUpHammer = true; // keeping this for now
                 this.defaultWeaponDef = DriverWeaponCatalog.LunarHammer;
             }
             
-            if (newWeapon.nameToken == DriverWeaponCatalog.RavSword.nameToken && !this.pickedUpRavSword)
+            if (newWeapon == DriverWeaponCatalog.RavSword)
             {
-                this.gameObject.GetComponents<EntityStateMachine>().First(state => state.customName == "Passive").enabled = true;
+                if (this.ravStateMachine)
+                    this.ravStateMachine.enabled = true;
                 this.pickedUpRavSword = true;
             }
-            else if (pickedUpRavSword) // swapped to new weapon, no more wall/air cling
+            else // swapped to new weapon, no more wall/air cling
             {
-                this.gameObject.GetComponents<EntityStateMachine>().First(state => state.customName == "Passive").enabled = false;
+                if (this.ravStateMachine)
+                    this.ravStateMachine.enabled = false;
                 this.pickedUpRavSword = false;
             }
 
@@ -741,9 +745,9 @@ namespace RobDriver.Modules.Components
                     return;
                 }
 
-                if (this.weaponDef.nameToken != this.lastWeaponDef.nameToken)
+                if (this.weaponDef != this.lastWeaponDef)
                 {
-                    if (this.weaponDef.nameToken != this.defaultWeaponDef.nameToken && this.weaponDef.nameToken != DriverWeaponCatalog.Pistol.nameToken)
+                    if (this.weaponDef != this.defaultWeaponDef && this.weaponDef != DriverWeaponCatalog.Pistol)
                     {
                         WeaponNotificationQueue.PushWeaponNotification(this.characterBody.master, this.weaponDef.index);
                     }
@@ -765,7 +769,7 @@ namespace RobDriver.Modules.Components
 
         private void TryUnlock()
         {
-            if (this.characterBody && this.characterBody.isPlayerControlled && this.weaponDef != this.arsenal.DefaultWeapon)
+            if (this.characterBody && this.weaponDef != this.arsenal.DefaultWeapon)
             {
                 var statSheet = PlayerStatsComponent.FindBodyStatsComponent(this.characterBody);
                 var unlockable = UnlockableCatalog.GetUnlockableDef(this.weaponDef.nameToken);
@@ -859,7 +863,7 @@ namespace RobDriver.Modules.Components
             // extra shit
             if (this.hammerEffectInstance && this.hammerEffectInstance2) // so it doesnt screw up custom skins. Compat for effects later maybe
             {
-                if (this.weaponDef.nameToken == DriverWeaponCatalog.LunarHammer.nameToken)
+                if (this.weaponDef == DriverWeaponCatalog.LunarHammer)
                 {
                     this.hammerEffectInstance.SetActive(true);
                     this.hammerEffectInstance2.SetActive(false); // this one needs to be remade from scratch ig

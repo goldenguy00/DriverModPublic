@@ -3818,20 +3818,25 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\golde\\.nuget\\packages\\": {}
+    "C:\\Users\\golde\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\golde\\Documents\\GitHub\\Driver\\DriverProject\\DriverMod.csproj",
+      "projectUniqueName": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj",
       "projectName": "DriverMod",
-      "projectPath": "C:\\Users\\golde\\Documents\\GitHub\\Driver\\DriverProject\\DriverMod.csproj",
+      "projectPath": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj",
       "packagesPath": "C:\\Users\\golde\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\golde\\Documents\\GitHub\\Driver\\DriverProject\\obj\\",
+      "outputPath": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\golde\\Documents\\GitHub\\Driver\\NuGet.Config",
+        "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\NuGet.Config",
         "C:\\Users\\golde\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3857,8 +3862,9 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "direct"
-      }
+        "auditMode": "all"
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "netstandard2.1": {
@@ -3907,7 +3913,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.304\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   },

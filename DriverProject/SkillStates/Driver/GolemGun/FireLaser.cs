@@ -108,7 +108,7 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 		{
 			base.FixedUpdate();
 
-			if (base.fixedAge >= (0.5f * this.duration) && this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+			if (base.fixedAge >= (0.5f * this.duration) && this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
 			{
 				base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
 				this.outer.SetNextStateToMain();

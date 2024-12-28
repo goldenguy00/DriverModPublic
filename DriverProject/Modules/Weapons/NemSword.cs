@@ -1,7 +1,6 @@
 ﻿using RobDriver.Modules.Survivors;
 using RoR2.Skills;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace RobDriver.Modules.Weapons
 {

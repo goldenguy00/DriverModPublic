@@ -42,7 +42,7 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
             this.characterBody.isSprinting = false;
             base.characterBody.SetAimTimer(0.2f);
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 this.cancelling = true;
                 this.outer.SetNextStateToMain();

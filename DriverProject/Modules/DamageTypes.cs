@@ -11,6 +11,8 @@ using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 using RobDriver.Modules.Components;
 using System.Xml.Linq;
+using R2API.Networking.Interfaces;
+using R2API.Networking;
 
 namespace RobDriver.Modules
 {
@@ -33,7 +35,9 @@ namespace RobDriver.Modules
         public static DamageAPI.ModdedDamageType Hemorrhage;
         public static DamageAPI.ModdedDamageType Gouge;
 
-        public static DamageAPI.ModdedDamageType bloodExplosionIdentifier;
+        public static DamageAPI.ModdedDamageType BloodExplosionIdentifier;
+        public static DamageAPI.ModdedDamageType StunGrenadeDazed;
+        public static DamageAPI.ModdedDamageType KnifeWound;
 
         internal static void Init()
         {
@@ -53,16 +57,21 @@ namespace RobDriver.Modules
             MysteryShot = DamageAPI.ReserveDamageType();
             Hemorrhage = DamageAPI.ReserveDamageType();
             Gouge = DamageAPI.ReserveDamageType();
-            bloodExplosionIdentifier = DamageAPI.ReserveDamageType();
+
+            BloodExplosionIdentifier = DamageAPI.ReserveDamageType();
+            StunGrenadeDazed = DamageAPI.ReserveDamageType();
+            KnifeWound = DamageAPI.ReserveDamageType();
+
             Hook();
         }
 
-        #region Private Methods
+        #region Hooks
 
         private static void Hook()
         {
-            On.RoR2.GlobalEventManager.OnHitEnemy += new On.RoR2.GlobalEventManager.hook_OnHitEnemy(GlobalEventManager_OnHitEnemy);
-            On.RoR2.GlobalEventManager.OnHitAll += new On.RoR2.GlobalEventManager.hook_OnHitAll(GlobalEventManager_OnHitAll);
+            On.RoR2.HealthComponent.TakeDamage += HealthComponent_TakeDamage;
+            On.RoR2.GlobalEventManager.ProcessHitEnemy += GlobalEventManager_ProcessHitEnemy;
+            On.RoR2.GlobalEventManager.OnHitAll += GlobalEventManager_OnHitAll;
         }
 
         private static bool CheckRoll(float procChance, CharacterMaster characterMaster)
@@ -71,7 +80,38 @@ namespace RobDriver.Modules
             return procChance >= 100f || Util.CheckRoll(procChance, characterMaster);
         }
 
-        private static void GlobalEventManager_OnHitEnemy(On.RoR2.GlobalEventManager.orig_OnHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
+        private static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
+        {
+            if (self.body)
+            {
+                if (damageInfo.HasModdedDamageType(StunGrenadeDazed))
+                {
+                    self.body.AddTimedBuff(Modules.Buffs.dazedDebuff, 10f);
+                }
+
+                if (damageInfo.HasModdedDamageType(KnifeWound))
+                {
+                    self.body.AddTimedBuff(Modules.Buffs.woundDebuff, 4f);
+
+                    if (self.gameObject.TryGetComponent<NetworkIdentity>(out var identity))
+                    {
+                        new SyncOverlay(identity.netId, self.gameObject).Send(NetworkDestination.Clients);
+                    }
+                }
+
+                if (damageInfo.dotIndex == Buffs.gougeIndex && self.alive)
+                {
+                    if (damageInfo.attacker && damageInfo.attacker.TryGetComponent<CharacterBody>(out var attackerBody))
+                    {
+                        damageInfo.crit = Util.CheckRoll(attackerBody.crit, attackerBody.master);
+                    }
+                }
+            }
+
+            orig(self, damageInfo);
+        }
+
+        private static void GlobalEventManager_ProcessHitEnemy(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             CharacterBody attackerBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
 

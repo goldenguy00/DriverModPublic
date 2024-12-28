@@ -34,6 +34,19 @@ namespace RobDriver
         "RecalculateStatsAPI",
     })]
 
+
+    /*
+     todo:
+    finish coin layer bullshit
+    fix temp overlays
+    fix icon awake for riskui
+    headshots make screen go fuckin red for a frame when really close up ????
+    rocket smoke puff persists
+    text layering bug ask rob
+    skateboard with afterburner
+     
+     */
+
     public class DriverPlugin : BaseUnityPlugin
     {
         public const string MODUID = "com.rob.Driver";

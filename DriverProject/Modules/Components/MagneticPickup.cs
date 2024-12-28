@@ -23,17 +23,17 @@ namespace RobDriver.Modules.Components
         {
             driverPosition = Vector3.zero;
             var lowestDistance = float.PositiveInfinity;
-            foreach (var tc in TeamComponent.GetTeamMembers(TeamIndex.Player))
+            foreach (var pcmc in PlayerCharacterMasterController.instances)
             {
-                if (tc && tc.body && tc.body.isPlayerControlled && tc.body.baseNameToken == Driver.bodyNameToken)
+                if (pcmc && pcmc.body && pcmc.body.baseNameToken == Driver.bodyNameToken)
                 {
-                    var distance = (tc.body.footPosition - thisPosition).sqrMagnitude;
+                    var distance = (pcmc.body.footPosition - thisPosition).sqrMagnitude;
                     if (distance < lowestDistance)
                     {
-                        if (!Config.enableMagenticConditionalPickups.Value || (tc.body.TryGetComponent<DriverController>(out var iDrive) 
+                        if (!Config.enableMagenticConditionalPickups.Value || (pcmc.body.TryGetComponent<DriverController>(out var iDrive) 
                             && iDrive && !iDrive.HasSpecialBullets && iDrive.weaponDef == iDrive.defaultWeaponDef))
                         {
-                            driverPosition = tc.body.footPosition;
+                            driverPosition = pcmc.body.footPosition;
                             lowestDistance = distance;
                         }
                     }

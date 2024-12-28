@@ -45,7 +45,8 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 
             this.fireDuration = 0;
 
-            if (this.iDrive) this.iDrive.ConsumeAmmo();
+            if (this.iDrive)
+                this.iDrive.ConsumeAmmo();
         }
 
         public virtual void FireBullet()
@@ -132,7 +133,7 @@ namespace RobDriver.SkillStates.Driver.GolemGun
                 this.FireBullet();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", "BufferEmpty");
                 this.outer.SetNextStateToMain();

@@ -65,13 +65,7 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
             }
         }
 
-        protected virtual DriverWeaponDef weaponDef
-        {
-            get
-            {
-                return DriverWeaponCatalog.PrototypeRocketLauncher;
-            }
-        }
+        protected virtual DriverWeaponDef weaponDef => DriverWeaponCatalog.PrototypeRocketLauncher;
 
         protected virtual void SpawnWeapon()
         {

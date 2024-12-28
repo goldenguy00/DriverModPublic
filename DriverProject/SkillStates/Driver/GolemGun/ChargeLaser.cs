@@ -133,7 +133,7 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 			this.characterBody.outOfCombatStopwatch = 0f;
 			base.characterBody.SetAimTimer(0.2f);
 
-			if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+			if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
 			{
 				base.PlayAnimation("Gesture, Override", "BufferEmpty");
 				this.outer.SetNextStateToMain();

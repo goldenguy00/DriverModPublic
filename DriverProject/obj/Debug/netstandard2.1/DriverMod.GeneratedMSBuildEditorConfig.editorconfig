@@ -1,5 +1,8 @@
 is_global = true
 build_property.RootNamespace = DriverMod
-build_property.ProjectDir = C:\Users\golde\Documents\GitHub\Driver\DriverProject\
+build_property.ProjectDir = C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTUseWindowsUIXamlProjections = false
+build_property.EffectiveAnalysisLevelStyle = 
+build_property.EnableCodeStyleSeverity = 
