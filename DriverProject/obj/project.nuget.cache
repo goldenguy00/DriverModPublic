@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "lZ+Tia33boE=",
+  "dgSpecHash": "ovjyrzwFShw=",
   "success": true,
   "projectFilePath": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj",
   "expectedPackageFiles": [
@@ -11,37 +11,22 @@
     "C:\\Users\\golde\\.nuget\\packages\\harmonyx\\2.7.0\\harmonyx.2.7.0.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\microsoft.netcore.targets\\1.1.0\\microsoft.netcore.targets.1.1.0.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\mmhook.ror2\\2024.9.5\\mmhook.ror2.2024.9.5.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\mmhook.ror2\\2024.12.10\\mmhook.ror2.2024.12.10.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\mono.cecil\\0.11.4\\mono.cecil.0.11.4.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\monomod\\22.5.1.1\\monomod.22.5.1.1.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\monomod.runtimedetour\\21.12.13.1\\monomod.runtimedetour.21.12.13.1.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\monomod.utils\\22.5.1.1\\monomod.utils.22.5.1.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api\\5.0.5\\r2api.5.0.5.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.artifactcode\\1.0.1\\r2api.artifactcode.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.colors\\1.0.1\\r2api.colors.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.commandhelper\\1.0.1\\r2api.commandhelper.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.contentmanagement\\1.0.1\\r2api.contentmanagement.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.core\\5.0.10\\r2api.core.5.0.10.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.damagetype\\1.0.4\\r2api.damagetype.1.0.4.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.deployable\\1.0.1\\r2api.deployable.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.difficulty\\1.1.1\\r2api.difficulty.1.1.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.director\\1.1.1\\r2api.director.1.1.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.dot\\1.0.1\\r2api.dot.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.elites\\1.0.2\\r2api.elites.1.0.2.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.items\\1.0.3\\r2api.items.1.0.3.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.contentmanagement\\1.0.6\\r2api.contentmanagement.1.0.6.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.core\\5.1.5\\r2api.core.5.1.5.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.damagetype\\1.1.4\\r2api.damagetype.1.1.4.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.dot\\1.0.3\\r2api.dot.1.0.3.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\r2api.language\\1.0.1\\r2api.language.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.loadout\\1.0.2\\r2api.loadout.1.0.2.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.lobbyconfig\\1.0.1\\r2api.lobbyconfig.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.networking\\1.0.2\\r2api.networking.1.0.2.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.orb\\1.0.1\\r2api.orb.1.0.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.prefab\\1.0.3\\r2api.prefab.1.0.3.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.recalculatestats\\1.2.0\\r2api.recalculatestats.1.2.0.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.sceneasset\\1.1.1\\r2api.sceneasset.1.1.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.skins\\1.0.0\\r2api.skins.1.0.0.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.sound\\1.0.2\\r2api.sound.1.0.2.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.tempvisualeffect\\1.0.2\\r2api.tempvisualeffect.1.0.2.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.unlockable\\1.0.2\\r2api.unlockable.1.0.2.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\riskofrain2.gamelibs\\1.3.2-r.1\\riskofrain2.gamelibs.1.3.2-r.1.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.networking\\1.0.3\\r2api.networking.1.0.3.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.prefab\\1.0.4\\r2api.prefab.1.0.4.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.recalculatestats\\1.5.0\\r2api.recalculatestats.1.5.0.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.skins\\1.2.0\\r2api.skins.1.2.0.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.sound\\1.0.3\\r2api.sound.1.0.3.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\riskofrain2.gamelibs\\1.3.6-r.0\\riskofrain2.gamelibs.1.3.6-r.0.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\ror2bepinexpack\\1.7.0\\ror2bepinexpack.1.7.0.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\rune580.mods.riskofrain2.riskofoptions\\2.8.2\\rune580.mods.riskofrain2.riskofoptions.2.8.2.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
@@ -73,16 +58,5 @@
     "C:\\Users\\golde\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\unityengine.modules\\2021.3.33\\unityengine.modules.2021.3.33.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'MMHOOK.RoR2 2024.9.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework '.NETStandard,Version=v2.1'. This package may not be fully compatible with your project.",
-      "libraryId": "MMHOOK.RoR2",
-      "targetGraphs": [
-        ".NETStandard,Version=v2.1"
-      ]
-    }
-  ]
+  "logs": []
 }

@@ -1,9 +1,4 @@
 ﻿using BepInEx.Logging;
-using System.Security;
-using System.Security.Permissions;
-
-[module: UnverifiableCode]
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
 internal static class Log
 {

@@ -1,15 +1,12 @@
-﻿using HarmonyLib;
-using R2API;
+﻿using R2API;
 using R2API.Networking;
 using R2API.Networking.Interfaces;
-using RobDriver.Modules.Misc;
 using RobDriver.Modules.Survivors;
 using RoR2;
 using RoR2.Skills;
 using RoR2.Stats;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -362,12 +359,12 @@ namespace RobDriver.Modules.Components
             // quit resetting my shit
             if (this.passive.isBullets || this.passive.isPistolOnly) return;
 
-            if (DriverPlugin.litInstalled && this.IsItemGoldenGun(itemIndex)) // funny compat :-)
+            if (DriverPlugin.LitInstalled && this.IsItemGoldenGun(itemIndex)) // funny compat :-)
             {
                 this.ServerPickUpWeapon(DriverWeaponCatalog.GoldenGun);
             }
 
-            if (DriverPlugin.classicItemsInstalled && this.IsItemGoldenGun2(itemIndex)) // not funny anymore
+            if (DriverPlugin.ClassicItemsInstalled && this.IsItemGoldenGun2(itemIndex)) // not funny anymore
             {
                 this.ServerPickUpWeapon(DriverWeaponCatalog.GoldenGun);
             }
@@ -433,7 +430,7 @@ namespace RobDriver.Modules.Components
                 {
                     for (int i = 0; i < alienHeadCount; i++)
                     {
-                        if (DriverPlugin.greenAlienHeadInstalled)
+                        if (DriverPlugin.GreenAlienHeadInstalled)
                         {
                             multiplier *= 0.85f;
                         }
@@ -619,7 +616,7 @@ namespace RobDriver.Modules.Components
                 this.defaultWeaponDef = DriverWeaponCatalog.LunarHammer;
             }
             
-            if (newWeapon == DriverWeaponCatalog.RavSword)
+            if (newWeapon == Weapons.RavSword.instance?.weaponDef)
             {
                 if (this.ravStateMachine)
                     this.ravStateMachine.enabled = true;

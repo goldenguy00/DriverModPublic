@@ -29,7 +29,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmercGun
             this.isCrit = base.RollCrit();
             this.earlyExitTime = 0.75f * this.duration;
 
-            if (DriverPlugin.starstormInstalled)
+            if (DriverPlugin.StarstormInstalled)
             {
                 Util.PlaySound("Play_nemmerc_primary_fire2", this.gameObject);
             }

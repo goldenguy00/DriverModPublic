@@ -1,11 +1,10 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using UnityEngine.AddressableAssets;
 
 namespace RobDriver.SkillStates.Driver.GolemGun
 {
-	public class ChargeLaser : BaseDriverSkillState
+    public class ChargeLaser : BaseDriverSkillState
 	{
 		public static float baseDuration = 0.3f;
 		public static float laserMaxWidth = 0.2f;

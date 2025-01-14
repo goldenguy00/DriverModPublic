@@ -2,8 +2,6 @@
 using RoR2;
 using EntityStates;
 using static RoR2.CameraTargetParams;
-using RobDriver.Modules.Components;
-using RoR2.UI;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
 

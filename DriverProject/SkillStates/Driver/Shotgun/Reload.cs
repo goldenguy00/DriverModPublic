@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using EntityStates;
-
-namespace RobDriver.SkillStates.Driver.Shotgun
+﻿namespace RobDriver.SkillStates.Driver.Shotgun
 {
     public class Reload : BaseDriverSkillState
     {

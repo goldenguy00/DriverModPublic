@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using RoR2;
-using EntityStates;
+﻿using RoR2;
 
 namespace RobDriver.SkillStates.Driver.GoldenGun
 {

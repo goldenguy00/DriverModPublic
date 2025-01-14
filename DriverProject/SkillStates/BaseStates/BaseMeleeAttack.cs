@@ -1,12 +1,9 @@
 ﻿using EntityStates;
-using LostInTransit.DamageTypes;
-using R2API;
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Audio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 

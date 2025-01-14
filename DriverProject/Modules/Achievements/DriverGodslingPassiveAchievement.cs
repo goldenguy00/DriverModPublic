@@ -1,79 +1,57 @@
-﻿using R2API;
-using R2API.Utils;
-using RoR2;
-using System;
+﻿using RoR2;
+using RoR2.Achievements;
 using UnityEngine;
 
 namespace RobDriver.Modules.Achievements
 {
-    internal class DriverGodslingPassiveAchievement : ModdedUnlockable
+    //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
+    //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
+    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
+    internal class DriverGodslingPassiveAchievement : BaseAchievement
     {
-        public override string AchievementIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_ID";
-        public override string UnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_REWARD_ID";
-        public override string AchievementNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_NAME";
-        public override string PrerequisiteUnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_REWARD_ID";
-        public override string UnlockableNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_UNLOCKABLE_NAME";
-        public override string AchievementDescToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_DESC";
-        public override Sprite Sprite { get; } = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon");
-
-        public override Func<string> GetHowToUnlock { get; } = (() => Language.GetStringFormatted("UNLOCK_VIA_ACHIEVEMENT_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
-        public override Func<string> GetUnlocked { get; } = (() => Language.GetStringFormatted("UNLOCKED_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_GODSLING_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
+        public const string identifier = "ROB_DRIVER_GODSLING";
+        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_GODSLING_NAME";
+        public const string unlockableIdentifier = "ROB_DRIVER_GODSLING_UNLOCKABLE";
+        public static Sprite Sprite => Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon");
 
         public static bool weaponPickedUpHard;
 
-        public override BodyIndex LookUpRequiredBodyIndex()
+        public override BodyIndex LookUpRequiredBodyIndex() => Survivors.Driver.bodyIndex;
+
+        public override void OnBodyRequirementMet()
         {
-            return BodyCatalog.FindBodyIndex("RobDriverBody");
+            base.OnBodyRequirementMet();
+
+            Run.onClientGameOverGlobal += this.OnClientGameOverGlobal;
+            Run.onRunStartGlobal += this.OnRunStartGlobal;
         }
 
-        public override void OnInstall()
+        public override void OnBodyRequirementBroken()
         {
-            base.OnInstall();
+            Run.onClientGameOverGlobal -= this.OnClientGameOverGlobal;
+            Run.onRunStartGlobal -= this.OnRunStartGlobal;
 
-            Run.onClientGameOverGlobal += this.ClearCheck;
-            Run.onRunStartGlobal += this.Reset;
+            base.OnBodyRequirementBroken();
         }
 
-        private void Reset(Run run)
+        private void OnRunStartGlobal(Run run) => weaponPickedUpHard = false;
+
+        public void OnClientGameOverGlobal(Run run, RunReport runReport)
         {
-            weaponPickedUpHard = false;
-        }
-
-        public void ClearCheck(Run run, RunReport runReport)
-        {
-            if (run is null) return;
-            if (runReport is null) return;
-
-            if (!runReport.gameEnding) return;
-
-            if (runReport.gameEnding.isWin)
+            if (runReport?.gameEnding && runReport.gameEnding.isWin && !weaponPickedUpHard)
             {
-                DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(runReport.ruleBook.FindDifficulty());
-
-                if (difficultyDef != null && difficultyDef.countsAsHardMode)
+                var difficultyIndex = runReport.ruleBook.FindDifficulty();
+                var difficultyDef = DifficultyCatalog.GetDifficultyDef(difficultyIndex);
+                if (difficultyDef != null)
                 {
-                    if (base.meetsBodyRequirement && !weaponPickedUpHard)
-                    {
-                        base.Grant();
-                    }
+                    var isDifficulty = difficultyDef.countsAsHardMode && difficultyDef.scalingValue >= 3f;
+                    var isInferno = difficultyDef.nameToken == "INFERNO_NAME";
+                    var isEclipse = difficultyIndex <= DifficultyIndex.Eclipse8 && difficultyIndex >= DifficultyIndex.Eclipse1;
+
+                    if (isDifficulty || isInferno || isEclipse)
+                        Grant();
                 }
             }
-        }
-
-        public override void OnUninstall()
-        {
-            base.OnUninstall();
-
-            Run.onClientGameOverGlobal -= this.ClearCheck;
-            Run.onRunStartGlobal -= this.Reset;
         }
     }
 }

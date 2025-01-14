@@ -2,7 +2,6 @@
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Projectile;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -66,7 +65,7 @@ namespace RobDriver.Modules
             ProjectileDamage grenadeDamage = stunGrenadeProjectilePrefab.GetComponent<ProjectileDamage>();
             ProjectileSimple simple = stunGrenadeProjectilePrefab.GetComponent<ProjectileSimple>();
             ProjectileImpactExplosion grenadeImpact = stunGrenadeProjectilePrefab.GetComponent<ProjectileImpactExplosion>();
-            stunGrenadeProjectilePrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DamageTypes.StunGrenadeDazed);
+            stunGrenadeProjectilePrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DriverDamageTypes.StunGrenadeDazed);
 
             Prefabs.projectilePrefabs.Add(stunGrenadeProjectilePrefab);
 
@@ -312,7 +311,7 @@ namespace RobDriver.Modules
         private static void CreateShockwave()
         {
             punchShockwave = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Loader/LoaderZapCone.prefab").WaitForCompletion().InstantiateClone("DriverPunchShockwaveProjectile", true);
-            punchShockwave.AddComponent<R2API.DamageAPI.ModdedDamageTypeHolderComponent>().Add(DamageTypes.BloodExplosionIdentifier);
+            punchShockwave.AddComponent<R2API.DamageAPI.ModdedDamageTypeHolderComponent>().Add(DriverDamageTypes.BloodExplosionIdentifier);
 
             var p = punchShockwave.GetComponent<ProjectileProximityBeamController>();
             p.lightningType = RoR2.Orbs.LightningOrb.LightningType.MageLightning;

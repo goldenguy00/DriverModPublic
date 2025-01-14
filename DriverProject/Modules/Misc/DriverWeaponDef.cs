@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using RoR2;
 using RoR2.Skills;
 
 [CreateAssetMenu(fileName = "wpn", menuName = "ScriptableObjects/WeaponDef", order = 1)]

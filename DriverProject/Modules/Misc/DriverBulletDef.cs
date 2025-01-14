@@ -9,7 +9,7 @@ public class DriverBulletDef : ScriptableObject
     [Header("General")]
     public string nameToken = "";
     public DamageType bulletType = DamageType.Generic;
-    public DamageAPI.ModdedDamageType moddedBulletType = DamageTypes.Generic;
+    public DamageAPI.ModdedDamageType moddedBulletType = DriverDamageTypes.Generic;
     public DriverWeaponTier tier = DriverWeaponTier.Common;
 
     [Header("Visuals")]

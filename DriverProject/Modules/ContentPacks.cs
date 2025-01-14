@@ -1,5 +1,4 @@
 ﻿using RoR2.ContentManagement;
-using System.Linq;
 
 namespace RobDriver.Modules
 {
@@ -28,10 +27,10 @@ namespace RobDriver.Modules
             contentPack.masterPrefabs.Add(Prefabs.masterPrefabs.ToArray());
             contentPack.networkSoundEventDefs.Add(Assets.networkSoundEventDefs.ToArray());
             contentPack.projectilePrefabs.Add(Prefabs.projectilePrefabs.ToArray());
-            contentPack.unlockableDefs.Add(Skills.unlockableDefs.ToArray());
             contentPack.skillDefs.Add(Skills.skillDefs.ToArray());
             contentPack.skillFamilies.Add(Skills.skillFamilies.ToArray());
             contentPack.survivorDefs.Add(Prefabs.survivorDefinitions.ToArray());
+            contentPack.unlockableDefs.Add(Unlockables.unlockableDefs.ToArray());
 
             args.ReportProgress(1f);
             yield break;

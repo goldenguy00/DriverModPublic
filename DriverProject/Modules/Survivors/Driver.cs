@@ -5,18 +5,9 @@ using RoR2.Skills;
 using System.Collections.Generic;
 using UnityEngine;
 using RoR2.CharacterAI;
-using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
-using RoR2.UI;
 using System.Linq;
 using RobDriver.Modules.Components;
-using R2API.Networking;
-using R2API.Networking.Interfaces;
-using MaterialHud;
-using TMPro;
-using RobDriver.Modules.Misc;
-using UnityEngine.UI;
-using System;
 
 namespace RobDriver.Modules.Survivors
 {
@@ -26,7 +17,6 @@ namespace RobDriver.Modules.Survivors
 
         internal static GameObject characterPrefab;
         internal static GameObject displayPrefab;
-
         internal static GameObject umbraMaster;
 
         internal static ConfigEntry<bool> forceUnlock;
@@ -38,21 +28,14 @@ namespace RobDriver.Modules.Survivors
 
         public const string bodyName = "RobDriverBody";
 
+        internal static BodyIndex bodyIndex = BodyIndex.None;
+
         public static int bodyRendererIndex; // use this to store the rendererinfo index containing our character's body
                                              // keep it last in the rendererinfos because teleporter particles for some reason require this. hopoo pls
 
         // item display stuffs
         internal static ItemDisplayRuleSet itemDisplayRuleSet;
         internal static List<ItemDisplayRuleSet.KeyAssetRuleGroup> itemDisplayRules;
-
-        internal static UnlockableDef characterUnlockableDef;
-        internal static UnlockableDef masteryUnlockableDef;
-        internal static UnlockableDef grandMasteryUnlockableDef;
-        internal static UnlockableDef suitUnlockableDef;
-
-        internal static UnlockableDef supplyDropUnlockableDef;
-        internal static UnlockableDef pistolPassiveUnlockableDef;
-        internal static UnlockableDef godslingPassiveUnlockableDef;
 
         // skill overrides
         internal static SkillDef lunarPistolPrimarySkillDef;
@@ -143,8 +126,6 @@ namespace RobDriver.Modules.Survivors
         internal static SkillDef scepterKnifeSkillDef;
         internal static SkillDef knifeSkillDef;
 
-        internal static int baseSkinCount;
-
         internal static string bodyNameToken;
 
         internal void CreateCharacter()
@@ -157,27 +138,22 @@ namespace RobDriver.Modules.Survivors
             {
                 forceUnlock = Modules.Config.ForceUnlockConfig("Driver");
 
-                masteryUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.MasteryAchievement>();
-                grandMasteryUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.GrandMasteryAchievement>();
-                suitUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.SuitAchievement>();
-
-                supplyDropUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.SupplyDropAchievement>();
-                pistolPassiveUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.DriverPistolPassiveAchievement>();
-                godslingPassiveUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.DriverGodslingPassiveAchievement>();
-
-                if (!forceUnlock.Value) characterUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.DriverUnlockAchievement>();
-
                 characterPrefab = CreateBodyPrefab(true);
-
                 displayPrefab = Modules.Prefabs.CreateDisplayPrefab("DriverDisplay", characterPrefab);
-
-                if (forceUnlock.Value) Modules.Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER");
-                else Modules.Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER", characterUnlockableDef);
-
                 umbraMaster = CreateMaster(characterPrefab, "RobDriverMonsterMaster");
-            }
 
-            DriverHooks.Hook();
+                Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER", forceUnlock.Value ? null : Unlockables.characterUnlockableDef);
+
+                DriverHooks.Hook();
+                RoR2.ContentManagement.ContentManager.onContentPacksAssigned += LateSetup;
+            }
+        }
+
+        private void LateSetup(HG.ReadOnlyArray<RoR2.ContentManagement.ReadOnlyContentPack> obj)
+        {
+            SetItemDisplays();
+            LateSkinSetup();
+            bodyIndex = BodyCatalog.FindBodyIndex(bodyName);
         }
 
         private static GameObject CreateBodyPrefab(bool isPlayer)
@@ -725,7 +701,7 @@ namespace RobDriver.Modules.Survivors
                     passive.pistolOnlyPassive);
 
                 Modules.Skills.AddUnlockablesToFamily(passive.passiveSkillSlot.skillFamily,
-                null, pistolPassiveUnlockableDef, godslingPassiveUnlockableDef, pistolPassiveUnlockableDef);
+                null, Unlockables.pistolPassiveUnlockableDef, Unlockables.godslingPassiveUnlockableDef, Unlockables.pistolPassiveUnlockableDef);
             }
             else
             {
@@ -735,7 +711,7 @@ namespace RobDriver.Modules.Survivors
                     passive.godslingPassive);
 
                 Modules.Skills.AddUnlockablesToFamily(passive.passiveSkillSlot.skillFamily,
-                null, pistolPassiveUnlockableDef, godslingPassiveUnlockableDef);
+                null, Unlockables.pistolPassiveUnlockableDef, Unlockables.godslingPassiveUnlockableDef);
             }
             #endregion
 
@@ -1979,16 +1955,16 @@ namespace RobDriver.Modules.Survivors
             if (Modules.Config.cursed.Value)
             {
                 Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, supplyDropLegacySkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, syringeLegacySkillDef, coinSkillDef);
-                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, supplyDropUnlockableDef, supplyDropUnlockableDef);
+                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, Unlockables.supplyDropUnlockableDef, Unlockables.supplyDropUnlockableDef);
             }
             else
             {
                 Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, coinSkillDef);
-                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, supplyDropUnlockableDef);
+                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, Unlockables.supplyDropUnlockableDef);
             }
             #endregion
 
-            if (DriverPlugin.scepterInstalled) InitializeScepterSkills();
+            if (DriverPlugin.ScepterInstalled) InitializeScepterSkills();
 
             Assets.InitWeaponDefs();
 
@@ -2022,18 +1998,14 @@ namespace RobDriver.Modules.Survivors
         {
             GameObject model = prefab.GetComponent<ModelLocator>().modelTransform.gameObject;
             CharacterModel characterModel = model.GetComponent<CharacterModel>();
+            
+            SkinnedMeshRenderer mainRenderer = characterModel.mainSkinnedMeshRenderer;
+            CharacterModel.RendererInfo[] defaultRenderers = characterModel.baseRendererInfos;
 
             ModelSkinController skinController = model.AddComponent<ModelSkinController>();
             ChildLocator childLocator = model.GetComponent<ChildLocator>();
 
-            SkinnedMeshRenderer mainRenderer = characterModel.mainSkinnedMeshRenderer;
-
-            CharacterModel.RendererInfo[] defaultRenderers = characterModel.baseRendererInfos;
-
-            Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(true);
-
-            List<SkinDef> skins = new List<SkinDef>();
-
+            List<SkinDef> skins = [];
             GameObject sluggerCloth = childLocator.FindChild("SluggerCloth").gameObject;
             GameObject tie = childLocator.FindChild("Tie").gameObject;
 
@@ -2079,7 +2051,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                masteryUnlockableDef);
+                Unlockables.masteryUnlockableDef);
 
             masterySkin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2116,7 +2088,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                grandMasteryUnlockableDef);
+                Unlockables.grandMasteryUnlockableDef);
 
             grandMasterySkin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2221,7 +2193,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                suitUnlockableDef);
+                Unlockables.suitUnlockableDef);
 
             suitSkin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2257,7 +2229,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                suitUnlockableDef);
+                Unlockables.suitUnlockableDef);
 
             suit2Skin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2365,7 +2337,6 @@ namespace RobDriver.Modules.Survivors
             if (Modules.Config.cursed.Value) skins.Add(minecraftSkin);
 
             skinController.skins = skins.ToArray();
-            baseSkinCount = skinController.skins.Length;
         }
 
         internal static void LateSkinSetup()
@@ -2670,7 +2641,7 @@ namespace RobDriver.Modules.Survivors
                 }
             });
 
-            if (DriverPlugin.litInstalled) SetLITDisplays();
+            if (DriverPlugin.LitInstalled) SetLITDisplays();
 
             itemDisplayRuleSet.keyAssetRuleGroups = itemDisplayRules.ToArray();
             //itemDisplayRuleSet.GenerateRuntimeValues();

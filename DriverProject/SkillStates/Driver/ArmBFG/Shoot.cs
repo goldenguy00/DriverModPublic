@@ -3,7 +3,6 @@ using UnityEngine;
 using EntityStates;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.ArmBFG
 {

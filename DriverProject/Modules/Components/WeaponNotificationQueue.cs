@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using RoR2;
-using RoR2.UI;
 using System;
 
 namespace RobDriver.Modules.Components
 {
-	public class WeaponNotificationQueue : MonoBehaviour
+    public class WeaponNotificationQueue : MonoBehaviour
 	{
 		public const float firstNotificationLengthSeconds = 6f;
 		public const float repeatNotificationLengthSeconds = 6f;

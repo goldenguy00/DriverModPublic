@@ -1,54 +1,42 @@
-﻿using R2API;
-using R2API.Utils;
-using RoR2;
+﻿using RoR2;
+using RoR2.Achievements;
 using System;
 using UnityEngine;
 
 namespace RobDriver.Modules.Achievements
 {
-    internal class DriverUnlockAchievement : ModdedUnlockable
+    //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
+    //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
+    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
+    internal class DriverUnlockAchievement : BaseAchievement
     {
-        public override string AchievementIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_ID";
-        public override string UnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_REWARD_ID";
-        public override string AchievementNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_NAME";
-        public override string PrerequisiteUnlockableIdentifier { get; } = "";
-        public override string UnlockableNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_UNLOCKABLE_NAME";
-        public override string AchievementDescToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_DESC";
-        public override Sprite Sprite { get; } = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texDriverAchievement");
+        public const string identifier = "ROB_DRIVER_BODY_UNLOCK";
+        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_BODY_UNLOCK_NAME";
+        public const string unlockableIdentifier = "ROB_DRIVER_BODY_UNLOCK_UNLOCKABLE"; 
+        public static Sprite Sprite => Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texDriverAchievement");
 
-        public override Func<string> GetHowToUnlock { get; } = (() => Language.GetStringFormatted("UNLOCK_VIA_ACHIEVEMENT_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
-        public override Func<string> GetUnlocked { get; } = (() => Language.GetStringFormatted("UNLOCKED_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
-
-        private void Check(CharacterBody characterBody)
-        {
-            if (Run.instance is null) return;
-
-            if (Run.instance.stageClearCount >= 2 && Run.instance.time <= 900f)
-            {
-                base.Grant();
-            }
-        }
 
         public override void OnInstall()
         {
             base.OnInstall();
 
-            CharacterBody.onBodyStartGlobal += Check;
+            CharacterBody.onBodyStartGlobal += OnBodyStartGlobal;
         }
 
         public override void OnUninstall()
         {
             base.OnUninstall();
 
-            CharacterBody.onBodyStartGlobal -= Check;
+            CharacterBody.onBodyStartGlobal -= OnBodyStartGlobal;
         }
+
+        private void OnBodyStartGlobal(CharacterBody characterBody)
+        {
+            if (Run.instance && Run.instance.stageClearCount >= 2 && Run.instance.time <= 900f)
+            {
+                base.Grant();
+            }
+        }
+
     }
 }

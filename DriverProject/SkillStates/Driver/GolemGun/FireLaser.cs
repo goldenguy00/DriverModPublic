@@ -1,12 +1,11 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using UnityEngine.AddressableAssets;
 using R2API;
 
 namespace RobDriver.SkillStates.Driver.GolemGun
 {
-	public class FireLaser : BaseDriverSkillState
+    public class FireLaser : BaseDriverSkillState
 	{
 		public static float damageCoefficient = 14f;
 		public static float blastRadius = 5f;

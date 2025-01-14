@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RobDriver.Modules.Misc
+namespace RobDriver.Modules
 {
     internal static class DriverWeaponSkinCatalog
     {

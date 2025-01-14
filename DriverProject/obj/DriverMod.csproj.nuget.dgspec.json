@@ -57,7 +57,7 @@
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[1.0.*, )"
+              "version": "[1.0.8, )"
             },
             "BepInEx.Core": {
               "target": "Package",
@@ -65,15 +65,54 @@
             },
             "MMHOOK.RoR2": {
               "target": "Package",
-              "version": "[2024.9.5, )"
+              "version": "[2024.12.10, )",
+              "noWarn": [
+                "NU1701"
+              ]
             },
-            "R2API": {
+            "R2API.ContentManagement": {
               "target": "Package",
-              "version": "[5.0.5, )"
+              "version": "[1.0.6, )"
+            },
+            "R2API.Core": {
+              "target": "Package",
+              "version": "[5.1.5, )"
+            },
+            "R2API.DamageType": {
+              "target": "Package",
+              "version": "[1.1.4, )"
+            },
+            "R2API.Dot": {
+              "target": "Package",
+              "version": "[1.0.3, )"
+            },
+            "R2API.Language": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            },
+            "R2API.Networking": {
+              "target": "Package",
+              "version": "[1.0.3, )"
+            },
+            "R2API.Prefab": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            },
+            "R2API.RecalculateStats": {
+              "target": "Package",
+              "version": "[1.5.0, )"
+            },
+            "R2API.Skins": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "R2API.Sound": {
+              "target": "Package",
+              "version": "[1.0.3, )"
             },
             "RiskOfRain2.GameLibs": {
               "target": "Package",
-              "version": "[1.3.2-r.1, )"
+              "version": "[1.3.6-r.0, )"
             },
             "Rune580.Mods.RiskOfRain2.RiskOfOptions": {
               "target": "Package",

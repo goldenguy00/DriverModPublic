@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using RoR2;
 using EntityStates;
-using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 
 namespace RobDriver.SkillStates.Driver

@@ -10,7 +10,6 @@ using TMPro;
 using RoR2.UI;
 using UnityEngine.UI;
 using RobDriver.Modules.Components;
-using UnityEngine.Rendering.PostProcessing;
 
 namespace RobDriver.Modules
 {
@@ -191,34 +190,6 @@ namespace RobDriver.Modules
         public static GameObject redSwingEffect;
         public static GameObject bigRedSwingEffect;
         public static GameObject consumeOrb;
-
-        internal static DriverWeaponDef pistolWeaponDef;
-        internal static DriverWeaponDef goldenGunWeaponDef;
-        internal static DriverWeaponDef pyriteGunWeaponDef;
-        internal static DriverWeaponDef shotgunWeaponDef;
-        internal static DriverWeaponDef riotShotgunWeaponDef;
-        internal static DriverWeaponDef slugShotgunWeaponDef;
-        internal static DriverWeaponDef machineGunWeaponDef;
-        internal static DriverWeaponDef heavyMachineGunWeaponDef;
-        internal static DriverWeaponDef bazookaWeaponDef;
-        internal static DriverWeaponDef rocketLauncherWeaponDef;
-        internal static DriverWeaponDef rocketLauncherAltWeaponDef;
-        internal static DriverWeaponDef sniperWeaponDef;
-        internal static DriverWeaponDef armCannonWeaponDef;
-        internal static DriverWeaponDef plasmaCannonWeaponDef;
-        internal static DriverWeaponDef beetleShieldWeaponDef;
-        internal static DriverWeaponDef behemothWeaponDef;
-        internal static DriverWeaponDef grenadeLauncherWeaponDef;
-        internal static DriverWeaponDef lunarPistolWeaponDef;
-        internal static DriverWeaponDef voidPistolWeaponDef;
-        internal static DriverWeaponDef needlerWeaponDef;
-        internal static DriverWeaponDef badassShotgunWeaponDef;
-        internal static DriverWeaponDef lunarRifleWeaponDef;
-        internal static DriverWeaponDef lunarHammerWeaponDef;
-        internal static DriverWeaponDef nemmandoGunWeaponDef;
-        internal static DriverWeaponDef nemmandoSwordWeaponDef;
-        internal static DriverWeaponDef nemmercGunWeaponDef;
-        internal static DriverWeaponDef golemGunWeaponDef;
 
         internal static Material syringeDamageOverlayMat;
         internal static Material syringeAttackSpeedOverlayMat;
@@ -1506,7 +1477,7 @@ namespace RobDriver.Modules
         internal static void InitWeaponDefs()
         {
             // ignore this one, this is the default
-            pistolWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.Pistol = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_PISTOL_NAME",
                 descriptionToken = "ROB_DRIVER_PISTOL_DESC",
@@ -1519,10 +1490,8 @@ namespace RobDriver.Modules
                 material = Assets.pistolMat,
                 animationSet = DriverWeaponDef.AnimationSet.Default
             });
-            DriverWeaponCatalog.AddWeapon(pistolWeaponDef);
-            DriverWeaponCatalog.Pistol = pistolWeaponDef;
 
-            lunarPistolWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.LunarPistol = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_LUNAR_PISTOL_NAME",
                 descriptionToken = "ROB_DRIVER_LUNAR_PISTOL_DESC",
@@ -1535,10 +1504,8 @@ namespace RobDriver.Modules
                 material = Addressables.LoadAssetAsync<Material>("RoR2/Base/LunarGolem/matLunarGolem.mat").WaitForCompletion(),
                 animationSet = DriverWeaponDef.AnimationSet.Default
             });
-            DriverWeaponCatalog.AddWeapon(lunarPistolWeaponDef);
-            DriverWeaponCatalog.LunarPistol = lunarPistolWeaponDef;
 
-            voidPistolWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.VoidPistol = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_VOID_PISTOL_NAME",
                 descriptionToken = "ROB_DRIVER_VOID_PISTOL_DESC",
@@ -1551,10 +1518,8 @@ namespace RobDriver.Modules
                 material = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/VoidJailer/matVoidJailer.mat").WaitForCompletion(),
                 animationSet = DriverWeaponDef.AnimationSet.Default
             });
-            DriverWeaponCatalog.AddWeapon(voidPistolWeaponDef);
-            DriverWeaponCatalog.VoidPistol = voidPistolWeaponDef;
 
-            needlerWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.Needler = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_NEEDLER_NAME",
                 descriptionToken = "ROB_DRIVER_NEEDLER_DESC",
@@ -1567,10 +1532,8 @@ namespace RobDriver.Modules
                 material = Assets.needlerMat,
                 animationSet = DriverWeaponDef.AnimationSet.Default
             });
-            DriverWeaponCatalog.AddWeapon(needlerWeaponDef);
-            DriverWeaponCatalog.Needler = needlerWeaponDef;
 
-            goldenGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.GoldenGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_GOLDENGUN_NAME",
                 descriptionToken = "ROB_DRIVER_GOLDENGUN_DESC",
@@ -1587,10 +1550,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Golden Gun",
                 dropChance = 100f
             });
-            DriverWeaponCatalog.AddWeapon(goldenGunWeaponDef);
-            DriverWeaponCatalog.GoldenGun = goldenGunWeaponDef;
 
-            pyriteGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.PyriteGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_PYRITEGUN_NAME",
                 descriptionToken = "ROB_DRIVER_PYRITEGUN_DESC",
@@ -1603,10 +1564,8 @@ namespace RobDriver.Modules
                 material = Assets.pyriteGunMat,
                 animationSet = DriverWeaponDef.AnimationSet.Default
             });
-            DriverWeaponCatalog.AddWeapon(pyriteGunWeaponDef);
-            DriverWeaponCatalog.PyriteGun = pyriteGunWeaponDef;
 
-            beetleShieldWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.BeetleShield = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_BEETLESHIELD_NAME",
                 descriptionToken = "ROB_DRIVER_BEETLESHIELD_DESC",
@@ -1623,11 +1582,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Chitin Shield",
                 dropChance = 2f
             });
-            DriverWeaponCatalog.AddWeapon(beetleShieldWeaponDef);
-            DriverWeaponCatalog.BeetleShield = beetleShieldWeaponDef;
 
-            // example of creating a WeaponDef through code and adding it to the catalog for driver to obtain
-            shotgunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.Shotgun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_SHOTGUN_NAME",
                 descriptionToken = "ROB_DRIVER_SHOTGUN_DESC",
@@ -1643,10 +1599,9 @@ namespace RobDriver.Modules
                 calloutSoundString = "sfx_driver_callout_shotgun",
                 configIdentifier = "Shotgun",
                 buffType = DriverWeaponDef.BuffType.Damage
-            });// now add it to the catalog here; catalog is necessary for networking
-            DriverWeaponCatalog.AddWeapon(shotgunWeaponDef);
+            });
 
-            riotShotgunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.RiotShotgun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_RIOT_SHOTGUN_NAME",
                 descriptionToken = "ROB_DRIVER_RIOT_SHOTGUN_DESC",
@@ -1663,9 +1618,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Riot Shotgun",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(riotShotgunWeaponDef);
 
-            slugShotgunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.SlugShotgun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_SLUG_SHOTGUN_NAME",
                 descriptionToken = "ROB_DRIVER_SLUG_SHOTGUN_DESC",
@@ -1682,9 +1636,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Slug Shotgun",
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(slugShotgunWeaponDef);
 
-            machineGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.MachineGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_MACHINEGUN_NAME",
                 descriptionToken = "ROB_DRIVER_MACHINEGUN_DESC",
@@ -1701,9 +1654,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Machine Gun",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(machineGunWeaponDef);
 
-            heavyMachineGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.HeavyMachineGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_HEAVY_MACHINEGUN_NAME",
                 descriptionToken = "ROB_DRIVER_HEAVY_MACHINEGUN_DESC",
@@ -1720,9 +1672,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Heavy Machine Gun",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(heavyMachineGunWeaponDef);
 
-            sniperWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.Sniper = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_SNIPER_NAME",
                 descriptionToken = "ROB_DRIVER_SNIPER_DESC",
@@ -1739,9 +1690,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Sniper Rifle",
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(sniperWeaponDef);
 
-            bazookaWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.Bazooka = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_BAZOOKA_NAME",
                 descriptionToken = "ROB_DRIVER_BAZOOKA_DESC",
@@ -1758,9 +1708,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Bazooka",
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(bazookaWeaponDef);
 
-            grenadeLauncherWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.GrenadeLauncher = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_GRENADELAUNCHER_NAME",
                 descriptionToken = "ROB_DRIVER_GRENADELAUNCHER_DESC",
@@ -1777,9 +1726,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Grenade Launcher",
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(grenadeLauncherWeaponDef);
 
-            rocketLauncherWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.RocketLauncher = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_ROCKETLAUNCHER_NAME",
                 descriptionToken = "ROB_DRIVER_ROCKETLAUNCHER_DESC",
@@ -1796,9 +1744,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Rocket Launcher",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(rocketLauncherWeaponDef);
 
-            behemothWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.Behemoth = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_BEHEMOTH_NAME",
                 descriptionToken = "ROB_DRIVER_BEHEMOTH_DESC",
@@ -1815,10 +1762,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Brilliant Behemoth",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(behemothWeaponDef);
-            DriverWeaponCatalog.Behemoth = behemothWeaponDef;
 
-            rocketLauncherAltWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.PrototypeRocketLauncher = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_ROCKETLAUNCHER_ALT_NAME",
                 descriptionToken = "ROB_DRIVER_ROCKETLAUNCHER_ALT_DESC",
@@ -1835,10 +1780,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Prototype Rocket Launcher",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(rocketLauncherAltWeaponDef);
-            DriverWeaponCatalog.PrototypeRocketLauncher = rocketLauncherAltWeaponDef;
 
-            armCannonWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.ArmCannon = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_ARMCANNON_NAME",
                 descriptionToken = "ROB_DRIVER_ARMCANNON_DESC",
@@ -1856,10 +1799,8 @@ namespace RobDriver.Modules
                 dropChance = 25f,
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(armCannonWeaponDef);
-            DriverWeaponCatalog.ArmCannon = armCannonWeaponDef;
 
-            plasmaCannonWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.PlasmaCannon = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_PLASMACANNON_NAME",
                 descriptionToken = "ROB_DRIVER_PLASMACANNON_DESC",
@@ -1876,10 +1817,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Super Plasma Cannon",
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(plasmaCannonWeaponDef);
-            DriverWeaponCatalog.PlasmaCannon = plasmaCannonWeaponDef;
 
-            badassShotgunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.BadassShotgun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_BADASS_SHOTGUN_NAME",
                 descriptionToken = "ROB_DRIVER_BADASS_SHOTGUN_DESC",
@@ -1896,9 +1835,8 @@ namespace RobDriver.Modules
                 configIdentifier = "Badass Shotgun",
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(badassShotgunWeaponDef);
 
-            lunarRifleWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.LunarRifle = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_LUNARRIFLE_NAME",
                 descriptionToken = "ROB_DRIVER_LUNARRIFLE_DESC",
@@ -1916,10 +1854,8 @@ namespace RobDriver.Modules
                 dropChance = 5f,
                 buffType = DriverWeaponDef.BuffType.AttackSpeed
             });
-            DriverWeaponCatalog.AddWeapon(lunarRifleWeaponDef);
-            DriverWeaponCatalog.LunarRifle = lunarRifleWeaponDef;
 
-            lunarHammerWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.LunarHammer = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_LUNARHAMMER_NAME",
                 descriptionToken = "ROB_DRIVER_LUNARHAMMER_DESC",
@@ -1935,10 +1871,8 @@ namespace RobDriver.Modules
                 dropChance = 100f,
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(lunarHammerWeaponDef);
-            DriverWeaponCatalog.LunarHammer = lunarHammerWeaponDef;
 
-            nemmandoGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.NemmandoGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_NEMMANDO_NAME",
                 descriptionToken = "ROB_DRIVER_NEMMANDO_DESC",
@@ -1954,10 +1888,8 @@ namespace RobDriver.Modules
                 calloutSoundString = "sfx_driver_callout_generic",
                 dropChance = 100f
             });
-            DriverWeaponCatalog.AddWeapon(nemmandoGunWeaponDef);
-            DriverWeaponCatalog.NemmandoGun = nemmandoGunWeaponDef;
 
-            nemmercGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.NemmercGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_NEMMERC_NAME",
                 descriptionToken = "ROB_DRIVER_NEMMERC_DESC",
@@ -1974,10 +1906,8 @@ namespace RobDriver.Modules
                 dropChance = 100f,
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(nemmercGunWeaponDef);
-            DriverWeaponCatalog.NemmercGun = nemmercGunWeaponDef;
 
-            golemGunWeaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
+            DriverWeaponCatalog.GolemRifle = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 nameToken = "ROB_DRIVER_GOLEMGUN_NAME",
                 descriptionToken = "ROB_DRIVER_GOLEMGUN_DESC",
@@ -1995,20 +1925,18 @@ namespace RobDriver.Modules
                 dropChance = 5f,
                 buffType = DriverWeaponDef.BuffType.Damage
             });
-            DriverWeaponCatalog.AddWeapon(golemGunWeaponDef);
-            DriverWeaponCatalog.GolemRifle = golemGunWeaponDef;
 
-            DriverWeaponCatalog.AddWeaponDrop("Beetle", beetleShieldWeaponDef);
-            DriverWeaponCatalog.AddWeaponDrop("Golem", golemGunWeaponDef);
-            DriverWeaponCatalog.AddWeaponDrop("LunarGolem", lunarRifleWeaponDef);
-            DriverWeaponCatalog.AddWeaponDrop("TitanGold", goldenGunWeaponDef);
-            DriverWeaponCatalog.AddWeaponDrop("Brother", lunarRifleWeaponDef);
-            DriverWeaponCatalog.AddWeaponDrop("BrotherHurt", lunarHammerWeaponDef);
+            DriverWeaponCatalog.AddWeaponDrop("Beetle", DriverWeaponCatalog.BeetleShield);
+            DriverWeaponCatalog.AddWeaponDrop("Golem", DriverWeaponCatalog.GolemRifle);
+            DriverWeaponCatalog.AddWeaponDrop("LunarGolem", DriverWeaponCatalog.LunarRifle);
+            DriverWeaponCatalog.AddWeaponDrop("TitanGold", DriverWeaponCatalog.GoldenGun);
+            DriverWeaponCatalog.AddWeaponDrop("Brother", DriverWeaponCatalog.LunarRifle);
+            DriverWeaponCatalog.AddWeaponDrop("BrotherHurt", DriverWeaponCatalog.LunarHammer);
 
-            DriverWeaponCatalog.AddWeaponDrop("Mechorilla", armCannonWeaponDef);
+            DriverWeaponCatalog.AddWeaponDrop("Mechorilla", DriverWeaponCatalog.ArmCannon);
 
-            DriverWeaponCatalog.AddWeaponDrop("NemCommando", nemmandoGunWeaponDef);
-            DriverWeaponCatalog.AddWeaponDrop("NemMerc", nemmercGunWeaponDef);
+            DriverWeaponCatalog.AddWeaponDrop("Commando", DriverWeaponCatalog.NemmandoGun);
+            DriverWeaponCatalog.AddWeaponDrop("NemMerc", DriverWeaponCatalog.NemmercGun);
         }
 
         private static GameObject CreateCrosshair()

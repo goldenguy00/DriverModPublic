@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using RoR2;
-using EntityStates;
-
-namespace RobDriver.SkillStates.Driver.PyriteGun
+﻿namespace RobDriver.SkillStates.Driver.PyriteGun
 {
     public class Shoot : SkillStates.Driver.Shoot
     {

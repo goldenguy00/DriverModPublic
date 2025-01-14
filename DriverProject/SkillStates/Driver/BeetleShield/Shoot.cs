@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace RobDriver.SkillStates.Driver.BeetleShield
+﻿namespace RobDriver.SkillStates.Driver.BeetleShield
 {
     public class Shoot : Driver.Shoot
     {

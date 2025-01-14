@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using R2API;
+﻿using R2API;
 using RoR2;
 using RoR2.Orbs;
 using UnityEngine;
-using System.Linq;
 
 namespace RobDriver.Modules.Components
 {
@@ -67,7 +65,7 @@ namespace RobDriver.Modules.Components
                             damageType = iDrive.DamageType
                         };
                         blastAttack.AddModdedDamageType(iDrive.ModdedDamageType);
-                        blastAttack.AddModdedDamageType(DamageTypes.BloodExplosionIdentifier);
+                        blastAttack.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
                         blastAttack.Fire();
 
                         EffectData effectData = new EffectData
@@ -101,7 +99,7 @@ namespace RobDriver.Modules.Components
                         else
                         {
                             damageInfo.damageType = DamageType.Stun1s | iDrive.DamageType;
-                            damageInfo.AddModdedDamageType(DamageTypes.BloodExplosionIdentifier);
+                            damageInfo.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
                             damageInfo.AddModdedDamageType(iDrive.ModdedDamageType);
 
                             healthComponent.TakeDamage(damageInfo);

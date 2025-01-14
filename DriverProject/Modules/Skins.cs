@@ -1,6 +1,4 @@
-﻿using R2API;
-using RoR2;
-using System;
+﻿using RoR2;
 using UnityEngine;
 
 namespace RobDriver.Modules
@@ -14,22 +12,22 @@ namespace RobDriver.Modules
 
         public static SkinDef CreateSkinDef(string skinName, Sprite skinIcon, CharacterModel.RendererInfo[] rendererInfos, SkinnedMeshRenderer mainRenderer, GameObject root, UnlockableDef unlockableDef)
         {
-            LoadoutAPI.SkinDefInfo skinDefInfo = new LoadoutAPI.SkinDefInfo
+            R2API.SkinDefInfo skinDefInfo = new R2API.SkinDefInfo
             {
-                BaseSkins = Array.Empty<SkinDef>(),
-                GameObjectActivations = new SkinDef.GameObjectActivation[0],
+                BaseSkins = [],
+                GameObjectActivations = [],
                 Icon = skinIcon,
-                MeshReplacements = new SkinDef.MeshReplacement[0],
-                MinionSkinReplacements = new SkinDef.MinionSkinReplacement[0],
+                MeshReplacements = [],
+                MinionSkinReplacements = [],
                 Name = skinName,
                 NameToken = skinName,
-                ProjectileGhostReplacements = new SkinDef.ProjectileGhostReplacement[0],
+                ProjectileGhostReplacements = [],
                 RendererInfos = rendererInfos,
                 RootObject = root,
                 UnlockableDef = unlockableDef
             };
 
-            SkinDef skin = LoadoutAPI.CreateNewSkinDef(skinDefInfo);
+            SkinDef skin = R2API.Skins.CreateNewSkinDef(skinDefInfo);
 
             return skin;
         }

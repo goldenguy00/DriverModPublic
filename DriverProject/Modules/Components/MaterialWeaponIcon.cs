@@ -3,11 +3,10 @@ using UnityEngine.UI;
 using RoR2;
 using RoR2.UI;
 using TMPro;
-using System;
 
 namespace RobDriver.Modules.Components
 {
-	public class MaterialWeaponIcon : MonoBehaviour
+    public class MaterialWeaponIcon : MonoBehaviour
 	{
 		public DriverController iDrive;
         public HUD targetHUD;

@@ -30,7 +30,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoSword
             this.hitStopDuration = 0.2f;
             this.smoothHitstop = true;
 
-            this.swingSoundString = DriverPlugin.starstormInstalled ? "NemmandoSwing" : "Play_merc_sword_swing";
+            this.swingSoundString = DriverPlugin.StarstormInstalled ? "NemmandoSwing" : "Play_merc_sword_swing";
 
             this.swingEffectPrefab = Modules.Assets.redMercSwing;
             this.hitSoundString = "";
@@ -43,7 +43,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoSword
             base.OnEnter();
 
             base.attack.AddModdedDamageType(iDrive.ModdedDamageType);
-            base.attack.AddModdedDamageType(DamageTypes.Gouge);
+            base.attack.AddModdedDamageType(DriverDamageTypes.Gouge);
         }
 
         protected override void FireAttack()

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using EntityStates;
-using EntityStates.Commando;
+﻿using EntityStates;
 using RoR2;
 using RoR2.Audio;
 using RoR2.Projectile;
 using UnityEngine;
-using RobDriver.Modules.Components;
 using R2API;
-using RobDriver.Modules;
 
 namespace RobDriver.SkillStates.Driver.Compat
 {
@@ -49,7 +43,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             base.PlayAnimation("FullBody, Override Soft", "BufferEmpty");
             PlayAnimation("FullBody, Override", startAnimString, "Grab.playbackRate", windupDuration);
 
-            if(DriverPlugin.ravagerInstalled) Util.PlaySound("sfx_ravager_shine", gameObject);
+            if(DriverPlugin.RavagerInstalled) Util.PlaySound("sfx_ravager_shine", gameObject);
 
             characterMotor.velocity *= 0.1f;
 
@@ -78,7 +72,7 @@ namespace RobDriver.SkillStates.Driver.Compat
                     stopwatch = 0f;
                     subState = SubState.DashGrab;
                     PlayAnimation("FullBody, Override", dashAnimString, "Grab.playbackRate", grabDuration * 1.25f);
-                    if(DriverPlugin.ravagerInstalled) Util.PlaySound("sfx_ravager_lunge", gameObject);
+                    if(DriverPlugin.RavagerInstalled) Util.PlaySound("sfx_ravager_lunge", gameObject);
                     else Util.PlaySound("sfx_driver_dodge", this.gameObject);
                 }
 
@@ -135,7 +129,7 @@ namespace RobDriver.SkillStates.Driver.Compat
                         scale = 2f
                     }, false);
 
-                    if (DriverPlugin.ravagerInstalled)
+                    if (DriverPlugin.RavagerInstalled)
                     {
                         Util.PlaySound("sfx_ravager_punch", gameObject);
                         Util.PlaySound("sfx_ravager_punch_generic", hurtBox.gameObject);

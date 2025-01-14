@@ -48,7 +48,7 @@ namespace RobDriver.SkillStates.Driver
 
             base.OnEnter();
 
-            this.attack.AddModdedDamageType(DamageTypes.KnifeWound);
+            this.attack.AddModdedDamageType(DriverDamageTypes.KnifeWound);
 
             Util.PlaySound("sfx_driver_foley_knife", this.gameObject);
         }
