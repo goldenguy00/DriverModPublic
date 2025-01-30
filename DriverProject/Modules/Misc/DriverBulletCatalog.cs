@@ -55,7 +55,7 @@ namespace RobDriver
 
         internal static void Init()
         {
-            Default = CreateBulletType("Default", DriverWeaponTier.Unique, Color.white);
+            Default = CreateBulletType("Default", DriverWeaponTier.Unique, Color.white, DamageType.Generic);
 
             // Common
             Slowing = CreateBulletType("Slowing", DriverWeaponTier.Common, Color.yellow, DamageType.SlowOnHit);
@@ -101,10 +101,10 @@ namespace RobDriver
             VoidLightning = CreateBulletType("Void Lightning", DriverWeaponTier.Legendary, new Color32(194, 115, 255, 255), DriverDamageTypes.VoidLightning);
         }
 
-        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageType damageType) => CreateBulletType(nameToken, tier, color, damageType);
-        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageTypeExtended damageType) => CreateBulletType(nameToken, tier, color, null, damageType);
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageType damageType) => CreateBulletType(nameToken, tier, color, damageType, null, null);
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageTypeExtended damageType) => CreateBulletType(nameToken, tier, color, null, damageType, null);
         public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageAPI.ModdedDamageType damageType) => CreateBulletType(nameToken, tier, color, null, null, damageType);
-        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageType? damageType = null, DamageTypeExtended? damageTypeExtended = null, DamageAPI.ModdedDamageType? moddedDamageType = null)
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageType? damageType, DamageTypeExtended? damageTypeExtended, DamageAPI.ModdedDamageType? moddedDamageType)
         {
             var bulletDef = DriverBulletDef.CreateBulletDefFromInfo(new DriverBulletDefInfo
             {

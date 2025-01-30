@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using RoR2.Skills;
+using System;
 
 [CreateAssetMenu(fileName = "wpn", menuName = "ScriptableObjects/WeaponDef", order = 1)]
 public class DriverWeaponDef : ScriptableObject
@@ -43,8 +44,10 @@ public class DriverWeaponDef : ScriptableObject
 
     [HideInInspector]
     public ushort index; // assigned at runtime
+
+    [Obsolete]
     [HideInInspector]
-    public GameObject pickupPrefab; // same thing
+    public GameObject pickupPrefab; // perish
 
     public string equipAnimationString
     {
