@@ -21,9 +21,9 @@ namespace RobDriver.Modules.Components
         public DriverBulletDef currentBulletDef { get; private set; }
         public DriverWeaponDef defaultWeaponDef { get; private set; }
 
+        public bool HasLoadoutWeapon => this.weaponDef == arsenal.DefaultWeapon;
         public bool HasSpecialBullets => this.currentBulletDef.index != DriverBulletCatalog.Default.index;
-        public DamageType DamageType => this.currentBulletDef.bulletType;
-        public DamageAPI.ModdedDamageType ModdedDamageType => this.currentBulletDef.moddedBulletType;
+        public DamageTypeCombo DamageType => this.currentBulletDef.bulletType;
         public float ammo => this.weaponTimer;
 
         public float chargeValue;

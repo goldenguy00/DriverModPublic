@@ -179,13 +179,13 @@
           }
         }
       },
-      "R2API.ContentManagement/1.0.6": {
+      "R2API.ContentManagement/1.0.8": {
         "type": "package",
         "dependencies": {
           "BepInEx.Core": "5.4.19",
-          "MMHOOK.RoR2": "2024.8.28",
-          "R2API.Core": "5.1.1",
-          "RiskOfRain2.GameLibs": "1.3.1.275-r.0",
+          "MMHOOK.RoR2": "2024.12.10",
+          "R2API.Core": "5.1.5",
+          "RiskOfRain2.GameLibs": "1.3.6-r.0",
           "RoR2BepInExPack": "1.7.0",
           "UnityEngine.Modules": "2021.3.33"
         },
@@ -220,12 +220,12 @@
           }
         }
       },
-      "R2API.DamageType/1.1.4": {
+      "R2API.DamageType/1.1.7": {
         "type": "package",
         "dependencies": {
           "BepInEx.Core": "5.4.19",
           "MMHOOK.RoR2": "2024.12.10",
-          "R2API.Core": "5.1.3",
+          "R2API.Core": "5.1.5",
           "RiskOfRain2.GameLibs": "1.3.6-r.0",
           "RoR2BepInExPack": "1.7.0",
           "UnityEngine.Modules": "2021.3.33"
@@ -1217,16 +1217,16 @@
         "monomod.utils.nuspec"
       ]
     },
-    "R2API.ContentManagement/1.0.6": {
-      "sha512": "yirfmEJgn7NJIOfyP7WAMXr6VQ9zUgxqC5iqyNs+U3BH/TjovS1rKpDtVF9vtN7zY8jxXycMWQ2js+B3sdIg/A==",
+    "R2API.ContentManagement/1.0.8": {
+      "sha512": "HgBlBUiwRxsU6pJZRUt6tFejz7P3+bRgOoXbiXREGenz8f7APcoRreuwTi/K28MnFyyveWl512aa9KDogw224Q==",
       "type": "package",
-      "path": "r2api.contentmanagement/1.0.6",
+      "path": "r2api.contentmanagement/1.0.8",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.1/R2API.ContentManagement.dll",
         "lib/netstandard2.1/R2API.ContentManagement.xml",
-        "r2api.contentmanagement.1.0.6.nupkg.sha512",
+        "r2api.contentmanagement.1.0.8.nupkg.sha512",
         "r2api.contentmanagement.nuspec"
       ]
     },
@@ -1243,16 +1243,16 @@
         "r2api.core.nuspec"
       ]
     },
-    "R2API.DamageType/1.1.4": {
-      "sha512": "vr5UktHq4nn2N2zjksRRwJKKmkEgRx9sa5mYrgF8YfdcLrbQDwposT6Csj5KjJPnXNZRD9t2wSio/3qAuz+4DQ==",
+    "R2API.DamageType/1.1.7": {
+      "sha512": "hOKyc7bdyvAAdd7qrvvvOcsOnERuzVndpPPNwDjR+beI8eDmhtWdE0SND8aEHs9hWrCFf+tvrT6TrHDLcvUNNw==",
       "type": "package",
-      "path": "r2api.damagetype/1.1.4",
+      "path": "r2api.damagetype/1.1.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.1/R2API.DamageType.dll",
         "lib/netstandard2.1/R2API.DamageType.xml",
-        "r2api.damagetype.1.1.4.nupkg.sha512",
+        "r2api.damagetype.1.1.7.nupkg.sha512",
         "r2api.damagetype.nuspec"
       ]
     },
@@ -3292,9 +3292,9 @@
       "BepInEx.Analyzers >= 1.0.8",
       "BepInEx.Core >= 5.4.21",
       "MMHOOK.RoR2 >= 2024.12.10",
-      "R2API.ContentManagement >= 1.0.6",
+      "R2API.ContentManagement >= 1.0.8",
       "R2API.Core >= 5.1.5",
-      "R2API.DamageType >= 1.1.4",
+      "R2API.DamageType >= 1.1.7",
       "R2API.Dot >= 1.0.3",
       "R2API.Language >= 1.0.1",
       "R2API.Networking >= 1.0.3",
@@ -3378,7 +3378,7 @@
           },
           "R2API.ContentManagement": {
             "target": "Package",
-            "version": "[1.0.6, )"
+            "version": "[1.0.8, )"
           },
           "R2API.Core": {
             "target": "Package",
@@ -3386,7 +3386,7 @@
           },
           "R2API.DamageType": {
             "target": "Package",
-            "version": "[1.1.4, )"
+            "version": "[1.1.7, )"
           },
           "R2API.Dot": {
             "target": "Package",

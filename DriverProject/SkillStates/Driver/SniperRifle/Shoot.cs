@@ -117,8 +117,6 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
                         bulletCount = 1
                     };
 
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
-
                     if (this.aiming)
                     {
                         bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)

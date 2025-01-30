@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ovjyrzwFShw=",
+  "dgSpecHash": "IQAr8BFHHWg=",
   "success": true,
   "projectFilePath": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj",
   "expectedPackageFiles": [
@@ -16,9 +16,9 @@
     "C:\\Users\\golde\\.nuget\\packages\\monomod\\22.5.1.1\\monomod.22.5.1.1.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\monomod.runtimedetour\\21.12.13.1\\monomod.runtimedetour.21.12.13.1.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\monomod.utils\\22.5.1.1\\monomod.utils.22.5.1.1.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.contentmanagement\\1.0.6\\r2api.contentmanagement.1.0.6.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.contentmanagement\\1.0.8\\r2api.contentmanagement.1.0.8.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\r2api.core\\5.1.5\\r2api.core.5.1.5.nupkg.sha512",
-    "C:\\Users\\golde\\.nuget\\packages\\r2api.damagetype\\1.1.4\\r2api.damagetype.1.1.4.nupkg.sha512",
+    "C:\\Users\\golde\\.nuget\\packages\\r2api.damagetype\\1.1.7\\r2api.damagetype.1.1.7.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\r2api.dot\\1.0.3\\r2api.dot.1.0.3.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\r2api.language\\1.0.1\\r2api.language.1.0.1.nupkg.sha512",
     "C:\\Users\\golde\\.nuget\\packages\\r2api.networking\\1.0.3\\r2api.networking.1.0.3.nupkg.sha512",

@@ -314,7 +314,7 @@ namespace RobDriver.Modules
                 {
                     min = 0,
                     max = 20,
-                    formatString = "{0:0.00}",
+                    FormatString = "{0:0.00}",
                     restartRequired = restartRequired
                 }));
             }

@@ -52,8 +52,6 @@ namespace RobDriver.SkillStates.Driver.Compat
             }
 
             base.OnEnter();
-
-            base.attack.AddModdedDamageType(this.iDrive.ModdedDamageType);
         }
 
         protected override void OnHitEnemyAuthority(int amount)

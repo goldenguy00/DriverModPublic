@@ -33,8 +33,6 @@ namespace RobDriver.Modules
         public static GameObject armCannonPrefab;
         public static GameObject artiGauntletPrefab;
 
-        // please make the names start with "Driver" and end with "Projectile" or "Grenade" for it to use the modded dmg types
-        // im so sorry for hard coding it like this
         internal static void RegisterProjectiles()
         {
             CreateStunGrenade();
@@ -61,13 +59,11 @@ namespace RobDriver.Modules
             stunGrenadeProjectilePrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/Projectiles/CommandoGrenadeProjectile").InstantiateClone("RobDriverStunGrenade", true);
 
             ProjectileController grenadeController = stunGrenadeProjectilePrefab.GetComponent<ProjectileController>();
+            ProjectileImpactExplosion grenadeImpact = stunGrenadeProjectilePrefab.GetComponent<ProjectileImpactExplosion>();
 
             ProjectileDamage grenadeDamage = stunGrenadeProjectilePrefab.GetComponent<ProjectileDamage>();
-            ProjectileSimple simple = stunGrenadeProjectilePrefab.GetComponent<ProjectileSimple>();
-            ProjectileImpactExplosion grenadeImpact = stunGrenadeProjectilePrefab.GetComponent<ProjectileImpactExplosion>();
-            stunGrenadeProjectilePrefab.AddComponent<DamageAPI.ModdedDamageTypeHolderComponent>().Add(DriverDamageTypes.StunGrenadeDazed);
-
-            Prefabs.projectilePrefabs.Add(stunGrenadeProjectilePrefab);
+            grenadeDamage.damageType = DamageTypeCombo.GenericSpecial;
+            grenadeDamage.damageType.AddModdedDamageType(DriverDamageTypes.StunGrenadeDazed);
 
             stunGrenadeImpactEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/StunChanceOnHit/ImpactStunGrenade.prefab").WaitForCompletion().InstantiateClone("DriverStunGrenadeImpact", true);
             stunGrenadeImpactEffectPrefab.AddComponent<NetworkIdentity>();
@@ -120,6 +116,8 @@ namespace RobDriver.Modules
             grenadeDamage.damageType = DamageType.Stun1s;
             grenadeDamage.force = 1500f;
             #endregion
+
+            Prefabs.projectilePrefabs.Add(stunGrenadeProjectilePrefab);
         }
 
         private static void CreateLunarShard()
@@ -153,7 +151,7 @@ namespace RobDriver.Modules
             ProjectileImpactExplosion impactExplosion = hmgGrenadeProjectilePrefab.GetComponent<ProjectileImpactExplosion>();
             InitializeImpactExplosion(impactExplosion);
 
-            GameObject fuckMyLife = null;
+            GameObject fuckMyLife;
             if (Modules.Config.badass.Value)
             {
                 fuckMyLife = Modules.Assets.badassSmallExplosionEffect;
@@ -311,26 +309,23 @@ namespace RobDriver.Modules
         private static void CreateShockwave()
         {
             punchShockwave = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Loader/LoaderZapCone.prefab").WaitForCompletion().InstantiateClone("DriverPunchShockwaveProjectile", true);
-            punchShockwave.AddComponent<R2API.DamageAPI.ModdedDamageTypeHolderComponent>().Add(DriverDamageTypes.BloodExplosionIdentifier);
+            var projectileDamage = punchShockwave.GetComponent<ProjectileDamage>();
+            projectileDamage.damageType = DamageTypeCombo.GenericSecondary;
+            projectileDamage.damageType.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
 
-            var p = punchShockwave.GetComponent<ProjectileProximityBeamController>();
-            p.lightningType = RoR2.Orbs.LightningOrb.LightningType.MageLightning;
-            p.damageCoefficient = 1f;
+            var proximityBeam = punchShockwave.GetComponent<ProjectileProximityBeamController>();
+            proximityBeam.lightningType = RoR2.Orbs.LightningOrb.LightningType.MageLightning;
+            proximityBeam.damageCoefficient = 1f;
 
             punchShockwave.transform.Find("Effect/Flash").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matCritImpactShockwave.mat").WaitForCompletion();
-            var c = punchShockwave.transform.Find("Effect/Flash").GetComponent<ParticleSystem>().main;
-            c.startColor = Color.red;
+            var particleSystem = punchShockwave.transform.Find("Effect/Flash").GetComponent<ParticleSystem>().main;
+            particleSystem.startColor = Color.red;
 
             punchShockwave.transform.Find("Effect/Impact Shockwave").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniRing1Void.mat").WaitForCompletion();
-
             punchShockwave.transform.Find("Flash").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpPortalEffect.mat").WaitForCompletion();
-
             punchShockwave.transform.Find("Effect/Sparks, Single").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matBloodHumanLarge.mat").WaitForCompletion();
-
             punchShockwave.transform.Find("Effect/Lines").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniHitspark1Void.mat").WaitForCompletion();
-
             punchShockwave.transform.Find("Effect/Ring").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/DLC1/Common/Void/matOmniHitspark1Void.mat").WaitForCompletion();
-
             punchShockwave.transform.Find("Effect/Point Light").GetComponent<Light>().color = Color.red;
 
             Modules.Prefabs.projectilePrefabs.Add(punchShockwave);
@@ -339,13 +334,13 @@ namespace RobDriver.Modules
         private static GameObject CreateRocket(bool gravity, string projectileName, string ghostName = "", string ghostToLoad = "")
         {
             GameObject projectilePrefab = CloneProjectilePrefab("CommandoGrenadeProjectile", projectileName);
-            projectilePrefab.AddComponent<Modules.Components.RocketRotation>();
+            projectilePrefab.AddComponent<RocketRotation>();
             projectilePrefab.transform.localScale *= 2f;
 
             ProjectileImpactExplosion impactExplosion = projectilePrefab.GetComponent<ProjectileImpactExplosion>();
             InitializeImpactExplosion(impactExplosion);
 
-            GameObject fuckMyLife = null;
+            GameObject fuckMyLife;
             if (Modules.Config.badass.Value)
             {
                 fuckMyLife = Modules.Assets.badassExplosionEffect;

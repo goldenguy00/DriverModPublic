@@ -83,7 +83,8 @@ namespace RobDriver
             weaponDef.index = (ushort)index;
 
             // heheheha
-            weaponDef.pickupPrefab = Modules.Assets.CreatePickupObject(weaponDef);
+            // fuck you
+            // weaponDef.pickupPrefab = Modules.Assets.CreatePickupObject(weaponDef);
 
             // set default icon
             if (!weaponDef.icon)

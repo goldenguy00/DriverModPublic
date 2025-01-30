@@ -64,7 +64,6 @@ namespace RobDriver.Modules.Components
                             damageColorIndex = this.damageColorIndex,
                             damageType = iDrive.DamageType
                         };
-                        blastAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                         blastAttack.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
                         blastAttack.Fire();
 
@@ -100,7 +99,6 @@ namespace RobDriver.Modules.Components
                         {
                             damageInfo.damageType = DamageType.Stun1s | iDrive.DamageType;
                             damageInfo.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
-                            damageInfo.AddModdedDamageType(iDrive.ModdedDamageType);
 
                             healthComponent.TakeDamage(damageInfo);
                             GlobalEventManager.instance.OnHitEnemy(damageInfo, healthComponent.gameObject);

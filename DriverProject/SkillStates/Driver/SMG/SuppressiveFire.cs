@@ -94,7 +94,6 @@ namespace RobDriver.SkillStates.Driver.SMG
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                     HitEffectNormal = false,
                 };
-                bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                 bulletAttack.Fire();
 
                 //this.characterMotor.ApplyForce(aimRay.direction * -this.selfForce);

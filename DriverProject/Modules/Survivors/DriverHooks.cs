@@ -20,9 +20,9 @@ using RoR2.Orbs;
 
 namespace RobDriver.Modules.Survivors
 {
-    public static class DriverHooks
+    internal static class DriverHooks
     {
-        internal static void Hook()
+        internal static void Init()
         {
             if (Modules.Config.dynamicCrosshairUniversal.Value) 
                 On.RoR2.UI.CrosshairController.Awake += CrosshairController_Awake;
@@ -55,19 +55,7 @@ namespace RobDriver.Modules.Survivors
             On.RoR2.UI.GameEndReportPanelController.AssignUnlockToStrip += GameEndReportPanelController_AssignUnlockToStrip;
         }
 
-        private static void CrosshairController_Awake(On.RoR2.UI.CrosshairController.orig_Awake orig, RoR2.UI.CrosshairController self)
-        {
-            orig(self);
-
-            if (self && !self.name.Contains("SprintCrosshair"))
-            {
-                if (!self.GetComponent<Modules.Components.DynamicCrosshair>())
-                {
-                    self.gameObject.AddComponent<Modules.Components.DynamicCrosshair>();
-                }
-            }
-        }
-
+        #region Damage Handling
         private static void RecalculateStatsAPI_GetStatCoefficients(CharacterBody self, R2API.RecalculateStatsAPI.StatHookEventArgs args)
         {
             if (!self)
@@ -105,21 +93,6 @@ namespace RobDriver.Modules.Survivors
                 self.attackSpeed += 0.75f;
                 self.crit += 40f;
                 self.regen += 10f;
-            }
-        }
-        private static void GameEndReportPanelController_AssignUnlockToStrip(On.RoR2.UI.GameEndReportPanelController.orig_AssignUnlockToStrip orig,
-            GameEndReportPanelController self, UnlockableDef unlockableDef, GameObject destUnlockableStrip)
-        {
-            orig(self, unlockableDef, destUnlockableStrip);
-
-            if (DriverWeaponCatalog.weaponDefs.Any(def => def.nameToken == unlockableDef.nameToken))
-            {
-                if (unlockableDef.achievementIcon?.texture is Texture icon)
-                {
-                    destUnlockableStrip.transform.Find("IconImage").GetComponent<RawImage>().texture = icon;
-                }
-                destUnlockableStrip.GetComponent<TooltipProvider>().overrideTitleText = Language.GetString("ROB_DRIVER_BODY_WEAPON_UNLOCKABLE_NAME");
-                destUnlockableStrip.GetComponent<TooltipProvider>().overrideBodyText = Language.GetString("ROB_DRIVER_BODY_WEAPON_UNLOCKABLE_DESC"); ;
             }
         }
 
@@ -162,7 +135,9 @@ namespace RobDriver.Modules.Survivors
                 RoR2.GlobalEventManager.instance.OnHitEnemy(damageInfo, self.gameObject);
             }
         }
+        #endregion
 
+        #region Global Event Manager
         private static void GlobalEventManager_ProcessHitEnemy(On.RoR2.GlobalEventManager.orig_ProcessHitEnemy orig, GlobalEventManager self, DamageInfo damageInfo, GameObject victim)
         {
             var attackerBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
@@ -174,7 +149,6 @@ namespace RobDriver.Modules.Survivors
 
                 damageInfo.damageType |= bulletInfo.bulletType;
                 damageInfo.RemoveModdedDamageType(DriverDamageTypes.MysteryShot);
-                damageInfo.AddModdedDamageType(bulletInfo.moddedBulletType);
             }
 
             orig(self, damageInfo, victim);
@@ -586,7 +560,7 @@ namespace RobDriver.Modules.Survivors
 
         private static void GlobalEventManager_OnHitAllProcess(On.RoR2.GlobalEventManager.orig_OnHitAllProcess orig, GlobalEventManager self, DamageInfo damageInfo, GameObject hitObject)
         {
-            if (damageInfo.procCoefficient != 0 && !damageInfo.rejected && damageInfo.HasModdedDamageType(DriverDamageTypes.ExplosiveRounds) && NetworkServer.active)
+            if (damageInfo.procCoefficient > 0 && !damageInfo.rejected && damageInfo.HasModdedDamageType(DriverDamageTypes.ExplosiveRounds) && NetworkServer.active)
             {
                 var attackerBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
                 if (attackerBody)
@@ -626,90 +600,15 @@ namespace RobDriver.Modules.Survivors
             orig(self, damageInfo, hitObject);
         }
 
-        private static void LoadoutPanelController_Rebuild(On.RoR2.UI.LoadoutPanelController.orig_Rebuild orig, LoadoutPanelController self)
-        {
-            orig(self);
-
-            // this is beyond stupid lmfao who let this monkey code
-            if (self.currentDisplayData.bodyIndex == Driver.bodyIndex)
-            {
-                // i made it worse, youre welcome
-                string newToken = "Passive";
-                foreach (var label in self.GetComponentsInChildren<LanguageTextMeshController>().Where(label => label && label.token == "LOADOUT_SKILL_MISC"))
-                {
-                    if (newToken != null)
-                    {
-                        label.token = newToken;
-                        newToken = newToken == "Passive" ? "Arsenal" : null;
-                    }
-                }
-            }
-        }
-
-        private static void HGButton_Start(On.RoR2.UI.HGButton.orig_Start orig, HGButton self)
-        {
-            orig(self);
-
-            if (!Config.enableGodslingInMultiplayer.Value)
-            {
-                // this is literally the worst thing ever
-                if (self && !string.IsNullOrEmpty(self.hoverToken) &&
-                    self.hoverToken.Contains("Godsling") && !RoR2Application.isInSinglePlayer)
-                {
-                    self.gameObject.SetActive(false);
-                }
-            }
-        }
-
-        private static void BaseAIState_AimInDirection(On.EntityStates.AI.BaseAIState.orig_AimInDirection orig, EntityStates.AI.BaseAIState self, ref BaseAI.BodyInputs dest, Vector3 aimDirection)
-        {
-            if (self.body && self.body.HasBuff(Buffs.dazedDebuff))
-            {
-                orig(self, ref dest, UnityEngine.Random.onUnitSphere);
-                dest.desiredAimDirection = UnityEngine.Random.onUnitSphere;
-            }
-            else orig(self, ref dest, aimDirection);
-        }
-
-        private static void BaseAIState_AimAt(On.EntityStates.AI.BaseAIState.orig_AimAt orig, EntityStates.AI.BaseAIState self, ref BaseAI.BodyInputs dest, BaseAI.Target aimTarget)
-        {
-            orig(self, ref dest, aimTarget);
-
-            if (self.body && self.body.HasBuff(Modules.Buffs.dazedDebuff))
-            {
-                dest.desiredAimDirection = UnityEngine.Random.onUnitSphere;
-            }
-        }
-
-        private static void SkillLocator_ApplyAmmoPack(On.RoR2.SkillLocator.orig_ApplyAmmoPack orig, SkillLocator self)
-        {
-            orig(self);
-
-            if (NetworkServer.active && self && self.name == Driver.bodyName && self.TryGetComponent<DriverController>(out var iDrive))
-            {
-                iDrive.ServerResetTimer();
-            }
-        }
-
-        private static void SkillLocator_ResetSkills(On.RoR2.SkillLocator.orig_ResetSkills orig, SkillLocator self)
-        {
-            orig(self);
-
-            if (NetworkServer.active && self && self.name == Driver.bodyName && self.TryGetComponent<DriverController>(out var iDrive))
-            {
-                iDrive.ServerResetTimer();
-            }
-        }
-
         private static void GlobalEventManager_onCharacterDeathGlobal(DamageReport damageReport)
         {
             if (!NetworkServer.active || !(damageReport.attackerBody && damageReport.attackerMaster && damageReport.victim))
                 return;
 
             bool isDriverOnPlayerTeam = false;
-            foreach (var master in CharacterMaster.instancesList)
+            foreach (var pcmc in PlayerCharacterMasterController.instances)
             {
-                if (master.teamIndex == TeamIndex.Player && master.backupBodyIndex == Driver.bodyIndex)
+                if (pcmc.master && pcmc.master.backupBodyIndex == Driver.bodyIndex)
                 {
                     isDriverOnPlayerTeam = true;
                     break;
@@ -780,7 +679,7 @@ namespace RobDriver.Modules.Survivors
             // how
 
             // stop dropping weapons when void monsters kill each other plz this is an annoying bug
-            if (damageReport.attackerTeamIndex != TeamIndex.Player) 
+            if (damageReport.attackerTeamIndex != TeamIndex.Player)
                 droppedWeapon = false;
 
             if (DriverWeaponCatalog.weaponDrops.TryGetValue(damageReport.victimBody.baseNameToken, out var uniqueDrop) && uniqueDrop.dropChance >= 100f)
@@ -805,23 +704,19 @@ namespace RobDriver.Modules.Survivors
                 else
                     weaponDef = DriverWeaponCatalog.GetRandomWeaponFromTier(weaponTier);
 
-                GameObject weaponPickup = UnityEngine.Object.Instantiate<GameObject>(weaponDef.pickupPrefab, position, UnityEngine.Random.rotation);
-                var weaponComponent = weaponPickup.GetComponent<SyncPickup>();
-
                 // add passive specific stuff
                 // give the poor godsling players the ultra rare weapons, nobody likes getting bullets from michael
+                bool isNewAmmoType = false;
                 if (!uniqueDrop || uniqueDrop.dropChance < 100)
-                    weaponComponent.isNewAmmoType = Util.CheckRoll(Config.godslingDropRateSplit.Value);
+                    isNewAmmoType = Util.CheckRoll(Config.godslingDropRateSplit.Value);
 
                 // non-legendary gets rerolled
-                weaponComponent.bulletDef = isBoss 
+                var bulletDef = isBoss
                     ? DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary)
                     : DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Uncommon);
 
-                if (weaponPickup.TryGetComponent<TeamFilter>(out var teamFilter))
-                    teamFilter.teamIndex = damageReport.attackerTeamIndex;
-
-                NetworkServer.Spawn(weaponPickup);
+                var weaponPickup = GameObject.Instantiate(Assets.weaponPickup, position, UnityEngine.Random.rotation);
+                weaponPickup.GetComponent<SyncPickup>().SpawnWeapon(damageReport.attackerTeamIndex, weaponDef, bulletDef, false /*cutAmmo*/, isNewAmmoType);
             }
             else
             {
@@ -835,6 +730,72 @@ namespace RobDriver.Modules.Survivors
                 Components.DriverController iDrive = damageReport.attackerBody.gameObject.GetComponent<Components.DriverController>();
                 if (iDrive) iDrive.ExtendTimer();
             }*/
+        }
+        #endregion
+
+        #region UI
+        private static void CrosshairController_Awake(On.RoR2.UI.CrosshairController.orig_Awake orig, RoR2.UI.CrosshairController self)
+        {
+            orig(self);
+
+            if (self && !self.name.Contains("SprintCrosshair"))
+            {
+                if (!self.GetComponent<Modules.Components.DynamicCrosshair>())
+                {
+                    self.gameObject.AddComponent<Modules.Components.DynamicCrosshair>();
+                }
+            }
+        }
+
+        private static void GameEndReportPanelController_AssignUnlockToStrip(On.RoR2.UI.GameEndReportPanelController.orig_AssignUnlockToStrip orig,
+            GameEndReportPanelController self, UnlockableDef unlockableDef, GameObject destUnlockableStrip)
+        {
+            orig(self, unlockableDef, destUnlockableStrip);
+
+            if (DriverWeaponCatalog.weaponDefs.Any(def => def.nameToken == unlockableDef.nameToken))
+            {
+                if (unlockableDef.achievementIcon?.texture is Texture icon)
+                {
+                    destUnlockableStrip.transform.Find("IconImage").GetComponent<RawImage>().texture = icon;
+                }
+                destUnlockableStrip.GetComponent<TooltipProvider>().overrideTitleText = Language.GetString("ROB_DRIVER_BODY_WEAPON_UNLOCKABLE_NAME");
+                destUnlockableStrip.GetComponent<TooltipProvider>().overrideBodyText = Language.GetString("ROB_DRIVER_BODY_WEAPON_UNLOCKABLE_DESC"); ;
+            }
+        }
+
+        private static void LoadoutPanelController_Rebuild(On.RoR2.UI.LoadoutPanelController.orig_Rebuild orig, LoadoutPanelController self)
+        {
+            orig(self);
+
+            // this is beyond stupid lmfao who let this monkey code
+            if (self.currentDisplayData.bodyIndex == Driver.bodyIndex)
+            {
+                // i made it worse, youre welcome
+                string newToken = "Passive";
+                foreach (var label in self.GetComponentsInChildren<LanguageTextMeshController>().Where(label => label && label.token == "LOADOUT_SKILL_MISC"))
+                {
+                    if (newToken != null)
+                    {
+                        label.token = newToken;
+                        newToken = newToken == "Passive" ? "Arsenal" : null;
+                    }
+                }
+            }
+        }
+
+        private static void HGButton_Start(On.RoR2.UI.HGButton.orig_Start orig, HGButton self)
+        {
+            orig(self);
+
+            if (!Config.enableGodslingInMultiplayer.Value)
+            {
+                // this is literally the worst thing ever
+                if (self && !string.IsNullOrEmpty(self.hoverToken) &&
+                    self.hoverToken.Contains("Godsling") && !RoR2Application.isInSinglePlayer)
+                {
+                    self.gameObject.SetActive(false);
+                }
+            }
         }
 
         private static void HUDSetup(RoR2.UI.HUD hud)
@@ -1062,7 +1023,48 @@ namespace RobDriver.Modules.Survivors
 
             _old.enabled = false;
         }
+        #endregion
 
+        #region Skills
+        private static void BaseAIState_AimInDirection(On.EntityStates.AI.BaseAIState.orig_AimInDirection orig, EntityStates.AI.BaseAIState self, ref BaseAI.BodyInputs dest, Vector3 aimDirection)
+        {
+            if (self.body && self.body.HasBuff(Buffs.dazedDebuff))
+            {
+                orig(self, ref dest, UnityEngine.Random.onUnitSphere);
+                dest.desiredAimDirection = UnityEngine.Random.onUnitSphere;
+            }
+            else orig(self, ref dest, aimDirection);
+        }
+
+        private static void BaseAIState_AimAt(On.EntityStates.AI.BaseAIState.orig_AimAt orig, EntityStates.AI.BaseAIState self, ref BaseAI.BodyInputs dest, BaseAI.Target aimTarget)
+        {
+            orig(self, ref dest, aimTarget);
+
+            if (self.body && self.body.HasBuff(Modules.Buffs.dazedDebuff))
+            {
+                dest.desiredAimDirection = UnityEngine.Random.onUnitSphere;
+            }
+        }
+
+        private static void SkillLocator_ApplyAmmoPack(On.RoR2.SkillLocator.orig_ApplyAmmoPack orig, SkillLocator self)
+        {
+            orig(self);
+
+            if (self && NetworkServer.active && self.name == Driver.bodyName && self.TryGetComponent<DriverController>(out var iDrive))
+            {
+                iDrive.ServerResetTimer();
+            }
+        }
+
+        private static void SkillLocator_ResetSkills(On.RoR2.SkillLocator.orig_ResetSkills orig, SkillLocator self)
+        {
+            orig(self);
+
+            if (self && NetworkServer.active && self.name == Driver.bodyName && self.TryGetComponent<DriverController>(out var iDrive))
+            {
+                iDrive.ServerResetTimer();
+            }
+        }
         private static void PlayVisionsAnimation(On.EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle.orig_OnEnter orig, EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle self)
         {
             orig(self);
@@ -1114,5 +1116,6 @@ namespace RobDriver.Modules.Survivors
                     }, false);
             }
         }
+        #endregion
     }
 }

@@ -63,7 +63,6 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 					falloffModel = BlastAttack.FalloffModel.None,
 					bonusForce = FireLaser.force * this.modifiedAimRay.direction
 				};
-				blastAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 				blastAttack.Fire();
 
 				Vector3 origin = this.modifiedAimRay.origin;

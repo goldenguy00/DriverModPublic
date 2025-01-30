@@ -4,81 +4,50 @@ using UnityEngine;
 
 namespace RobDriver.Modules.Components
 {
-    internal class MagneticPickup : MonoBehaviour
+    public class MagneticPickup : MonoBehaviour
     {
-        // stole this code from MagneticPickups mod
-        private void FixedUpdate()
+        private const float ACCELERATION = 50f;
+        private const float MAX_SPEED = 100f;
+
+        [Tooltip("The rigidbody to set the velocity of.")]
+        public Rigidbody rigidbody;
+
+        [Tooltip("The TeamFilter which controls which team can activate this trigger.")]
+        public TeamFilter teamFilter;
+
+        public Transform gravitateTarget;
+
+        private void OnTriggerEnter(Collider other)
         {
-            if (!Config.enableMagneticPickups.Value)
+            if (gravitateTarget || teamFilter.teamIndex == TeamIndex.None)
                 return;
 
-            if (IsDriverPlayerNearby(this.transform.position, out var driverPosition))
+            var teamComponent = other.GetComponent<TeamComponent>();
+            if (teamComponent && teamComponent.teamIndex == teamFilter.teamIndex && teamComponent.body && teamComponent.body.bodyIndex == Driver.bodyIndex)
             {
-                MovePickupTowardsPlayer(driverPosition);
-            }
-        }
-
-        // stole this code from MagneticPickups mod
-        private bool IsDriverPlayerNearby(Vector3 thisPosition, out Vector3 driverPosition)
-        {
-            driverPosition = Vector3.zero;
-            var lowestDistance = float.PositiveInfinity;
-            foreach (var pcmc in PlayerCharacterMasterController.instances)
-            {
-                if (pcmc && pcmc.body && pcmc.body.baseNameToken == Driver.bodyNameToken)
+                var iDrive = teamComponent.body.GetComponent<DriverController>();
+                if (iDrive && (!Config.enableMagenticConditionalPickups.Value || (!iDrive.HasSpecialBullets && iDrive.HasLoadoutWeapon)))
                 {
-                    var distance = (pcmc.body.footPosition - thisPosition).sqrMagnitude;
-                    if (distance < lowestDistance)
-                    {
-                        if (!Config.enableMagenticConditionalPickups.Value || (pcmc.body.TryGetComponent<DriverController>(out var iDrive) 
-                            && iDrive && !iDrive.HasSpecialBullets && iDrive.weaponDef == iDrive.defaultWeaponDef))
-                        {
-                            driverPosition = pcmc.body.footPosition;
-                            lowestDistance = distance;
-                        }
-                    }
+                    gravitateTarget = other.transform;
                 }
             }
-
-            return lowestDistance < (Config.pickupRadius.Value * Config.pickupRadius.Value);
         }
 
-        // stole this code from MagneticPickups mod
-        private void MovePickupTowardsPlayer(Vector3 playerLocation)
+        private void OnTriggerExit(Collider other)
         {
-            var rigidBody = this.GetComponent<Rigidbody>();
+            if (other.transform == gravitateTarget)
+                gravitateTarget = null;
+        }
 
-            // Set the velocity to 0 to begin with to remove any gravity.
-            rigidBody.velocity = Vector3.zero;
+        private void FixedUpdate()
+        {
+            if (!Config.enableMagneticPickups.Value || Config.pickupRadius.Value <= 0f)
+                return;
 
-            // Move the pickup upwards, if it is not already high above the ground and there's nothing directly above it.
-            var didHitUp = Physics.Raycast(
-                this.transform.position,
-                this.transform.up,
-                out var upwardsHit
-            );
-            var didHitDown = Physics.Raycast(
-                this.transform.position,
-                -this.transform.up,
-                out var downwardsHit
-            );
-
-            var hasSpaceUpwards = !didHitUp || upwardsHit.distance > 10f;
-            var hasSpaceDownwards = didHitDown && downwardsHit.distance < 250f;
-
-            // Only move upwards if the pickup has enough space.
-            if (hasSpaceUpwards && hasSpaceDownwards)
+            if (gravitateTarget)
             {
-                rigidBody.velocity += Vector3.up * 1.25f;
+                rigidbody.velocity = Vector3.MoveTowards(rigidbody.velocity, (gravitateTarget.transform.position - base.transform.position).normalized * MAX_SPEED, ACCELERATION);
             }
-
-            var speed = Vector3.MoveTowards(
-                rigidBody.velocity,
-                (this.transform.position - playerLocation).normalized * 100f,
-                50f
-            );
-
-            rigidBody.velocity -= speed;
         }
     }
 }

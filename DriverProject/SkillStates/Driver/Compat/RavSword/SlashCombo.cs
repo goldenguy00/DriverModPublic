@@ -56,8 +56,6 @@ namespace RobDriver.SkillStates.Driver.Compat
             }
 
             base.OnEnter();
-
-            this.attack.AddModdedDamageType(iDrive.ModdedDamageType);
         }
 
         public override void FixedUpdate()

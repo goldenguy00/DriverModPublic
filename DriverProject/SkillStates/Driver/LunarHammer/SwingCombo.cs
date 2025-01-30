@@ -40,8 +40,6 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
             else this.muzzleString = this.muzzleString ="SwingCenter2";
 
             base.OnEnter();
-
-            this.attack.AddModdedDamageType(iDrive.ModdedDamageType);
         }
 
         protected override void FireAttack()

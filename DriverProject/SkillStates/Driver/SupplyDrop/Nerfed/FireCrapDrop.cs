@@ -1,42 +1,26 @@
-﻿using RobDriver.Modules;
-using RobDriver.Modules.Components;
-using RoR2;
-using UnityEngine;
-using UnityEngine.Networking;
-
-namespace RobDriver.SkillStates.Driver.SupplyDrop.Nerfed
+﻿namespace RobDriver.SkillStates.Driver.SupplyDrop.Nerfed
 {
     public class FireCrapDrop : FireSupplyDrop
     {
-        protected override void SpawnWeapon()
+        protected override bool cutAmmo => true;
+
+        protected override DriverWeaponDef weaponDef
         {
-            if (NetworkServer.active)
+            get
             {
-                DriverWeaponDef _weaponDef;
-                DriverBulletDef _bulletDef;
+                return Modules.Config.randomSupplyDrop.Value
+                    ? DriverWeaponCatalog.GetRandomWeapon()
+                    : DriverWeaponCatalog.GetRandomWeaponFromTier(DriverWeaponTier.Uncommon);
+            }
+        }
 
-                if (Modules.Config.randomSupplyDrop.Value)
-                {
-                    _weaponDef = DriverWeaponCatalog.GetRandomWeapon();
-                    _bulletDef = DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Legendary);
-
-                }
-                else
-                {
-                    _weaponDef = DriverWeaponCatalog.GetRandomWeaponFromTier(DriverWeaponTier.Uncommon);
-                    _bulletDef = DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Uncommon);
-                }
-
-                GameObject weaponPickup = UnityEngine.Object.Instantiate<GameObject>(_weaponDef.pickupPrefab, this.dropPosition, UnityEngine.Random.rotation);
-
-                var weaponComponent = weaponPickup.GetComponent<SyncPickup>();
-                weaponComponent.bulletDef = _bulletDef;
-                weaponComponent.cutAmmo = true;
-
-                TeamFilter teamFilter = weaponPickup.GetComponent<TeamFilter>();
-                if (teamFilter) teamFilter.teamIndex = this.teamComponent.teamIndex;
-
-                NetworkServer.Spawn(weaponPickup);
+        protected override DriverBulletDef bulletDef
+        {
+            get
+            {
+                return Modules.Config.randomSupplyDrop.Value
+                    ? DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Legendary)
+                    : DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Uncommon);
             }
         }
     }

@@ -169,7 +169,6 @@ namespace RobDriver.SkillStates.Driver.Compat
                             inflictor = base.gameObject,
                             crit = base.RollCrit()
                         };
-                        blastAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
                         // shockwave
                         ProjectileManager.instance.FireProjectile(new FireProjectileInfo

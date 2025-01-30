@@ -37,7 +37,7 @@ namespace RobDriver.Modules.Survivors
         internal static ItemDisplayRuleSet itemDisplayRuleSet;
         internal static List<ItemDisplayRuleSet.KeyAssetRuleGroup> itemDisplayRules;
 
-        // skill overrides
+        #region Skill Overrides
         internal static SkillDef lunarPistolPrimarySkillDef;
         internal static SkillDef lunarPistolSecondarySkillDef;
 
@@ -125,6 +125,7 @@ namespace RobDriver.Modules.Survivors
         internal static SkillDef scepterSyringeLegacySkillDef;
         internal static SkillDef scepterKnifeSkillDef;
         internal static SkillDef knifeSkillDef;
+        #endregion
 
         internal static string bodyNameToken;
 
@@ -144,7 +145,8 @@ namespace RobDriver.Modules.Survivors
 
                 Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER", forceUnlock.Value ? null : Unlockables.characterUnlockableDef);
 
-                DriverHooks.Hook();
+                DriverHooks.Init();
+
                 RoR2.ContentManagement.ContentManager.onContentPacksAssigned += LateSetup;
             }
         }
@@ -153,6 +155,7 @@ namespace RobDriver.Modules.Survivors
         {
             SetItemDisplays();
             LateSkinSetup();
+
             bodyIndex = BodyCatalog.FindBodyIndex(bodyName);
         }
 
@@ -1964,7 +1967,8 @@ namespace RobDriver.Modules.Survivors
             }
             #endregion
 
-            if (DriverPlugin.ScepterInstalled) InitializeScepterSkills();
+            if (DriverPlugin.ScepterInstalled)
+                InitializeScepterSkills();
 
             Assets.InitWeaponDefs();
 
@@ -2371,6 +2375,7 @@ namespace RobDriver.Modules.Survivors
             }
         }
 
+        #region Item Displays
         private static void InitializeItemDisplays(GameObject prefab)
         {
             CharacterModel characterModel = prefab.GetComponentInChildren<CharacterModel>();
@@ -2706,6 +2711,7 @@ namespace RobDriver.Modules.Survivors
             }
             itemDisplayRules = cock.ToList();
         }
+        #endregion
 
         private static CharacterModel.RendererInfo[] SkinRendererInfos(CharacterModel.RendererInfo[] defaultRenderers, Material[] materials)
         {

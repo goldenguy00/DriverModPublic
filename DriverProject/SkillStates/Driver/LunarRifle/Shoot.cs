@@ -101,7 +101,6 @@ namespace RobDriver.SkillStates.Driver.LunarRifle
                         hitEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/LunarGolem/LunarGolemTwinShotExplosion.prefab").WaitForCompletion(),
                         HitEffectNormal = false,
                     };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
                     bulletAttack.minSpread = 0;
                     bulletAttack.maxSpread = 0;

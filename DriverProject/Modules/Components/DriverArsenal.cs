@@ -8,19 +8,19 @@ namespace RobDriver.Modules.Components
     {
         public GenericSkill weaponSkillSlot;
 
-        public DriverWeaponDef weaponDef;
+        private DriverWeaponDef weaponDef;
 
         public DriverWeaponDef DefaultWeapon
         {
             get
             {
                 if (!this.weaponSkillSlot || !this.weaponSkillSlot.skillDef)
-                    return DriverWeaponCatalog.Pistol;
+                    this.weaponDef = DriverWeaponCatalog.Pistol;
 
                 if (!this.weaponDef)
                     this.weaponDef = DriverWeaponCatalog.weaponDefs.FirstOrDefault(def => def.nameToken == this.weaponSkillSlot.skillDef.skillName);
 
-                return this.weaponDef ? this.weaponDef : DriverWeaponCatalog.Pistol;
+                return this.weaponDef ?? DriverWeaponCatalog.Pistol;
             }
         }
     }

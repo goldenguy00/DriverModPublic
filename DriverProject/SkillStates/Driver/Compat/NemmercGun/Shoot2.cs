@@ -105,7 +105,6 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmercGun
                         hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                         HitEffectNormal = false,
                     };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                     bulletAttack.minSpread = 0;
                     bulletAttack.maxSpread = 0;
                     bulletAttack.bulletCount = 1;

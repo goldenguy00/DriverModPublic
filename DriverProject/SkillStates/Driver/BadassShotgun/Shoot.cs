@@ -111,7 +111,6 @@ namespace RobDriver.SkillStates.Driver.BadassShotgun
                         hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                         HitEffectNormal = false,
                     };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
                     bulletAttack.minSpread = 0;
                     bulletAttack.maxSpread = 0;

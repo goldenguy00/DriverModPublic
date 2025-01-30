@@ -15,7 +15,7 @@ namespace RobDriver.SkillStates.BaseStates
 
         protected string hitboxName = "Sword";
 
-        protected DamageType damageType = DamageType.Generic;
+        protected DamageTypeCombo damageType = DamageTypeCombo.Generic;
         protected float damageCoefficient = 3.5f;
         protected float procCoefficient = 1f;
         protected float pushForce = 300f;
