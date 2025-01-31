@@ -1,0 +1,243 @@
+Event	ID	Name			Wwise Object Path	Notes
+	53240417	sfx_driver_foley_syringe			\Default Work Unit\sfx_driver_foley_syringe	
+	154415796	sfx_driver_callout_grenade_launcher			\Default Work Unit\sfx_driver_callout_grenade_launcher	
+	188248301	sfx_driver_lunar_rifle_shoot			\Default Work Unit\sfx_driver_lunar_rifle_shoot	
+	215454263	sfx_driver_zap_prep			\Default Work Unit\sfx_driver_zap_prep	
+	281916955	sfx_driver_dance			\Default Work Unit\sfx_driver_dance	
+	382660130	sfx_driver_dash			\Default Work Unit\sfx_driver_dash	
+	422952198	sfx_driver_explosion_badass			\Default Work Unit\sfx_driver_explosion_badass	
+	476201875	sfx_driver_foley			\Default Work Unit\sfx_driver_foley	
+	548562189	sfx_driver_bazooka_shoot_critical			\Default Work Unit\sfx_driver_bazooka_shoot_critical	
+	580575852	sfx_driver_tyler_gun_loop			\Default Work Unit\sfx_driver_tyler_gun_loop	
+	620738122	sfx_driver_button_foley			\Default Work Unit\sfx_driver_button_foley	
+	656479750	sfx_driver_skateboard_roll			\Default Work Unit\sfx_driver_skateboard_roll	
+	685212097	sfx_driver_heavy_machinegun_shoot			\Default Work Unit\sfx_driver_heavy_machinegun_shoot	
+	694690353	sfx_driver_stun_grenade			\Default Work Unit\sfx_driver_stun_grenade	
+	713823858	sfx_driver_bash_prep			\Default Work Unit\sfx_driver_bash_prep	
+	726523567	sfx_driver_shotgun_load			\Default Work Unit\sfx_driver_shotgun_load	
+	750866529	sfx_driver_machinegun_shoot			\Default Work Unit\sfx_driver_machinegun_shoot	
+	754557177	sfx_driver_aim_foley			\Default Work Unit\sfx_driver_aim_foley	
+	810666547	sfx_driver_dodge			\Default Work Unit\sfx_driver_dodge	
+	821783224	sfx_driver_slug_shotgun_shoot			\Default Work Unit\sfx_driver_slug_shotgun_shoot	
+	871384323	sfx_driver_riot_shotgun_shoot			\Default Work Unit\sfx_driver_riot_shotgun_shoot	
+	995282871	sfx_driver_heavy_machinegun_shoot_critical			\Default Work Unit\sfx_driver_heavy_machinegun_shoot_critical	
+	1232485127	sfx_driver_zap			\Default Work Unit\sfx_driver_zap	
+	1238771372	sfx_driver_callout_generic			\Default Work Unit\sfx_driver_callout_generic	
+	1272780910	sfx_driver_button_press			\Default Work Unit\sfx_driver_button_press	
+	1344402942	sfx_driver_knife_impact			\Default Work Unit\sfx_driver_knife_impact	
+	1379271367	sfx_driver_pistol_ready			\Default Work Unit\sfx_driver_pistol_ready	
+	1387864832	sfx_driver_gun_drop			\Default Work Unit\sfx_driver_gun_drop	
+	1419052880	sfx_driver_skateboard_land			\Default Work Unit\sfx_driver_skateboard_land	
+	1480020442	sfx_driver_pistol_shoot_charged			\Default Work Unit\sfx_driver_pistol_shoot_charged	
+	1514477229	sfx_driver_coin			\Default Work Unit\sfx_driver_coin	
+	1514801480	sfx_driver_slug_shotgun_shoot_critical			\Default Work Unit\sfx_driver_slug_shotgun_shoot_critical	
+	1638839714	sfx_slugger_dance			\Default Work Unit\sfx_slugger_dance	
+	1679553720	sfx_driver_swing			\Default Work Unit\sfx_driver_swing	
+	1773040002	sfx_driver_pistol_spin			\Default Work Unit\sfx_driver_pistol_spin	
+	1909784672	sfx_driver_coin_spin			\Default Work Unit\sfx_driver_coin_spin	
+	1913152606	sfx_driver_button_ready			\Default Work Unit\sfx_driver_button_ready	
+	1929998633	sfx_driver_foley_knife			\Default Work Unit\sfx_driver_foley_knife	
+	1955868537	sfx_driver_impact_hammer			\Default Work Unit\sfx_driver_impact_hammer	
+	2113141704	sfx_driver_headshot			\Default Work Unit\sfx_driver_headshot	
+	2113981505	sfx_driver_gun_throw			\Default Work Unit\sfx_driver_gun_throw	
+	2236545062	sfx_driver_pistol_shoot_charged_critical			\Default Work Unit\sfx_driver_pistol_shoot_charged_critical	
+	2367482183	sfx_driver_callout_machine_gun			\Default Work Unit\sfx_driver_callout_machine_gun	
+	2398473043	sfx_driver_fire_preon			\Default Work Unit\sfx_driver_fire_preon	
+	2546302188	sfx_driver_plasma_cannon_shoot			\Default Work Unit\sfx_driver_plasma_cannon_shoot	
+	2677126499	sfx_driver_heavy_machinegun_shoot_old			\Default Work Unit\sfx_driver_heavy_machinegun_shoot_old	
+	2679788639	sfx_driver_shotgun_open			\Default Work Unit\sfx_driver_shotgun_open	
+	2691954031	sfx_driver_grenade_explosion_badass			\Default Work Unit\sfx_driver_grenade_explosion_badass	
+	2724578450	sfx_driver_air_dodge			\Default Work Unit\sfx_driver_air_dodge	
+	2747723118	sfx_driver_pickup			\Default Work Unit\sfx_driver_pickup	
+	2755739469	sfx_driver_gun_jammed			\Default Work Unit\sfx_driver_gun_jammed	
+	2770464116	sfx_driver_shotgun_shoot			\Default Work Unit\sfx_driver_shotgun_shoot	
+	2789791669	sfx_driver_shotgun_close			\Default Work Unit\sfx_driver_shotgun_close	
+	2805779716	sfx_driver_riot_shotgun_pump			\Default Work Unit\sfx_driver_riot_shotgun_pump	
+	2930570864	sfx_driver_shell			\Default Work Unit\sfx_driver_shell	
+	3011416731	sfx_driver_callout_flamethrower			\Default Work Unit\sfx_driver_callout_flamethrower	
+	3043786176	sfx_driver_gun_catch			\Default Work Unit\sfx_driver_gun_catch	
+	3070416717	sfx_driver_reload_01			\Default Work Unit\sfx_driver_reload_01	
+	3070416718	sfx_driver_reload_02			\Default Work Unit\sfx_driver_reload_02	
+	3070416719	sfx_driver_reload_03			\Default Work Unit\sfx_driver_reload_03	
+	3079332119	sfx_driver_grenade_launcher_shoot			\Default Work Unit\sfx_driver_grenade_launcher_shoot	
+	3095580138	sfx_driver_callout_laser			\Default Work Unit\sfx_driver_callout_laser	
+	3238250766	sfx_driver_swing_knife			\Default Work Unit\sfx_driver_swing_knife	
+	3280444205	sfx_driver_callout_shotgun			\Default Work Unit\sfx_driver_callout_shotgun	
+	3363690059	sfx_driver_explosion			\Default Work Unit\sfx_driver_explosion	
+	3387066135	sfx_driver_pistol_shoot			\Default Work Unit\sfx_driver_pistol_shoot	
+	3411706191	sfx_driver_sniper_shoot			\Default Work Unit\sfx_driver_sniper_shoot	
+	3507104811	sfx_driver_bazooka_shoot			\Default Work Unit\sfx_driver_bazooka_shoot	
+	3520698972	sfx_driver_skateboard_ollie			\Default Work Unit\sfx_driver_skateboard_ollie	
+	3521387021	sfx_driver_swing_hammer			\Default Work Unit\sfx_driver_swing_hammer	
+	3536419259	sfx_driver_callout_hmg			\Default Work Unit\sfx_driver_callout_hmg	
+	3557580807	sfx_driver_boom			\Default Work Unit\sfx_driver_boom	
+	3570600388	sfx_driver_grenade_explosion			\Default Work Unit\sfx_driver_grenade_explosion	
+	3705173988	sfx_driver_shotgun_shoot_critical			\Default Work Unit\sfx_driver_shotgun_shoot_critical	
+	3786060731	sfx_driver_syringe_buff			\Default Work Unit\sfx_driver_syringe_buff	
+	3800325399	sfx_driver_machinegun_shoot_critical			\Default Work Unit\sfx_driver_machinegun_shoot_critical	
+	3843567922	sfx_driver_sniper_shoot_charged			\Default Work Unit\sfx_driver_sniper_shoot_charged	
+	3852188431	sfx_jacket_dance			\Default Work Unit\sfx_jacket_dance	
+	3901040117	sfx_driver_riot_shotgun_shoot_critical			\Default Work Unit\sfx_driver_riot_shotgun_shoot_critical	
+	3988731914	sfx_driver_sniper_click			\Default Work Unit\sfx_driver_sniper_click	
+	4015687393	sfx_driver_rocket_launcher_shoot			\Default Work Unit\sfx_driver_rocket_launcher_shoot	
+	4026368412	sfx_driver_bash			\Default Work Unit\sfx_driver_bash	
+	4086566589	sfx_driver_blood_gurgle			\Default Work Unit\sfx_driver_blood_gurgle	
+	4111556543	sfx_driver_knife_hit			\Default Work Unit\sfx_driver_knife_hit	
+	4123331381	sfx_driver_injection			\Default Work Unit\sfx_driver_injection	
+	4127889993	sfx_driver_pistol_shoot_critical			\Default Work Unit\sfx_driver_pistol_shoot_critical	
+	4150361196	sfx_driver_callout_rocket_launcher			\Default Work Unit\sfx_driver_callout_rocket_launcher	
+	4156994585	sfx_driver_heavy_machinegun_shoot_critical_old			\Default Work Unit\sfx_driver_heavy_machinegun_shoot_critical_old	
+	4190072832	sfx_driver_callout_sniper			\Default Work Unit\sfx_driver_callout_sniper	
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	3673881719	Volume_SFX			\Default Work Unit\Volume_SFX	
+	3811743133	Driver_SkateSpeed			\Default Work Unit\Driver_SkateSpeed	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	12565096	sfx_driver_gun_drop	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_gun_drop_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_gun_drop		10192
+	18933853	sfx_driver_impact_hammer_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_impact_hammer_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_impact_hammer\sfx_driver_impact_hammer_02		9369
+	19489746	sfx_driver_explosion_badass_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_explosion_badass_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_explosion_badass\sfx_driver_explosion_badass_03		69221
+	19533110	sfx_driver_prep_nuke	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_prep_nuke_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_prep_nuke		34739
+	35517958	sfx_driver_injection_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_injection_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_injection\sfx_driver_injection_02		8305
+	36339121	sfx_driver_pistol_charged_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_charged_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\charge_shot\sfx_driver_pistol_charged_03		31493
+	38532755	sfx_driver_grenade_launcher_shoot_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_launcher_shoot_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_grenade_launcher_shoot\sfx_driver_grenade_launcher_shoot_01		14185
+	50927294	sfx_driver_riot_shotgun_pump_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_riot_shotgun_pump_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_riot_shotgun_pump\sfx_driver_riot_shotgun_pump_01		6543
+	57353016	sfx_driver_bazooka_fire	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_bazooka_fire_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_bazooka_fire		15634
+	64510135	sfx_driver_rocket_launcher_shoot_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_rocket_launcher_shoot_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_rocket_launcher_shoot\sfx_driver_rocket_launcher_shoot_01		24936
+	76251330	sfx_driver_bash_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_bash_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_bash\sfx_driver_bash_02		13843
+	88177871	sfx_driver_swing_hammer_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_hammer_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing_hammer\sfx_driver_swing_hammer_03		21033
+	93930580	sfx_driver_swing_hammer_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_hammer_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing_hammer\sfx_driver_swing_hammer_01		22073
+	93948657	sfx_driver_pistol_ready	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_ready_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_pistol_ready		2732
+	106009693	sfx_driver_grenade_explosion_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_explosion_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\sfx_driver_grenade_explosion\sfx_driver_grenade_explosion_01		33010
+	114186865	sfx_driver_gun_throw	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_gun_throw_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_gun_throw		4088
+	116436710	sfx_driver_heavy_machine_gun_shoot	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_heavy_machine_gun_shoot_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_heavy_machine_gun_shoot		12161
+	122533331	sfx_driver_callout_generic	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_generic_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_generic		9673
+	123258058	sfx_driver_riot_shotgun_pump_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_riot_shotgun_pump_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_riot_shotgun_pump\sfx_driver_riot_shotgun_pump_02		7918
+	134003796	sfx_driver_sniper_shoot_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_sniper_shoot_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_sniper_shoot\sfx_driver_sniper_shoot_01		14490
+	137512284	sfx_driver_rocket_launcher_fire_nuke	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_rocket_launcher_fire_nuke_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_rocket_launcher_fire_nuke		39160
+	140655611	sfx_driver_zap_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_zap_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_zap\sfx_driver_zap_03		25423
+	144334770	sfx_driver_pistol_spin	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_spin_9EDFC787.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_pistol_spin		6191
+	152399576	sfx_driver_shotgun_04	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_04_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun\sfx_driver_shotgun_04		47245
+	158038505	driver_nightcall	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_nightcall_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\driver_dance\driver_nightcall		3596507
+	170445608	sfx_driver_button_ready	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_button_ready_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_button_ready		7610
+	172286938	sfx_driver_explosion	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_explosion_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\sfx_driver_explosion		60046
+	176245099	sfx_driver_bash_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_bash_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_bash\sfx_driver_bash_03		12509
+	199847453	sfx_driver_lunar_cannon_shoot	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_lunar_cannon_shoot_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_lunar_cannon_shoot		26855
+	200549039	M16	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\M16_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\M16		7148
+	204521395	sfx_driver_skateboard_land	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_skateboard_land_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_skateboard_land		4034
+	208195255	sfx_driver_grenade_explosion_badass_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_explosion_badass_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_grenade_explosion_badass\sfx_driver_grenade_explosion_badass_02		41235
+	211129213	driver_dust	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_dust_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\jacket_dance\driver_dust		4897856
+	213421064	sfx_driver_plasma_cannon_shoot	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_plasma_cannon_shoot_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_plasma_cannon_shoot		48163
+	223852966	sfx_driver_reload_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_reload_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_reload_01		6020
+	231249302	sfx_driver_bazooka_fire_critical	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_bazooka_fire_critical_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_bazooka_fire_critical		15864
+	231262035	sfx_driver_callout_shotgun	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_shotgun_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_shotgun		11500
+	236788315	sfx_driver_shotgun_load	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_load_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun_load		9817
+	246644603	sfx_driver_shell_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shell_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shell\sfx_driver_shell_01		16566
+	250046579	sfx_driver_pickup_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pickup_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_pickup\sfx_driver_pickup_01		17376
+	264538835	sfx_driver_swing_knife_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_knife_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing_knife\sfx_driver_swing_knife_01		5100
+	265768591	sfx_driver_slug_shotgun_fire_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_slug_shotgun_fire_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_slug_shotgun_shoot\sfx_driver_slug_shotgun_fire_03		29339
+	275430983	sfx_driver_shell_04	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shell_04_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shell\sfx_driver_shell_04		21899
+	277259456	sfx_driver_pistol_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_02		24499
+	279150818	sfx_driver_swing	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing		6350
+	279783695	sfx_driver_pistol_04	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_04_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_04		21356
+	280149706	sfx_driver_zap_prep	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_zap_prep_9EDFC787.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_zap_prep		60406
+	285984666	sfx_driver_callout_sniper	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_sniper_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_sniper		15738
+	286408050	driver_barracks	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_barracks_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\slugger_dance\driver_barracks		617691
+	290766598	sfx_driver_aim_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_aim_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_aim_foley\sfx_driver_aim_03		9163
+	300697306	sfx_driver_dash	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_dash_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_dash		1662
+	301199870	sfx_driver_skateboard_roll	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_skateboard_roll_9EDFC787.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\sfx_driver_skateboard_roll		48338
+	312007338	sfx_driver_reload_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_reload_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_reload_03		17984
+	336160757	sfx_driver_callout_machinegun	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_machinegun_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_machinegun		11176
+	344277281	sfx_driver_foley_syringe	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_foley_syringe_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_foley_syringe		5190
+	382565627	sfx_driver_headshot_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_headshot_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_headshot\sfx_driver_headshot_02		2385
+	383720595	sfx_driver_shell_06	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shell_06_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shell\sfx_driver_shell_06		13820
+	394643428	sfx_driver_shotgun_critical	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_critical_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun_critical		48776
+	399305832	sfx_driver_shotgun_close	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_close_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun_close		6930
+	409697076	sfx_driver_pistol_07	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_07_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_07		16238
+	416820763	sfx_coin_spin	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\coinspin_9EDFC787.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_coin_spin		14663
+	418385383	sfx_driver_swing_knife_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_knife_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing_knife\sfx_driver_swing_knife_02		6040
+	430621491	sfx_driver_foley_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_foley_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_foley\sfx_driver_foley_02		2891
+	439546855	sfx_driver_headshot_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_headshot_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_headshot\sfx_driver_headshot_03		2600
+	460898076	sfx_driver_bash_prep	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_bash_prep_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_bash_prep		2742
+	472921452	sfx_driver_explosion_badass_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_explosion_badass_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_explosion_badass\sfx_driver_explosion_badass_01		54942
+	486337579	sfx_driver_knife_hit_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_knife_hit_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_knife_hit\sfx_driver_knife_hit_01		8386
+	506304054	sfx_driver_pistol_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_03		16956
+	506867828	sfx_driver_bash_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_bash_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_bash\sfx_driver_bash_01		12542
+	511923789	sfx_driver_callout_rocket_launcher	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_rocket_launcher_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_rocket_launcher		24338
+	538857740	sfx_driver_syringe_buff	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_syringe_buff_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_syringe_buff		73365
+	541050718	sfx_driver_shotgun_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun\sfx_driver_shotgun_01		40462
+	545301630	sfx_driver_shotgun_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun\sfx_driver_shotgun_03		39493
+	550961347	sfx_driver_grenade_launcher_shoot_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_launcher_shoot_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_grenade_launcher_shoot\sfx_driver_grenade_launcher_shoot_02		21000
+	571875249	sfx_driver_skateboard_ollie	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_skateboard_ollie_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_skateboard_ollie		5195
+	574324382	sfx_driver_grenade_explosion_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_explosion_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\sfx_driver_grenade_explosion\sfx_driver_grenade_explosion_02		35084
+	581957993	sfx_driver_stun_grenade	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_stun_grenade_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_stun_grenade		42224
+	587058461	sfx_driver_sniper_shoot_charged	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_sniper_shoot_charged_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_sniper_shoot_charged		25268
+	597833957	sfx_driver_heavy_machine_gun_shoot_critical	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_heavy_machine_gun_shoot_critical_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_heavy_machine_gun_shoot_critical		12765
+	601395396	sfx_driver_aim_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_aim_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_aim_foley\sfx_driver_aim_02		9969
+	606879799	sfx_driver_pistol_05	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_05_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_05		19170
+	608932759	sfx_blood_gurgle	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_blood_gurgle_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_blood_gurgle		35601
+	613263205	sfx_driver_gun_catch	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_gun_catch_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_gun_catch		7462
+	621113539	sfx_driver_shell_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shell_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shell\sfx_driver_shell_02		20665
+	629932395	sfx_driver_shotgun_open	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_open_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun_open		12070
+	637611440	sfx_driver_zap_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_zap_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_zap\sfx_driver_zap_01		20401
+	660154433	sfx_driver_button_foley	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_button_foley_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_button_foley		4422
+	665980612	sfx_driver_pistol_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_01		17787
+	684026597	sfx_driver_pistol_charged_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_charged_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\charge_shot\sfx_driver_pistol_charged_01		29824
+	694320022	sfx_driver_tyler_gun_loop	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_tyler_gun_loop_9EDFC787.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\sfx_driver_tyler_gun_loop		56298
+	715069105	sfx_driver_air_dodge	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_air_dodge_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_air_dodge		15549
+	726155769	sfx_driver_explosion_badass_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_explosion_badass_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_explosion_badass\sfx_driver_explosion_badass_02		92145
+	727414514	sfx_driver_gun_jammed	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_gun_jammed_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_gun_jammed		64016
+	739550788	sfx_driver_injection_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_injection_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_injection\sfx_driver_injection_01		6753
+	760264291	sfx_driver_reload_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_reload_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_reload_02		2980
+	762333021	sfx_driver_headshot_06	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_headshot_06_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_headshot\sfx_driver_headshot_06		3269
+	762483654	sfx_driver_callout_grenadelauncher	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_grenadelauncher_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_grenadelauncher		21035
+	767202860	sfx_driver_slug_shotgun_fire_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_slug_shotgun_fire_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_slug_shotgun_shoot\sfx_driver_slug_shotgun_fire_01		34621
+	773340434	sfx_driver_machinegun_shoot	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_machinegun_shoot_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_machinegun_shoot		12827
+	775738401	sfx_driver_big_explosion	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\245372__quaker540__hq-explosion_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\sfx_driver_big_explosion		26175
+	775748391	sfx_driver_swing_hammer_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_hammer_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing_hammer\sfx_driver_swing_hammer_02		27775
+	776407770	sfx_driver_pistol_06	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_06_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_06		15907
+	784309971	sfx_driver_slug_shotgun_fire_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_slug_shotgun_fire_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_slug_shotgun_shoot\sfx_driver_slug_shotgun_fire_02		35726
+	784626399	driver_into_the_cosmos	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_into_the_cosmos_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\slugger_dance\driver_into_the_cosmos		4120356
+	787533323	sfx_driver_shell_05	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shell_05_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shell\sfx_driver_shell_05		16226
+	798684735	sfx_driver_riot_shotgun_pump_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_riot_shotgun_pump_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_riot_shotgun_pump\sfx_driver_riot_shotgun_pump_03		7850
+	828265829	sfx_driver_callout_flamethrower	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_flamethrower_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_flamethrower		16976
+	830580599	sfx_driver_impact_hammer_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_impact_hammer_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_impact_hammer\sfx_driver_impact_hammer_03		8874
+	834438627	sfx_driver_foley_knife2	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_foley_knife2_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_foley_knife2		8260
+	854794046	sfx_driver_zap_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_zap_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_zap\sfx_driver_zap_02		19329
+	857582462	sfx_driver_knife_impact	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_knife_impact_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_knife_impact		4802
+	864257057	sfx_driver_boom	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_boom_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_boom		27067
+	867338345	sfx_driver_sniper_shoot_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_sniper_shoot_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_sniper_shoot\sfx_driver_sniper_shoot_02		19337
+	869550288	sfx_driver_grenade_explosion_badass_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_explosion_badass_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_grenade_explosion_badass\sfx_driver_grenade_explosion_badass_03		49391
+	884342922	sfx_driver_riot_shotgun_shoot_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_riot_shotgun_shoot_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_riot_shotgun_shoot\sfx_driver_riot_shotgun_shoot_02		20561
+	886308071	sfx_driver_pickup_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pickup_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_pickup\sfx_driver_pickup_02		12934
+	909261926	sfx_driver_headshot_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_headshot_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_headshot\sfx_driver_headshot_01		3340
+	912686396	sfx_driver_rocket_launcher_shoot_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_rocket_launcher_shoot_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_rocket_launcher_shoot\sfx_driver_rocket_launcher_shoot_02		22968
+	914136058	sfx_driver_callout_laser	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_laser_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_laser		11945
+	914247726	sfx_driver_rocket_launcher_shoot_04	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_rocket_launcher_shoot_04_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_rocket_launcher_shoot\sfx_driver_rocket_launcher_shoot_04		24972
+	914707721	sfx_driver_shell_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shell_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shell\sfx_driver_shell_03		23982
+	918021308	driver_a_real_hero	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_a_real_hero_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\driver_dance\driver_a_real_hero		4128128
+	919681358	sfx_driver_pistol_08	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_08_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_08		16639
+	921660690	sfx_driver_rocket_launcher_shoot_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_rocket_launcher_shoot_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_rocket_launcher_shoot\sfx_driver_rocket_launcher_shoot_03		25868
+	936268348	sfx_driver_aim_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_aim_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_aim_foley\sfx_driver_aim_01		9078
+	953494456	sfx_driver_foley_knife	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_foley_knife_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_foley_knife		9189
+	955153487	driver_hydrogen	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_hydrogen_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\jacket_dance\driver_hydrogen		5475206
+	966564575	sfx_driver_pistol_10	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_10_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_10		14896
+	976648469	sfx_driver_pistol_charged_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_charged_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\charge_shot\sfx_driver_pistol_charged_02		30639
+	976794706	sfx_driver_headshot_05	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_headshot_05_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_headshot\sfx_driver_headshot_05		2189
+	977552133	sfx_driver_pistol_09	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_pistol_09_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\Shoot\sfx_driver_pistol\sfx_driver_pistol_09		16029
+	978442170	sfx_driver_shotgun_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_shotgun_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_shotgun\sfx_driver_shotgun_02		40154
+	982529035	sfx_driver_headshot_04	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_headshot_04_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_headshot\sfx_driver_headshot_04		2745
+	983078141	sfx_driver_dodge	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_dodge_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_dodge		12630
+	986087333	sfx_driver_riot_shotgun_shoot_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_riot_shotgun_shoot_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_riot_shotgun_shoot\sfx_driver_riot_shotgun_shoot_01		19016
+	986283722	sfx_driver_sniper_click	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_sniper_click_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_sniper_click		4288
+	994224036	driver_its_safe_now	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\driver_its_safe_now_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\jacket_dance\driver_its_safe_now		3308766
+	999831627	sfx_driver_callout_hmg	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_callout_hmg_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_callout_hmg		19799
+	1005677143	sfx_driver_foley_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_foley_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_foley\sfx_driver_foley_01		4746
+	1006085586	sfx_driver_impact_hammer_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_impact_hammer_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_impact_hammer\sfx_driver_impact_hammer_01		6945
+	1007683965	sfx_driver_swing_knife_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_swing_knife_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_swing_knife\sfx_driver_swing_knife_03		7713
+	1010326925	sfx_driver_button_press	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_button_press_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_button_press		4410
+	1015493833	sfx_driver_knife_hit_02	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_knife_hit_02_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_knife_hit\sfx_driver_knife_hit_02		5825
+	1031576208	sfx_driver_sniper_shoot_03	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_sniper_shoot_03_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_sniper_shoot\sfx_driver_sniper_shoot_03		18038
+	1033472076	sfx_driver_grenade_explosion_badass_01	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_grenade_explosion_badass_01_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_grenade_explosion_badass\sfx_driver_grenade_explosion_badass_01		33326
+	1070443664	sfx_driver_coin	E:\RoR2Mods\Driver\MechorillaWWISE\.cache\Windows\SFX\sfx_driver_coin_3F75BDB9.wem		\Actor-Mixer Hierarchy\Default Work Unit\SFX\RandomPitch\sfx_driver_coin		10294
+
