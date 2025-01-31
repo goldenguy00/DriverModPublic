@@ -1,70 +1,53 @@
-﻿using R2API;
-using R2API.Utils;
+﻿using RobDriver.Modules.Components;
 using RoR2;
+using RoR2.Achievements;
 using System;
 using UnityEngine;
 
 namespace RobDriver.Modules.Achievements
 {
-    internal class SuitAchievement : ModdedUnlockable
+    //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
+    //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
+    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
+    internal class SuitAchievement : BaseAchievement
     {
-        public override string AchievementIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_ID";
-        public override string UnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_REWARD_ID";
-        public override string AchievementNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_NAME";
-        public override string PrerequisiteUnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_REWARD_ID";
-        public override string UnlockableNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_UNLOCKABLE_NAME";
-        public override string AchievementDescToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_DESC";
-        public override Sprite Sprite { get; } = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSuitSkin");
+        public const string identifier = "ROB_DRIVER_SUIT";
+        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_SUIT_NAME";
+        public const string unlockableIdentifier = "ROB_DRIVER_SUIT_UNLOCKABLE";
+        public static Sprite Sprite => Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSuitSkin");
 
-        public override Func<string> GetHowToUnlock { get; } = (() => Language.GetStringFormatted("UNLOCK_VIA_ACHIEVEMENT_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
-        public override Func<string> GetUnlocked { get; } = (() => Language.GetStringFormatted("UNLOCKED_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
+        public override BodyIndex LookUpRequiredBodyIndex() => Survivors.Driver.bodyIndex;
 
-        public override BodyIndex LookUpRequiredBodyIndex()
+        public override void OnBodyRequirementMet()
         {
-            return BodyCatalog.FindBodyIndex("RobDriverBody");
+            base.OnBodyRequirementMet();
+
+            GlobalEventManager.onCharacterDeathGlobal += this.GlobalEventManager_onCharacterDeathGlobal;
         }
 
-        public override void OnInstall()
+        public override void OnBodyRequirementBroken()
         {
-            base.OnInstall();
+            base.OnBodyRequirementBroken();
 
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            GlobalEventManager.onCharacterDeathGlobal -= this.GlobalEventManager_onCharacterDeathGlobal;
         }
 
         private void GlobalEventManager_onCharacterDeathGlobal(DamageReport damageReport)
         {
-            if (damageReport.attackerBody && damageReport.attackerMaster && damageReport.victim && damageReport.attackerBody.baseNameToken == Modules.Survivors.Driver.bodyNameToken)
+            if (damageReport.attackerBody && damageReport.attackerBody.bodyIndex == Survivors.Driver.bodyIndex)
             {
-                if (damageReport.victimIsChampion)
+                if (damageReport.victimIsChampion && damageReport.attackerBody.TryGetComponent<DriverController>(out var iDrive))
                 {
-                    Modules.Components.DriverController iDrive = damageReport.attackerBody.gameObject.GetComponent<Modules.Components.DriverController>();
-                    if (iDrive)
+                    if (iDrive.weaponDef == DriverWeaponCatalog.Sniper)
                     {
-                        if (iDrive.weaponDef.nameToken == "ROB_DRIVER_SNIPER_NAME")
+                        if (base.meetsBodyRequirement)
                         {
-                            if (base.meetsBodyRequirement)
-                            {
-                                base.Grant();
-                            }
+                            base.Grant();
                         }
                     }
                 }
             }
         }
 
-        public override void OnUninstall()
-        {
-            base.OnUninstall();
-
-            RoR2.GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
-        }
     }
 }

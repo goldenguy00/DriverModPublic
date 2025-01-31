@@ -1,12 +1,8 @@
-﻿using EntityStates;
-using EntityStates.Executioner;
-using RobDriver.Modules;
-using RobDriver.Modules.Survivors;
+﻿using RobDriver.Modules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace RobDriver
 {
@@ -16,22 +12,65 @@ namespace RobDriver
         public static DriverWeaponDef[] weaponDefs = new DriverWeaponDef[0];
 
         internal static DriverWeaponDef Pistol;
-        internal static DriverWeaponDef PyriteGun;
-        internal static DriverWeaponDef GoldenGun;
-        internal static DriverWeaponDef PrototypeRocketLauncher;
-        internal static DriverWeaponDef ArmCannon;
-        internal static DriverWeaponDef PlasmaCannon;
-        internal static DriverWeaponDef Behemoth;
-        internal static DriverWeaponDef BeetleShield;
         internal static DriverWeaponDef LunarPistol;
         internal static DriverWeaponDef VoidPistol;
         internal static DriverWeaponDef Needler;
-        internal static DriverWeaponDef GolemRifle;
+
+        internal static DriverWeaponDef GoldenGun;
+        internal static DriverWeaponDef PyriteGun;
+        internal static DriverWeaponDef BeetleShield;
+
+        internal static DriverWeaponDef Shotgun;
+        internal static DriverWeaponDef RiotShotgun;
+        internal static DriverWeaponDef SlugShotgun;
+
+        internal static DriverWeaponDef MachineGun;
+        internal static DriverWeaponDef HeavyMachineGun;
+        internal static DriverWeaponDef Sniper;
+
+        internal static DriverWeaponDef Bazooka;
+        internal static DriverWeaponDef GrenadeLauncher;
+        internal static DriverWeaponDef RocketLauncher;
+        internal static DriverWeaponDef Behemoth;
+        internal static DriverWeaponDef PrototypeRocketLauncher;
+        internal static DriverWeaponDef ArmCannon;
+        internal static DriverWeaponDef PlasmaCannon;
+
+        internal static DriverWeaponDef BadassShotgun;
         internal static DriverWeaponDef LunarRifle;
         internal static DriverWeaponDef LunarHammer;
+
         internal static DriverWeaponDef NemmandoGun;
         internal static DriverWeaponDef NemmercGun;
-        internal static DriverWeaponDef RavSword;
+        internal static DriverWeaponDef GolemRifle;
+
+        public static DriverWeaponDef CreateAndAddWeapon(DriverWeaponDefInfo weaponDefInfo)
+        {
+            DriverWeaponDef weaponDef = (DriverWeaponDef)ScriptableObject.CreateInstance(typeof(DriverWeaponDef));
+            weaponDef.name = weaponDefInfo.nameToken;
+
+            weaponDef.nameToken = weaponDefInfo.nameToken;
+            weaponDef.descriptionToken = weaponDefInfo.descriptionToken;
+            weaponDef.icon = weaponDefInfo.icon;
+            weaponDef.crosshairPrefab = weaponDefInfo.crosshairPrefab;
+            weaponDef.tier = weaponDefInfo.tier;
+            weaponDef.shotCount = weaponDefInfo.shotCount;
+            weaponDef.buffType = weaponDefInfo.buffType;
+
+            weaponDef.primarySkillDef = weaponDefInfo.primarySkillDef;
+            weaponDef.secondarySkillDef = weaponDefInfo.secondarySkillDef;
+
+            weaponDef.mesh = weaponDefInfo.mesh;
+            weaponDef.material = weaponDefInfo.material;
+            weaponDef.animationSet = weaponDefInfo.animationSet;
+            weaponDef.calloutSoundString = weaponDefInfo.calloutSoundString;
+
+            weaponDef.configIdentifier = weaponDefInfo.configIdentifier;
+            weaponDef.dropChance = weaponDefInfo.dropChance;
+
+            AddWeapon(weaponDef);
+            return weaponDef;
+        }
 
         public static void AddWeapon(DriverWeaponDef weaponDef)
         {
@@ -44,7 +83,8 @@ namespace RobDriver
             weaponDef.index = (ushort)index;
 
             // heheheha
-            weaponDef.pickupPrefab = Modules.Assets.CreatePickupObject(weaponDef);
+            // fuck you
+            // weaponDef.pickupPrefab = Modules.Assets.CreatePickupObject(weaponDef);
 
             // set default icon
             if (!weaponDef.icon)
@@ -84,22 +124,32 @@ namespace RobDriver
 
             if (autoComplete)
             {
-                if (!bodyName.Contains("Body")) bodyName += "Body";
-                if (!bodyName.Contains("(Clone)")) bodyName += "(Clone)";
+                if (!bodyName.Contains("Body"))
+                    bodyName += "Body";
+
+                bodyName = bodyName.Replace("(Clone)", "");
             }
             if (weaponDrops.ContainsKey(bodyName)) return;
             weaponDrops.Add(bodyName, weaponDef);
+        }
+
+        public static bool HasWeaponDrop(string bodyNameToken, out DriverWeaponDef weaponDef)
+        {
+            //TODO
+            if (weaponDrops.TryGetValue(bodyNameToken, out weaponDef))
+                return true;
+            return false;
         }
 
         public static bool IsWeaponPistol(DriverWeaponDef weaponDef)
         {
             // These are all the pistol options that are forced upgrades with steadyaim
             // beetle shield doesnt count since it's dropped instead of reloaded
-            return weaponDef.nameToken == Pistol.nameToken ||
-                weaponDef.nameToken == LunarPistol.nameToken ||
-                weaponDef.nameToken == VoidPistol.nameToken ||
-                weaponDef.nameToken == Needler.nameToken ||
-                weaponDef.nameToken == PyriteGun.nameToken;
+            return weaponDef == Pistol ||
+                weaponDef == LunarPistol ||
+                weaponDef == VoidPistol ||
+                weaponDef == Needler ||
+                weaponDef == PyriteGun;
         }
 
         public static DriverWeaponDef GetWeaponFromIndex(int index)

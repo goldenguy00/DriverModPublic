@@ -1,5 +1,4 @@
-﻿using RoR2;
-using RoR2.UI;
+﻿using RoR2.UI;
 
 namespace RobDriver.Modules.Components
 {

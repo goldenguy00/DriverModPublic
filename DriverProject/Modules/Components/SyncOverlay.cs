@@ -41,7 +41,7 @@ namespace RobDriver.Modules.Components
                 Transform modelTransform = penis.modelTransform;
                 if (modelTransform)
                 {
-                    TemporaryOverlay temporaryOverlay = modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                    var temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                     temporaryOverlay.duration = 4f;
                     temporaryOverlay.destroyComponentOnEnd = true;
                     temporaryOverlay.originalMaterial = Modules.Assets.woundOverlayMat;

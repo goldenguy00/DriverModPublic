@@ -54,7 +54,7 @@ namespace RobDriver.SkillStates.Driver.Skateboard
                 }
             }
 
-            if (this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken && this.iDrive.weaponEffectInstance)
+            if (this.iDrive.weaponDef != this.cachedWeaponDef && this.iDrive.weaponEffectInstance)
                 this.iDrive.weaponEffectInstance.GetComponent<Modules.Components.BackWeaponComponent>().Init(this.iDrive.weaponDef);
 
             this.characterBody.isSprinting = this.isSprinting;

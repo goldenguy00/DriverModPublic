@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using RiskOfOptions;
@@ -67,8 +66,10 @@ namespace RobDriver.Modules
             public ConfigEntry<int> shotCount;
         }
 
-        internal static void ReadConfig()
+        internal static void ReadConfig(ConfigFile config)
         {
+            myConfig = config;
+
             #region General
             badass = Config.BindAndOptions("01 - General", "Badass Mode", false, "Makes the mod BadAss.", true);
 
@@ -221,7 +222,7 @@ namespace RobDriver.Modules
 
         public static void InitROO(Sprite modSprite, string modDescription)
         {
-            if (DriverPlugin.rooInstalled) _InitROO(modSprite, modDescription);
+            if (DriverPlugin.RooInstalled) _InitROO(modSprite, modDescription);
         }
 
         public static void _InitROO(Sprite modSprite, string modDescription)
@@ -244,7 +245,7 @@ namespace RobDriver.Modules
 
             ConfigEntry<T> configEntry = myConfig.Bind(section, name, defaultValue, description);
 
-            if (DriverPlugin.rooInstalled)
+            if (DriverPlugin.RooInstalled)
             {
                 TryRegisterOption(configEntry, restartRequired);
             }
@@ -268,7 +269,7 @@ namespace RobDriver.Modules
 
             ConfigEntry<float> configEntry = myConfig.Bind(section, name, defaultValue, description);
 
-            if (DriverPlugin.rooInstalled)
+            if (DriverPlugin.RooInstalled)
             {
                 TryRegisterOptionSlider(configEntry, min, max, restartRequired);
             }
@@ -292,7 +293,7 @@ namespace RobDriver.Modules
 
             ConfigEntry<int> configEntry = myConfig.Bind(section, name, defaultValue, description);
 
-            if (DriverPlugin.rooInstalled)
+            if (DriverPlugin.RooInstalled)
             {
                 TryRegisterOptionSlider(configEntry, min, max, restartRequired);
             }
@@ -313,7 +314,7 @@ namespace RobDriver.Modules
                 {
                     min = 0,
                     max = 20,
-                    formatString = "{0:0.00}",
+                    FormatString = "{0:0.00}",
                     restartRequired = restartRequired
                 }));
             }

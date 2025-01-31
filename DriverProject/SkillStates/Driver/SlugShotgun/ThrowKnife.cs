@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 using RoR2;
 using EntityStates;
-using UnityEngine.AddressableAssets;
 using RoR2.Projectile;
 
 namespace RobDriver.SkillStates.Driver.SlugShotgun
 {
     public class ThrowKnife : GenericProjectileBaseState
     {
-        public static float baseDuration = 0.55f;
+        public static new float baseDuration = 0.55f;
         public static float baseDelayDuration = 0.1f * baseDuration;
 
-        public static float damageCoefficient = 6.5f;
+        public static new float damageCoefficient = 6.5f;
 
         public override void OnEnter()
         {

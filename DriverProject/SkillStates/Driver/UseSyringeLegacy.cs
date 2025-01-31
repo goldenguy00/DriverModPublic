@@ -70,13 +70,13 @@ namespace RobDriver.SkillStates.Driver
                     }, true);
                     if (this.modelTransform)
                     {
-                        TemporaryOverlay temporaryOverlay = this.modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                        var temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                         temporaryOverlay.duration = 12f;
                         temporaryOverlay.animateShaderAlpha = true;
                         temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                         temporaryOverlay.destroyComponentOnEnd = true;
                         temporaryOverlay.originalMaterial = Modules.Assets.syringeDamageOverlayMat;
-                        temporaryOverlay.AddToCharacerModel(this.modelTransform.GetComponent<CharacterModel>());
+                        temporaryOverlay.AddToCharacterModel(this.modelTransform.GetComponent<CharacterModel>());
                     }
                     break;
                 case 1:
@@ -94,13 +94,13 @@ namespace RobDriver.SkillStates.Driver
                     }, true);
                     if (this.modelTransform)
                     {
-                        TemporaryOverlay temporaryOverlay = this.modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                        var temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                         temporaryOverlay.duration = 12f;
                         temporaryOverlay.animateShaderAlpha = true;
                         temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                         temporaryOverlay.destroyComponentOnEnd = true;
                         temporaryOverlay.originalMaterial = Modules.Assets.syringeAttackSpeedOverlayMat;
-                        temporaryOverlay.AddToCharacerModel(this.modelTransform.GetComponent<CharacterModel>());
+                        temporaryOverlay.AddToCharacterModel(this.modelTransform.GetComponent<CharacterModel>());
                     }
                     break;
                 case 2:
@@ -118,13 +118,13 @@ namespace RobDriver.SkillStates.Driver
                     }, true);
                     if (this.modelTransform)
                     {
-                        TemporaryOverlay temporaryOverlay = this.modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                        var temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                         temporaryOverlay.duration = 12f;
                         temporaryOverlay.animateShaderAlpha = true;
                         temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                         temporaryOverlay.destroyComponentOnEnd = true;
                         temporaryOverlay.originalMaterial = Modules.Assets.syringeCritOverlayMat;
-                        temporaryOverlay.AddToCharacerModel(this.modelTransform.GetComponent<CharacterModel>());
+                        temporaryOverlay.AddToCharacterModel(this.modelTransform.GetComponent<CharacterModel>());
                     }
                     break;
             }

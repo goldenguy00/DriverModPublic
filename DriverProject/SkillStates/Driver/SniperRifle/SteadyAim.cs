@@ -2,8 +2,6 @@
 using RoR2;
 using EntityStates;
 using static RoR2.CameraTargetParams;
-using RobDriver.Modules.Components;
-using RoR2.UI;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
 using R2API;
@@ -72,7 +70,7 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
             base.characterBody.SetAimTimer(0.2f);
             this.attackSpeedStat = this.characterBody.attackSpeed;
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 this.cancelling = true;
                 this.outer.SetNextStateToMain();
@@ -224,7 +222,6 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
                     queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
                 };
-                bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                 bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
                 {
                     if (BulletAttack.IsSniperTargetHit(hitInfo))

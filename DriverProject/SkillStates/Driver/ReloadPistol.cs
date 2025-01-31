@@ -1,5 +1,4 @@
 ﻿using EntityStates;
-using UnityEngine;
 using RoR2;
 using static RoR2.CameraTargetParams;
 using UnityEngine.Networking;

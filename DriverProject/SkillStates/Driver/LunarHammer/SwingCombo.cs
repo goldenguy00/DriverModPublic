@@ -40,8 +40,6 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
             else this.muzzleString = this.muzzleString ="SwingCenter2";
 
             base.OnEnter();
-
-            this.attack.AddModdedDamageType(iDrive.ModdedDamageType);
         }
 
         protected override void FireAttack()
@@ -60,7 +58,7 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
         {
             base.FixedUpdate();
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", "BufferEmpty");
                 this.outer.SetNextStateToMain();

@@ -1,5 +1,5 @@
-﻿using R2API;
-using System;
+﻿using System;
+using R2API;
 
 namespace RobDriver.Modules
 {
@@ -7,8 +7,6 @@ namespace RobDriver.Modules
     {
         internal static void AddTokens()
         {
-            string prefix = DriverPlugin.developerPrefix + "_DRIVER_BODY_";
-
             string desc = "The Driver is literally me.<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine;
             desc = desc + "< ! > Each weapon has its own unique strengths and weaknesses so be sure to pick the right tool for the job." + Environment.NewLine + Environment.NewLine;
             desc = desc + "< ! > Focus greatly increases your damage output, but be careful not to get flanked while aiming." + Environment.NewLine + Environment.NewLine;
@@ -28,7 +26,9 @@ namespace RobDriver.Modules
             lore += "A real human being and a real hero\n\n";
             lore += "\"So, what do you do?\"\n\n";
             lore += "\"I drive.\"";
-            
+
+
+            string prefix = "ROB_DRIVER_BODY";
 
             LanguageAPI.Add(prefix + "NAME", "Driver");
             LanguageAPI.Add(prefix + "DESCRIPTION", desc);
@@ -261,45 +261,39 @@ namespace RobDriver.Modules
             #endregion
 
             #region Achievements
-            LanguageAPI.Add(prefix + "UNLOCKABLE_UNLOCKABLE_NAME", "A Real Hero");
-            LanguageAPI.Add(prefix + "UNLOCKABLE_ACHIEVEMENT_NAME", "A Real Hero");
-            LanguageAPI.Add(prefix + "UNLOCKABLE_ACHIEVEMENT_DESC", "Reach stage 3 in less than 15 minutes.");
+            // unlockables tied to achievements dont use tokens
+            string nameFormat = "ACHIEVEMENT_ROB_DRIVER_{0}_NAME";
+            string descFormat = "ACHIEVEMENT_ROB_DRIVER_{0}_DESC";
 
-            LanguageAPI.Add(prefix + "MONSOONUNLOCKABLE_UNLOCKABLE_NAME", "Driver: Mastery");
-            LanguageAPI.Add(prefix + "MONSOONUNLOCKABLE_ACHIEVEMENT_NAME", "Driver: Mastery");
-            LanguageAPI.Add(prefix + "MONSOONUNLOCKABLE_ACHIEVEMENT_DESC", "As Driver, beat the game or obliterate on Monsoon.");
+            LanguageAPI.Add(string.Format(nameFormat, "BODY_UNLOCK"), "A Real Hero");
+            LanguageAPI.Add(string.Format(descFormat, "BODY_UNLOCK"), "Reach stage 3 in less than 15 minutes.");
 
-            LanguageAPI.Add(prefix + "TYPHOON_UNLOCKABLE_UNLOCKABLE_NAME", "Driver: Grand Mastery");
-            LanguageAPI.Add(prefix + "TYPHOON_UNLOCKABLE_ACHIEVEMENT_NAME", "Driver: Grand Mastery");
-            LanguageAPI.Add(prefix + "TYPHOON_UNLOCKABLE_ACHIEVEMENT_DESC", "As Driver, beat the game or obliterate on Typhoon or Eclipse.\n<color=#8888>(Counts any difficulty Typhoon or higher)</color>");
+            LanguageAPI.Add(string.Format(nameFormat, "MONSOON"), "Driver: Mastery");
+            LanguageAPI.Add(string.Format(descFormat, "MONSOON"), "As Driver, beat the game or obliterate on Monsoon.");
 
-            LanguageAPI.Add(prefix + "SUPPLY_DROP_UNLOCKABLE_UNLOCKABLE_NAME", "Driver: Locked and Loaded");
-            LanguageAPI.Add(prefix + "SUPPLY_DROP_UNLOCKABLE_ACHIEVEMENT_NAME", "Driver: Locked and Loaded");
-            LanguageAPI.Add(prefix + "SUPPLY_DROP_UNLOCKABLE_ACHIEVEMENT_DESC", "As Driver, complete a teleporter event without letting any briefcases despawn.");
+            LanguageAPI.Add(string.Format(nameFormat, "TYPHOON"), "Driver: Grand Mastery");
+            LanguageAPI.Add(string.Format(descFormat, "TYPHOON"), "As Driver, beat the game or obliterate on Typhoon or win on Eclipse 8.\n<color=#8888>(Counts any difficulty Typhoon or higher)</color>");
 
-            LanguageAPI.Add(prefix + "PISTOLPASSIVE_UNLOCKABLE_UNLOCKABLE_NAME", "Driver: Professional Killer");
-            LanguageAPI.Add(prefix + "PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_NAME", "Driver: Professional Killer");
-            LanguageAPI.Add(prefix + "PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_DESC", "As Driver, complete a teleporter event without picking up any weapons.");
+            LanguageAPI.Add(string.Format(nameFormat, "SUPPLY_DROP"), "Driver: Locked and Loaded");
+            LanguageAPI.Add(string.Format(descFormat, "SUPPLY_DROP"), "As Driver, complete a teleporter event without letting any briefcases despawn.");
 
-            LanguageAPI.Add(prefix + "GODSLING_UNLOCKABLE_UNLOCKABLE_NAME", "Driver: Ryan Godsling");
-            LanguageAPI.Add(prefix + "GODSLING_UNLOCKABLE_ACHIEVEMENT_NAME", "Driver: Ryan Godsling");
-            LanguageAPI.Add(prefix + "GODSLING_UNLOCKABLE_ACHIEVEMENT_DESC", "As Driver, beat the game or obliterate on Monsoon or higher without picking up any weapons or bullets.");
+            LanguageAPI.Add(string.Format(nameFormat, "PISTOL_PASSIVE"), "Driver: Professional Killer");
+            LanguageAPI.Add(string.Format(descFormat, "PISTOL_PASSIVE"), "As Driver, complete a teleporter event without picking up any weapons.");
 
-            LanguageAPI.Add(prefix + "SUIT_UNLOCKABLE_UNLOCKABLE_NAME", "Driver: Dressed to Kill");
-            LanguageAPI.Add(prefix + "SUIT_UNLOCKABLE_ACHIEVEMENT_NAME", "Driver: Dressed to Kill");
-            LanguageAPI.Add(prefix + "SUIT_UNLOCKABLE_ACHIEVEMENT_DESC", "As Driver, land the killing blow on a boss with a Sniper Rifle.");
+            LanguageAPI.Add(string.Format(nameFormat, "GODSLING"), "Driver: Ryan Godsling");
+            LanguageAPI.Add(string.Format(descFormat, "GODSLING"), "As Driver, beat the game or obliterate on Monsoon or higher without picking up any weapons or bullets.");
 
-            LanguageAPI.Add(prefix + "WEAPON_UNLOCKABLE_NAME", "Weapon Unlocked");
-            LanguageAPI.Add(prefix + "WEAPON_UNLOCKABLE_DESC", "This weapon can now be selected at any time from Driver's Arsenal.");
+            LanguageAPI.Add(string.Format(nameFormat, "SUIT"), "Driver: Dressed to Kill");
+            LanguageAPI.Add(string.Format(descFormat, "SUIT"), "As Driver, land the killing blow on a boss with a Sniper Rifle.");
             #endregion
 
+            #region Gun shit
+            LanguageAPI.Add("UNLOCKABLE_ROB_DRIVER_WEAPON_NAME", "Weapon Unlocked");
+            LanguageAPI.Add("UNLOCKABLE_ROB_DRIVER_WEAPON_DESC", "This weapon can now be selected at any time from Driver's Arsenal.");
 
             LanguageAPI.Add("ROB_DRIVER_JAMMED_POPUP", "JAMMED...");
-
             LanguageAPI.Add("ROB_DRIVER_UPGRADE_POPUP", "UPGRADE!");
 
-
-            #region Gun shit
             LanguageAPI.Add("ROB_DRIVER_PISTOL_NAME", "Pistol");
             LanguageAPI.Add("ROB_DRIVER_PISTOL_DESC", "A reliable handgun that excels at nothing.");
 

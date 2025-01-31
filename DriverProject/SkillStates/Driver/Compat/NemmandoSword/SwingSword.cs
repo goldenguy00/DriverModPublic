@@ -30,20 +30,20 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoSword
             this.hitStopDuration = 0.2f;
             this.smoothHitstop = true;
 
-            this.swingSoundString = DriverPlugin.starstormInstalled ? "NemmandoSwing" : "Play_merc_sword_swing";
+            this.swingSoundString = DriverPlugin.StarstormInstalled ? "NemmandoSwing" : "Play_merc_sword_swing";
 
             this.swingEffectPrefab = Modules.Assets.redMercSwing;
             this.hitSoundString = "";
             this.hitEffectPrefab = Modules.Assets.redSlashImpactEffect;
             this.impactSound = Modules.Assets.knifeImpactSoundDef.index;
 
-            this.damageType = iDrive.DamageType | DamageType.Stun1s;
+            this.damageType = this.iDrive.DamageType;
+            this.damageType.damageType |= DamageType.Stun1s;
+            this.damageType.AddModdedDamageType(DriverDamageTypes.Gouge);
+
             this.muzzleString = this.swingIndex == 0 ? "SwingMuzzle1" : "SwingMuzzle2";
 
             base.OnEnter();
-
-            base.attack.AddModdedDamageType(iDrive.ModdedDamageType);
-            base.attack.AddModdedDamageType(DamageTypes.Gouge);
         }
 
         protected override void FireAttack()
@@ -71,7 +71,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoSword
         {
             base.FixedUpdate();
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", "BufferEmpty");
                 this.outer.SetNextStateToMain();

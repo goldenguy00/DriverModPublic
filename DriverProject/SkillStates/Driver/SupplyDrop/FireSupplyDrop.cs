@@ -3,7 +3,6 @@ using RoR2;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using EntityStates;
-using RobDriver.Modules;
 using RobDriver.Modules.Components;
 
 namespace RobDriver.SkillStates.Driver.SupplyDrop
@@ -19,6 +18,10 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
 
         protected float duration;
         private bool hasFired;
+
+        protected virtual bool cutAmmo => false;
+        protected virtual DriverWeaponDef weaponDef => DriverWeaponCatalog.PrototypeRocketLauncher;
+        protected virtual DriverBulletDef bulletDef => DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary);
 
         public override void OnEnter()
         {
@@ -65,27 +68,12 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
             }
         }
 
-        protected virtual DriverWeaponDef weaponDef
-        {
-            get
-            {
-                return DriverWeaponCatalog.PrototypeRocketLauncher;
-            }
-        }
-
         protected virtual void SpawnWeapon()
         {
             if (NetworkServer.active)
             {
-                GameObject weaponPickup = UnityEngine.Object.Instantiate<GameObject>(this.weaponDef.pickupPrefab, this.dropPosition, UnityEngine.Random.rotation);
-
-                TeamFilter teamFilter = weaponPickup.GetComponent<TeamFilter>();
-                if (teamFilter) teamFilter.teamIndex = this.teamComponent.teamIndex;
-
-                var weaponComponent = weaponPickup.GetComponent<SyncPickup>();
-                weaponComponent.bulletDef = DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary);
-
-                NetworkServer.Spawn(weaponPickup);
+                var weaponPickup = GameObject.Instantiate(Modules.Assets.weaponPickup, this.dropPosition, Random.rotation);
+                weaponPickup.GetComponent<SyncPickup>().SpawnWeapon(this.teamComponent.teamIndex, this.weaponDef, this.bulletDef, this.cutAmmo);
             }
         }
 

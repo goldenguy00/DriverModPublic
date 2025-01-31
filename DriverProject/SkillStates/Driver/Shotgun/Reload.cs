@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using EntityStates;
-
-namespace RobDriver.SkillStates.Driver.Shotgun
+﻿namespace RobDriver.SkillStates.Driver.Shotgun
 {
     public class Reload : BaseDriverSkillState
     {
@@ -18,7 +15,7 @@ namespace RobDriver.SkillStates.Driver.Shotgun
         {
             base.FixedUpdate();
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", "BufferEmpty");
                 this.outer.SetNextStateToMain();
@@ -27,7 +24,7 @@ namespace RobDriver.SkillStates.Driver.Shotgun
 
             if (base.fixedAge >= this.duration)
             {
-                if (this.iDrive.weaponDef.nameToken == this.iDrive.defaultWeaponDef.nameToken && !this.iDrive.HasSpecialBullets) iDrive.FinishReload();
+                if (this.iDrive.weaponDef == this.iDrive.defaultWeaponDef && !this.iDrive.HasSpecialBullets) iDrive.FinishReload();
                 this.outer.SetNextStateToMain();
             }
         }

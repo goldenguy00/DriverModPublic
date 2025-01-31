@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using RoR2;
 using RoR2.Skills;
+using System;
 
 [CreateAssetMenu(fileName = "wpn", menuName = "ScriptableObjects/WeaponDef", order = 1)]
 public class DriverWeaponDef : ScriptableObject
@@ -44,8 +44,10 @@ public class DriverWeaponDef : ScriptableObject
 
     [HideInInspector]
     public ushort index; // assigned at runtime
+
+    [Obsolete]
     [HideInInspector]
-    public GameObject pickupPrefab; // same thing
+    public GameObject pickupPrefab; // perish
 
     public string equipAnimationString
     {
@@ -58,26 +60,16 @@ public class DriverWeaponDef : ScriptableObject
 
     public Color color
     {
-        get
+        get => this.tier switch
         {
-            switch (this.tier)
-            {
-                case DriverWeaponTier.Common:
-                    return RobDriver.Modules.Helpers.whiteItemColor;
-                case DriverWeaponTier.Uncommon:
-                    return RobDriver.Modules.Helpers.greenItemColor;
-                case DriverWeaponTier.Legendary:
-                    return RobDriver.Modules.Helpers.redItemColor;
-                case DriverWeaponTier.Unique:
-                    return RobDriver.Modules.Helpers.yellowItemColor;
-                case DriverWeaponTier.Lunar:
-                    return RobDriver.Modules.Helpers.lunarItemColor;
-                case DriverWeaponTier.Void:
-                    return RobDriver.Modules.Helpers.voidItemColor;
-            }
-
-            return RobDriver.Modules.Helpers.whiteItemColor;
-        }
+            DriverWeaponTier.Common => RobDriver.Modules.Helpers.whiteItemColor,
+            DriverWeaponTier.Uncommon => RobDriver.Modules.Helpers.greenItemColor,
+            DriverWeaponTier.Legendary => RobDriver.Modules.Helpers.redItemColor,
+            DriverWeaponTier.Unique => RobDriver.Modules.Helpers.yellowItemColor,
+            DriverWeaponTier.Lunar => RobDriver.Modules.Helpers.lunarItemColor,
+            DriverWeaponTier.Void => RobDriver.Modules.Helpers.voidItemColor,
+            _ => RobDriver.Modules.Helpers.whiteItemColor,
+        };
     }
 
     public static DriverWeaponDef CreateWeaponDefFromInfo(DriverWeaponDefInfo weaponDefInfo)

@@ -1,17 +1,10 @@
 ﻿using R2API;
-using RoR2.Orbs;
 using RoR2;
 using UnityEngine;
 using System.Collections.Generic;
-using RobDriver.Modules;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Utilities;
-using System.Diagnostics;
-using static UnityEngine.AddressableAssets.ResourceLocators.ContentCatalogData;
-using UnityEngine.Networking;
 
-namespace RobDriver.Modules
+namespace RobDriver
 {
     public static class DriverBulletCatalog
     {
@@ -19,169 +12,131 @@ namespace RobDriver.Modules
 
         internal static DriverBulletDef Default { get; private set; }
 
-        internal static DamageType[] allowedDamageTypes = new DamageType[]
-        {
-            DamageType.ResetCooldownsOnKill,
-            DamageType.SlowOnHit,
-            DamageType.Stun1s,
-            DamageType.IgniteOnHit,
-            DamageType.Freeze2s,
-            DamageType.ClayGoo,
-            DamageType.BleedOnHit,
-            DamageType.PoisonOnHit,
-            DamageType.WeakOnHit,
-            DamageType.Nullify,
-            DamageType.BonusToLowHealth,
-            DamageType.BlightOnHit,
-            DamageType.CrippleOnHit,
-            DamageType.FruitOnHit
-        };
+        // Common
+        internal static DriverBulletDef Slowing;
+        internal static DriverBulletDef Stunning;
+        internal static DriverBulletDef Incendiary;
+        internal static DriverBulletDef Goo;
+        internal static DriverBulletDef Serrated;
+        internal static DriverBulletDef Poison;
+        internal static DriverBulletDef Weakening;
+        internal static DriverBulletDef Executing;
+        internal static DriverBulletDef Blighting;
+        internal static DriverBulletDef Resetting;
+
+        // Uncommon
+        internal static DriverBulletDef Crippling;
+        internal static DriverBulletDef Fruitful;
+        internal static DriverBulletDef Frostbite;
+        internal static DriverBulletDef Nullifying;
+        internal static DriverBulletDef Coin;
+        internal static DriverBulletDef Explosive;
+        internal static DriverBulletDef Missile;
+        internal static DriverBulletDef Flaming;
+        internal static DriverBulletDef Icy;
+        internal static DriverBulletDef Sticky;
+        internal static DriverBulletDef Mystery;
+        internal static DriverBulletDef Hemorrhaging;
+
+        // Legendary
+        internal static DriverBulletDef Dagger;
+        internal static DriverBulletDef Lightning;
+        internal static DriverBulletDef Fireball;
+        internal static DriverBulletDef Hook;
+        internal static DriverBulletDef Ruinous;
+        internal static DriverBulletDef GiantSlayer;
+        internal static DriverBulletDef Disabling;
+        internal static DriverBulletDef Warping;
+        internal static DriverBulletDef Amputating;
+
+        // Void
+        internal static DriverBulletDef VoidMissile;
+        internal static DriverBulletDef VoidLightning;
 
         internal static void Init()
         {
-            InitializeBullets();
+            Default = CreateBulletType("Default", DriverWeaponTier.Unique, Color.white, DamageType.Generic);
+
+            // Common
+            Slowing = CreateBulletType("Slowing", DriverWeaponTier.Common, Color.yellow, DamageType.SlowOnHit);
+            Stunning = CreateBulletType("Stunning", DriverWeaponTier.Common, Color.gray, DamageType.Stun1s);
+            Incendiary = CreateBulletType("Incendiary", DriverWeaponTier.Common, new Color32(255, 127, 80, 255), DamageType.IgniteOnHit);
+            Goo = CreateBulletType("Goo", DriverWeaponTier.Common, Color.black, DamageType.ClayGoo);
+            Serrated = CreateBulletType("Serrated", DriverWeaponTier.Common, DamageColor.FindColor(DamageColorIndex.Bleed), DamageType.BleedOnHit);
+            Poison = CreateBulletType("Poison", DriverWeaponTier.Common, Color.green, DamageType.PoisonOnHit);
+            Weakening = CreateBulletType("Weakening", DriverWeaponTier.Common, new Color32(220, 237, 159, 255), DamageType.WeakOnHit);
+            Executing = CreateBulletType("Executing", DriverWeaponTier.Common, DamageColor.FindColor(DamageColorIndex.Fragile), DamageType.BonusToLowHealth);
+            Blighting = CreateBulletType("Blighting", DriverWeaponTier.Common, new Color32(222, 85, 230, 255), DamageType.BlightOnHit);
+
+            Coin = CreateBulletType("Coin", DriverWeaponTier.Common, new Color32(255, 212, 94, 255), DriverDamageTypes.CoinShot);
+            Mystery = CreateBulletType("Mystery", DriverWeaponTier.Common, new Color32(30, 51, 45, 255), DriverDamageTypes.MysteryShot);
+
+            // Uncommon
+            Resetting = CreateBulletType("Resetting", DriverWeaponTier.Uncommon, Color.red, DamageType.ResetCooldownsOnKill);
+            Crippling = CreateBulletType("Crippling", DriverWeaponTier.Uncommon, new Color32(48, 205, 217, 255), DamageType.CrippleOnHit);
+            Fruitful = CreateBulletType("Fruitful", DriverWeaponTier.Uncommon, new Color32(255, 191, 225, 255), DamageType.FruitOnHit);
+            Frostbite = CreateBulletType("Frostbite", DriverWeaponTier.Uncommon, Color.cyan, DamageType.Freeze2s);
+
+            Explosive = CreateBulletType("Explosive", DriverWeaponTier.Uncommon, Color.yellow, DriverDamageTypes.ExplosiveRounds);
+            Missile = CreateBulletType("Missle", DriverWeaponTier.Uncommon, new Color32(219, 132, 11, 255), DriverDamageTypes.MissileShot);
+            Flaming = CreateBulletType("Elemental Flame", DriverWeaponTier.Uncommon, new Color32(255, 127, 80, 255), DriverDamageTypes.FlameTornadoShot);
+            Icy = CreateBulletType("Elemental Ice", DriverWeaponTier.Uncommon, Color.cyan, DriverDamageTypes.IceBlastShot);
+            Sticky = CreateBulletType("Sticky", DriverWeaponTier.Uncommon, new Color32(255, 117, 48, 255), DriverDamageTypes.StickyShot);
+            Hemorrhaging = CreateBulletType("Hemorrhaging", DriverWeaponTier.Uncommon, DamageColor.FindColor(DamageColorIndex.SuperBleed), DriverDamageTypes.Hemorrhage);
+
+            // Legendary
+            Dagger = CreateBulletType("Dagger", DriverWeaponTier.Legendary, Color.black, DriverDamageTypes.DaggerShot);
+            Lightning = CreateBulletType("Lightning", DriverWeaponTier.Legendary, Color.cyan, DriverDamageTypes.LightningStrikeRounds);
+            Fireball = CreateBulletType("Fireball", DriverWeaponTier.Legendary, new Color32(255, 127, 80, 255), DriverDamageTypes.FireballRounds);
+            Hook = CreateBulletType("Hook", DriverWeaponTier.Legendary, Color.grey, DriverDamageTypes.HookShot);
+            Ruinous = CreateBulletType("Ruinous", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageType.LunarRuin);
+            GiantSlayer = CreateBulletType("Giant Slayer", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.DamagePercentOfMaxHealth);
+            Disabling = CreateBulletType("Disabling", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.DisableAllSkills);
+            Warping = CreateBulletType("Warping", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.Warp);
+            Amputating = CreateBulletType("Amputating", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.Amputate);
+
+            // Void
+            Nullifying = CreateBulletType("Nullifying", DriverWeaponTier.Uncommon, DamageColor.FindColor(DamageColorIndex.Void), DamageType.Nullify);
+            VoidMissile = CreateBulletType("Void Missile", DriverWeaponTier.Legendary, new Color32(122, 69, 173, 255), DriverDamageTypes.VoidMissileShot);
+            VoidLightning = CreateBulletType("Void Lightning", DriverWeaponTier.Legendary, new Color32(194, 115, 255, 255), DriverDamageTypes.VoidLightning);
         }
 
-        public static void InitializeBullets()
-        {
-            Default = DriverBulletDef.CreateBulletDefFromInfo(new DriverBulletDefInfo()
-            {
-                nameToken = "Default",
-                tier = DriverWeaponTier.Unique,
-                moddedDriverBulletType = DamageTypes.Generic,
-                driverBulletType = DamageType.Generic,
-                trailColor = Color.white 
-            });
-            Default.index = 0;
-            bulletDefs.Add(Default);
-
-            foreach (DamageType i in allowedDamageTypes)
-            {
-                //Renaming
-                switch (i)
-                {
-                    // common
-                    case DamageType.SlowOnHit:
-                        CreateBulletType("Slowing", i, DriverWeaponTier.Common, Color.yellow);
-                        break;
-
-                    case DamageType.Stun1s:
-                        CreateBulletType("Stunning", i, DriverWeaponTier.Common, Color.gray);
-                        break;
-
-                    case DamageType.IgniteOnHit:
-                        CreateBulletType("Incendiary", i, DriverWeaponTier.Common, new Color(255f / 255f, 127f / 255f, 80 / 255f));
-                        break;
-
-                    case DamageType.ClayGoo:
-                        CreateBulletType("Goo", i, DriverWeaponTier.Common, Color.black);
-                        break;
-
-                    case DamageType.BleedOnHit:
-                        CreateBulletType("Serrated", i, DriverWeaponTier.Common, DamageColorIndex.Bleed);
-                        break;
-
-                    case DamageType.PoisonOnHit:
-                        CreateBulletType("Poison", i, DriverWeaponTier.Common, Color.green);
-                        break;
-
-                    case DamageType.WeakOnHit:
-                        CreateBulletType("Weakening", i, DriverWeaponTier.Common, new Color(220f / 255f, 237f / 255f, 159f / 255f));
-                        break;
-
-                    case DamageType.BonusToLowHealth:
-                        CreateBulletType("Executing", i, DriverWeaponTier.Common, DamageColorIndex.Fragile);
-                        break;
-
-                    case DamageType.BlightOnHit:
-                        CreateBulletType("Blighting", i, DriverWeaponTier.Common, new Color(222f / 255f, 85f / 255f, 230f / 255f));
-                        break;
-
-                    // uncommon
-                    case DamageType.ResetCooldownsOnKill:
-                        CreateBulletType("Resetting", i, DriverWeaponTier.Uncommon, Color.red);
-                        break;
-
-                    case DamageType.CrippleOnHit:
-                        CreateBulletType("Crippling", i, DriverWeaponTier.Uncommon, new Color(48f / 255f, 205f / 255f, 217f / 255f));
-                        break;
-
-                    case DamageType.FruitOnHit:
-                        CreateBulletType("Fruitful", i, DriverWeaponTier.Uncommon, new Color(255f / 255f, 191f / 255f, 225f / 255f));
-                        break;
-
-                    case DamageType.Freeze2s:
-                        CreateBulletType("Frostbite", i, DriverWeaponTier.Uncommon, Color.cyan);
-                        break;
-
-                    // void
-                    case DamageType.Nullify:
-                        CreateBulletType("Nullifying", i, DriverWeaponTier.Uncommon, DamageColorIndex.Void);
-                        break;
-                }
-            }
-
-            // common
-            CreateBulletType("Coin", DamageTypes.CoinShot, DriverWeaponTier.Common, new Color(255 / 255f, 212 / 255f, 94 / 255f));
-
-            // uncommon
-            CreateBulletType("Explosive", DamageTypes.ExplosiveRounds, DriverWeaponTier.Uncommon, Color.yellow);
-            CreateBulletType("Missle", DamageTypes.MissileShot, DriverWeaponTier.Uncommon, new Color(219 / 255f, 132 / 255f, 11 / 255f));
-            CreateBulletType("Elemental Flame", DamageTypes.FlameTornadoShot, DriverWeaponTier.Uncommon, new Color(255f / 255f, 127f / 255f, 80 / 255f));
-            CreateBulletType("Elemental Ice", DamageTypes.IceBlastShot, DriverWeaponTier.Uncommon, Color.cyan);
-            CreateBulletType("Sticky", DamageTypes.StickyShot, DriverWeaponTier.Uncommon, new Color(255 / 255f, 117 / 255f, 48 / 255f));
-            CreateBulletType("Mystery", DamageTypes.MysteryShot, DriverWeaponTier.Uncommon, new Color(30 / 255f, 51 / 255f, 45 / 255f));
-            CreateBulletType("Hemorrhaging", DamageTypes.Hemorrhage, DriverWeaponTier.Uncommon, DamageColorIndex.SuperBleed);
-
-            // legendary
-            CreateBulletType("Dagger", DamageTypes.DaggerShot, DriverWeaponTier.Legendary, Color.black);
-            CreateBulletType("Lightning", DamageTypes.LightningStrikeRounds, DriverWeaponTier.Legendary, Color.cyan);
-            CreateBulletType("Fireball", DamageTypes.FireballRounds, DriverWeaponTier.Legendary, new Color(255f / 255f, 127f / 255f, 80 / 255f));
-            CreateBulletType("Hook", DamageTypes.HookShot, DriverWeaponTier.Legendary, Color.grey);
-
-            //void
-            CreateBulletType("Void Missile", DamageTypes.VoidMissileShot, DriverWeaponTier.Uncommon, new Color(122 / 255f, 69 / 255f, 173 / 255f));
-            CreateBulletType("Void Lightning", DamageTypes.VoidLightning, DriverWeaponTier.Legendary, new Color(194 / 255f, 115 / 255f, 255 / 255f));
-
-        }
-
-        public static void CreateBulletType(string nameToken, DamageType damageType, DriverWeaponTier tier, DamageColorIndex color)
-        {
-            CreateBulletType(nameToken, damageType, DamageTypes.Generic, tier, DamageColor.FindColor(color));
-        }
-
-        public static void CreateBulletType(string nameToken, DamageType damageType, DriverWeaponTier tier, Color color)
-        {
-            CreateBulletType(nameToken, damageType, DamageTypes.Generic, tier, color);
-        }
-
-        public static void CreateBulletType(string nameToken, DamageAPI.ModdedDamageType moddedBulletType, DriverWeaponTier tier, DamageColorIndex color)
-        {
-            CreateBulletType(nameToken, DamageType.Generic, moddedBulletType, tier, DamageColor.FindColor(color));
-        }
-
-        public static void CreateBulletType(string nameToken, DamageAPI.ModdedDamageType moddedBulletType, DriverWeaponTier tier, Color color)
-        {
-            CreateBulletType(nameToken, DamageType.Generic, moddedBulletType, tier, color);
-        }
-
-        public static void CreateBulletType(string nameToken, DamageType damageType, DamageAPI.ModdedDamageType moddedBulletType, DriverWeaponTier tier, Color color)
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageType damageType) => CreateBulletType(nameToken, tier, color, damageType, null, null);
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageTypeExtended damageType) => CreateBulletType(nameToken, tier, color, null, damageType, null);
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageAPI.ModdedDamageType damageType) => CreateBulletType(nameToken, tier, color, null, null, damageType);
+        public static DriverBulletDef CreateBulletType(string nameToken, DriverWeaponTier tier, Color color, DamageType? damageType, DamageTypeExtended? damageTypeExtended, DamageAPI.ModdedDamageType? moddedDamageType)
         {
             var bulletDef = DriverBulletDef.CreateBulletDefFromInfo(new DriverBulletDefInfo
             {
                 nameToken = nameToken,
-                driverBulletType = damageType,
-                moddedDriverBulletType = moddedBulletType,
+                damageType = damageType,
+                damageTypeExtended = damageTypeExtended,
+                moddedDamageType = moddedDamageType,
                 tier = tier,
                 trailColor = color
             });
             bulletDef.index = (ushort)bulletDefs.Count;
             bulletDefs.Add(bulletDef);
+
+            return bulletDef;
+        }
+
+        public static DriverBulletDef CreateBulletType(DriverBulletDefInfo bulletDefInfo)
+        {
+            var bulletDef = DriverBulletDef.CreateBulletDefFromInfo(bulletDefInfo);
+            bulletDef.index = (ushort)bulletDefs.Count;
+            bulletDefs.Add(bulletDef);
+
+            return bulletDef;
         }
 
         public static DriverBulletDef GetBulletDefFromIndex(int index)
         {
-            return bulletDefs.ElementAtOrDefault(index) ?? Default;
+            var bullet = bulletDefs.ElementAtOrDefault(index);
+            if (!bullet)
+                Log.Error("Failed to get bullet at index " + index);
+
+            return bullet ?? Default;
         }
 
         public static DriverBulletDef GetWeightedRandomBullet(DriverWeaponTier maxTier)
@@ -189,10 +144,14 @@ namespace RobDriver.Modules
             int commonWeight = 5;
             int uncommonWeight = maxTier >= DriverWeaponTier.Uncommon ? 3 : 0;
             int legendaryWeight = maxTier >= DriverWeaponTier.Legendary ? 1 : 0;
-            int rnd = UnityEngine.Random.Range(0, commonWeight + uncommonWeight + legendaryWeight);
+            int rnd = Random.Range(0, commonWeight + uncommonWeight + legendaryWeight);
 
-            if (rnd < commonWeight) return GetRandomBulletFromTier(DriverWeaponTier.Common);
-            if (rnd < commonWeight + uncommonWeight) return GetRandomBulletFromTier(DriverWeaponTier.Uncommon);
+            if (rnd < commonWeight)
+                return GetRandomBulletFromTier(DriverWeaponTier.Common);
+
+            if (rnd < commonWeight + uncommonWeight)
+                return GetRandomBulletFromTier(DriverWeaponTier.Uncommon);
+
             return GetRandomBulletFromTier(DriverWeaponTier.Legendary);
         }
 
@@ -208,10 +167,9 @@ namespace RobDriver.Modules
                 }
             }
 
-            if (validBullets.Count == 0) return Default;
-
-            int rnd = UnityEngine.Random.Range(0, validBullets.Count());
-            return validBullets[rnd];
+            return validBullets.Count > 0
+                ? validBullets[Random.Range(0, validBullets.Count)]
+                : Default;
         }
     }
 }

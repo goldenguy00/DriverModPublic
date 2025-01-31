@@ -13,13 +13,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
         public static float procCoefficient = 1f;
         public float baseDuration = 0.8f;
 
-        protected virtual string shootSoundString
-        {
-            get
-            {
-                return "Play_bandit2_R_fire";
-            }
-        }
+        protected virtual string shootSoundString => "Play_bandit2_R_fire";
 
         private float duration;
         private bool kill;
@@ -33,7 +27,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
 
             base.PlayAnimation("Gesture, Override", "ShootLightsOut", "Action.playbackRate", this.duration);
 
-            if (this.iDrive && iDrive.defaultWeaponDef.nameToken != iDrive.weaponDef.nameToken) this.iDrive.weaponTimer = 0.1f;
+            if (this.iDrive && iDrive.defaultWeaponDef != iDrive.weaponDef) this.iDrive.weaponTimer = 0.1f;
 
             this.Fire();
 
@@ -93,7 +87,6 @@ namespace RobDriver.SkillStates.Driver.Revolver
                 queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                 hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
             };
-            bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
             bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
             {

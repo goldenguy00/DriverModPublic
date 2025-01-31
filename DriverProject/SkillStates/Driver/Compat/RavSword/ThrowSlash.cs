@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using RoR2;
 using RobDriver.SkillStates.BaseStates;
-using System.Reflection;
 using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat
@@ -30,7 +29,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             this.hitStopDuration = 0.08f;
             this.smoothHitstop = true;
 
-            if (DriverPlugin.ravagerInstalled) this.swingSoundString = "sfx_ravager_swing";
+            if (DriverPlugin.RavagerInstalled) this.swingSoundString = "sfx_ravager_swing";
             else this.swingSoundString = "sfx_driver_swing_knife";
             this.swingEffectPrefab = Modules.Assets.redSwingEffect;
             this.hitSoundString = "";
@@ -45,7 +44,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             {
                 this.hitStopDuration *= 2.5f;
                 this.attackEndTime = 0.7f;
-                if (DriverPlugin.ravagerInstalled) this.swingSoundString = "sfx_ravager_bigswing";
+                if (DriverPlugin.RavagerInstalled) this.swingSoundString = "sfx_ravager_bigswing";
                 else this.swingSoundString = "sfx_driver_swing_hammer";
                 this.impactSound = Modules.Assets.hammerImpactSoundDef.index;
                 this.swingEffectPrefab = Modules.Assets.bigRedSwingEffect;
@@ -53,8 +52,6 @@ namespace RobDriver.SkillStates.Driver.Compat
             }
 
             base.OnEnter();
-
-            base.attack.AddModdedDamageType(this.iDrive.ModdedDamageType);
         }
 
         protected override void OnHitEnemyAuthority(int amount)

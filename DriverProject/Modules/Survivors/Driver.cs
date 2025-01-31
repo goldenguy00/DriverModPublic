@@ -5,18 +5,9 @@ using RoR2.Skills;
 using System.Collections.Generic;
 using UnityEngine;
 using RoR2.CharacterAI;
-using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
-using RoR2.UI;
 using System.Linq;
 using RobDriver.Modules.Components;
-using R2API.Networking;
-using R2API.Networking.Interfaces;
-using MaterialHud;
-using TMPro;
-using RobDriver.Modules.Misc;
-using UnityEngine.UI;
-using System;
 
 namespace RobDriver.Modules.Survivors
 {
@@ -26,7 +17,6 @@ namespace RobDriver.Modules.Survivors
 
         internal static GameObject characterPrefab;
         internal static GameObject displayPrefab;
-
         internal static GameObject umbraMaster;
 
         internal static ConfigEntry<bool> forceUnlock;
@@ -38,6 +28,8 @@ namespace RobDriver.Modules.Survivors
 
         public const string bodyName = "RobDriverBody";
 
+        internal static BodyIndex bodyIndex = BodyIndex.None;
+
         public static int bodyRendererIndex; // use this to store the rendererinfo index containing our character's body
                                              // keep it last in the rendererinfos because teleporter particles for some reason require this. hopoo pls
 
@@ -45,16 +37,7 @@ namespace RobDriver.Modules.Survivors
         internal static ItemDisplayRuleSet itemDisplayRuleSet;
         internal static List<ItemDisplayRuleSet.KeyAssetRuleGroup> itemDisplayRules;
 
-        internal static UnlockableDef characterUnlockableDef;
-        internal static UnlockableDef masteryUnlockableDef;
-        internal static UnlockableDef grandMasteryUnlockableDef;
-        internal static UnlockableDef suitUnlockableDef;
-
-        internal static UnlockableDef supplyDropUnlockableDef;
-        internal static UnlockableDef pistolPassiveUnlockableDef;
-        internal static UnlockableDef godslingPassiveUnlockableDef;
-
-        // skill overrides
+        #region Skill Overrides
         internal static SkillDef lunarPistolPrimarySkillDef;
         internal static SkillDef lunarPistolSecondarySkillDef;
 
@@ -142,8 +125,7 @@ namespace RobDriver.Modules.Survivors
         internal static SkillDef scepterSyringeLegacySkillDef;
         internal static SkillDef scepterKnifeSkillDef;
         internal static SkillDef knifeSkillDef;
-
-        internal static int baseSkinCount;
+        #endregion
 
         internal static string bodyNameToken;
 
@@ -157,27 +139,24 @@ namespace RobDriver.Modules.Survivors
             {
                 forceUnlock = Modules.Config.ForceUnlockConfig("Driver");
 
-                masteryUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.MasteryAchievement>();
-                grandMasteryUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.GrandMasteryAchievement>();
-                suitUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.SuitAchievement>();
-
-                supplyDropUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.SupplyDropAchievement>();
-                pistolPassiveUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.DriverPistolPassiveAchievement>();
-                godslingPassiveUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.DriverGodslingPassiveAchievement>();
-
-                if (!forceUnlock.Value) characterUnlockableDef = R2API.UnlockableAPI.AddUnlockable<Achievements.DriverUnlockAchievement>();
-
                 characterPrefab = CreateBodyPrefab(true);
-
                 displayPrefab = Modules.Prefabs.CreateDisplayPrefab("DriverDisplay", characterPrefab);
-
-                if (forceUnlock.Value) Modules.Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER");
-                else Modules.Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER", characterUnlockableDef);
-
                 umbraMaster = CreateMaster(characterPrefab, "RobDriverMonsterMaster");
-            }
 
-            Hook();
+                Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER", forceUnlock.Value ? null : Unlockables.characterUnlockableDef);
+
+                DriverHooks.Init();
+
+                RoR2.ContentManagement.ContentManager.onContentPacksAssigned += LateSetup;
+            }
+        }
+
+        private void LateSetup(HG.ReadOnlyArray<RoR2.ContentManagement.ReadOnlyContentPack> obj)
+        {
+            SetItemDisplays();
+            LateSkinSetup();
+
+            bodyIndex = BodyCatalog.FindBodyIndex(bodyName);
         }
 
         private static GameObject CreateBodyPrefab(bool isPlayer)
@@ -254,7 +233,6 @@ namespace RobDriver.Modules.Survivors
             passiveController.initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.WallJump));
             passiveController.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.WallJump));
             passiveController.customName = "Passive";
-            passiveController.enabled = false;
 
             // this is for the lunar shard skill..
             EntityStateMachine stateMachine = newPrefab.AddComponent<EntityStateMachine>();
@@ -524,7 +502,7 @@ namespace RobDriver.Modules.Survivors
                 }, "Hammer");
 
             hitboxTransform = childLocator.FindChild("KnifeHitbox");
-            hitboxTransform.localScale *= 1.3f;
+            hitboxTransform.localScale *= 2f;
             Modules.Prefabs.SetupHitbox(model, new Transform[]
                 {
                     hitboxTransform
@@ -726,7 +704,7 @@ namespace RobDriver.Modules.Survivors
                     passive.pistolOnlyPassive);
 
                 Modules.Skills.AddUnlockablesToFamily(passive.passiveSkillSlot.skillFamily,
-                null, pistolPassiveUnlockableDef, godslingPassiveUnlockableDef, pistolPassiveUnlockableDef);
+                null, Unlockables.pistolPassiveUnlockableDef, Unlockables.godslingPassiveUnlockableDef, Unlockables.pistolPassiveUnlockableDef);
             }
             else
             {
@@ -736,7 +714,7 @@ namespace RobDriver.Modules.Survivors
                     passive.godslingPassive);
 
                 Modules.Skills.AddUnlockablesToFamily(passive.passiveSkillSlot.skillFamily,
-                null, pistolPassiveUnlockableDef, godslingPassiveUnlockableDef);
+                null, Unlockables.pistolPassiveUnlockableDef, Unlockables.godslingPassiveUnlockableDef);
             }
             #endregion
 
@@ -1979,17 +1957,18 @@ namespace RobDriver.Modules.Survivors
 
             if (Modules.Config.cursed.Value)
             {
-                Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, supplyDropLegacySkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, syringeLegacySkillDef/*, coinSkillDef*/);
-                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, supplyDropUnlockableDef, supplyDropUnlockableDef);
+                Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, supplyDropLegacySkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, syringeLegacySkillDef, coinSkillDef);
+                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, Unlockables.supplyDropUnlockableDef, Unlockables.supplyDropUnlockableDef);
             }
             else
             {
-                Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef/*, coinSkillDef*/);
-                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, supplyDropUnlockableDef);
+                Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, coinSkillDef);
+                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, Unlockables.supplyDropUnlockableDef);
             }
             #endregion
 
-            if (DriverPlugin.scepterInstalled) InitializeScepterSkills();
+            if (DriverPlugin.ScepterInstalled)
+                InitializeScepterSkills();
 
             Assets.InitWeaponDefs();
 
@@ -2023,18 +2002,14 @@ namespace RobDriver.Modules.Survivors
         {
             GameObject model = prefab.GetComponent<ModelLocator>().modelTransform.gameObject;
             CharacterModel characterModel = model.GetComponent<CharacterModel>();
+            
+            SkinnedMeshRenderer mainRenderer = characterModel.mainSkinnedMeshRenderer;
+            CharacterModel.RendererInfo[] defaultRenderers = characterModel.baseRendererInfos;
 
             ModelSkinController skinController = model.AddComponent<ModelSkinController>();
             ChildLocator childLocator = model.GetComponent<ChildLocator>();
 
-            SkinnedMeshRenderer mainRenderer = characterModel.mainSkinnedMeshRenderer;
-
-            CharacterModel.RendererInfo[] defaultRenderers = characterModel.baseRendererInfos;
-
-            Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(true);
-
-            List<SkinDef> skins = new List<SkinDef>();
-
+            List<SkinDef> skins = [];
             GameObject sluggerCloth = childLocator.FindChild("SluggerCloth").gameObject;
             GameObject tie = childLocator.FindChild("Tie").gameObject;
 
@@ -2080,7 +2055,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                masteryUnlockableDef);
+                Unlockables.masteryUnlockableDef);
 
             masterySkin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2117,7 +2092,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                grandMasteryUnlockableDef);
+                Unlockables.grandMasteryUnlockableDef);
 
             grandMasterySkin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2222,7 +2197,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                suitUnlockableDef);
+                Unlockables.suitUnlockableDef);
 
             suitSkin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2258,7 +2233,7 @@ namespace RobDriver.Modules.Survivors
                 }),
                 mainRenderer,
                 model,
-                suitUnlockableDef);
+                Unlockables.suitUnlockableDef);
 
             suit2Skin.meshReplacements = new SkinDef.MeshReplacement[]
             {
@@ -2366,7 +2341,6 @@ namespace RobDriver.Modules.Survivors
             if (Modules.Config.cursed.Value) skins.Add(minecraftSkin);
 
             skinController.skins = skins.ToArray();
-            baseSkinCount = skinController.skins.Length;
         }
 
         internal static void LateSkinSetup()
@@ -2401,6 +2375,7 @@ namespace RobDriver.Modules.Survivors
             }
         }
 
+        #region Item Displays
         private static void InitializeItemDisplays(GameObject prefab)
         {
             CharacterModel characterModel = prefab.GetComponentInChildren<CharacterModel>();
@@ -2671,7 +2646,7 @@ namespace RobDriver.Modules.Survivors
                 }
             });
 
-            if (DriverPlugin.litInstalled) SetLITDisplays();
+            if (DriverPlugin.LitInstalled) SetLITDisplays();
 
             itemDisplayRuleSet.keyAssetRuleGroups = itemDisplayRules.ToArray();
             //itemDisplayRuleSet.GenerateRuntimeValues();
@@ -2736,6 +2711,7 @@ namespace RobDriver.Modules.Survivors
             }
             itemDisplayRules = cock.ToList();
         }
+        #endregion
 
         private static CharacterModel.RendererInfo[] SkinRendererInfos(CharacterModel.RendererInfo[] defaultRenderers, Material[] materials)
         {
@@ -2745,568 +2721,6 @@ namespace RobDriver.Modules.Survivors
             newRendererInfos[0].defaultMaterial = materials[0];
 
             return newRendererInfos;
-        }
-
-        private static void Hook()
-        {
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
-
-            RoR2.UI.HUD.onHudTargetChangedGlobal += HUDSetup;
-
-            On.RoR2.UI.HGButton.Start += HGButton_Start;
-
-            On.RoR2.SkillLocator.ApplyAmmoPack += SkillLocator_ApplyAmmoPack;
-            On.RoR2.SkillLocator.ResetSkills += SkillLocator_ResetSkills;
-
-            // heresy anims
-            On.EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle.OnEnter += PlayVisionsAnimation;
-            On.EntityStates.GlobalSkills.LunarNeedle.ChargeLunarSecondary.PlayChargeAnimation += PlayChargeLunarAnimation;
-            On.EntityStates.GlobalSkills.LunarNeedle.ThrowLunarSecondary.PlayThrowAnimation += PlayThrowLunarAnimation;
-            On.EntityStates.GlobalSkills.LunarDetonator.Detonate.OnEnter += PlayRuinAnimation;
-
-            // dazed debuff
-            On.RoR2.HealthComponent.TakeDamage += HealthComponent_TakeDamage;
-            On.EntityStates.AI.BaseAIState.AimAt += BaseAIState_AimAt;
-            On.EntityStates.AI.BaseAIState.AimInDirection += BaseAIState_AimInDirection;
-
-            On.RoR2.UI.LoadoutPanelController.Rebuild += LoadoutPanelController_Rebuild;// the most useless hook ever.
-            On.RoR2.UI.GameEndReportPanelController.AssignUnlockToStrip += GameEndReportPanelController_AssignUnlockToStrip;
-        }
-
-        private static void GameEndReportPanelController_AssignUnlockToStrip(On.RoR2.UI.GameEndReportPanelController.orig_AssignUnlockToStrip orig, 
-            GameEndReportPanelController self, UnlockableDef unlockableDef, GameObject destUnlockableStrip)
-        {
-            orig(self, unlockableDef, destUnlockableStrip);
-
-            if (DriverWeaponCatalog.weaponDefs.Any(def => def.nameToken == unlockableDef.nameToken))
-            {
-                if (unlockableDef.achievementIcon?.texture is Texture icon)
-                {
-                    destUnlockableStrip.transform.Find("IconImage").GetComponent<RawImage>().texture = icon;
-                }
-                destUnlockableStrip.GetComponent<TooltipProvider>().overrideTitleText = Language.GetString("ROB_DRIVER_BODY_WEAPON_UNLOCKABLE_NAME");
-                destUnlockableStrip.GetComponent<TooltipProvider>().overrideBodyText = Language.GetString("ROB_DRIVER_BODY_WEAPON_UNLOCKABLE_DESC"); ;
-            }
-        }
-
-        private static void LoadoutPanelController_Rebuild(On.RoR2.UI.LoadoutPanelController.orig_Rebuild orig, LoadoutPanelController self)
-        {
-            orig(self);
-
-            // this is beyond stupid lmfao who let this monkey code
-            if (self.currentDisplayData.bodyIndex == BodyCatalog.FindBodyIndex("RobDriverBody"))
-            {
-                // i made it worse, youre welcome
-                string newToken = "Passive";
-                foreach (var label in self.gameObject.GetComponentsInChildren<LanguageTextMeshController>().Where(label => label && label.token == "LOADOUT_SKILL_MISC"))
-                {
-                    if (newToken != null)
-                    {
-                        label.token = newToken;
-                        newToken = newToken == "Passive" ? "Arsenal" : null;
-                    }
-                }
-            }
-        }
-
-        private static void HGButton_Start(On.RoR2.UI.HGButton.orig_Start orig, HGButton self)
-        {
-            orig(self);
-
-            if (!Config.enableGodslingInMultiplayer.Value)
-            {
-                // this is literally the worst thing ever
-                if (self && !string.IsNullOrEmpty(self.hoverToken) &&
-                    self.hoverToken.Contains("Godsling") && !RoR2Application.isInSinglePlayer)
-                {
-                    self.gameObject.SetActive(false);
-                }
-            }
-        }
-
-        private static void BaseAIState_AimInDirection(On.EntityStates.AI.BaseAIState.orig_AimInDirection orig, EntityStates.AI.BaseAIState self, ref BaseAI.BodyInputs dest, Vector3 aimDirection)
-        {
-            if (self.body && self.body.HasBuff(Modules.Buffs.dazedDebuff))
-            {
-                orig(self, ref dest, UnityEngine.Random.onUnitSphere);
-                dest.desiredAimDirection = UnityEngine.Random.onUnitSphere;
-            }
-            else orig(self, ref dest, aimDirection);
-        }
-
-        private static void BaseAIState_AimAt(On.EntityStates.AI.BaseAIState.orig_AimAt orig, EntityStates.AI.BaseAIState self, ref BaseAI.BodyInputs dest, BaseAI.Target aimTarget)
-        {
-            if (self.body && self.body.HasBuff(Modules.Buffs.dazedDebuff))
-            {
-                orig(self, ref dest, aimTarget);
-                dest.desiredAimDirection = UnityEngine.Random.onUnitSphere;
-            }
-            else orig(self, ref dest, aimTarget);
-        }
-
-        private static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo damageInfo)
-        {
-            if (damageInfo.inflictor && damageInfo.inflictor.name.Contains("RobDriverStunGrenade") && self && self.body)
-            {
-                self.body.AddTimedBuff(Modules.Buffs.dazedDebuff, 10f);
-            }
-
-            if (damageInfo.damageType == DamageType.ApplyMercExpose && damageInfo.attacker && damageInfo.attacker.name.Contains("RobDriverBody"))
-            {
-                damageInfo.damageType = DamageType.Stun1s;
-
-                if (self)
-                {
-                    if (self.body) self.body.AddTimedBuff(Modules.Buffs.woundDebuff, 4f);
-
-                    if (self.gameObject.TryGetComponent<NetworkIdentity>(out var identity))
-                    {
-                        new SyncOverlay(identity.netId, self.gameObject).Send(NetworkDestination.Clients);
-                    }
-                }
-            }
-
-            if (damageInfo.dotIndex == Buffs.gougeIndex && self && self.alive)
-            {
-                if (damageInfo.attacker && damageInfo.attacker.TryGetComponent<CharacterBody>(out var attackerBody))
-                {
-                    damageInfo.crit = Util.CheckRoll(attackerBody.crit, attackerBody.master);
-                }
-            }
-
-            orig(self, damageInfo);
-        }
-
-        private static void SkillLocator_ApplyAmmoPack(On.RoR2.SkillLocator.orig_ApplyAmmoPack orig, SkillLocator self)
-        {
-            orig(self);
-
-            // this is terribly hardcoded and not future proof
-            // but more performant than doing something like a getcomponent every time a bandolier drop is picked up on anyone
-            // this will break if an alternate primary is added but that'll never happen with the weapon system existing
-            if (self && self.primary.baseSkill.skillNameToken == DriverPlugin.developerPrefix + "_DRIVER_BODY_PRIMARY_PISTOL_NAME" && 
-                self.TryGetComponent<DriverController>(out var iDrive))
-            {
-                iDrive.ServerResetTimer();
-            }
-        }
-
-        private static void SkillLocator_ResetSkills(On.RoR2.SkillLocator.orig_ResetSkills orig, SkillLocator self)
-        {
-            orig(self);
-
-            if (self && self.primary.baseSkill.skillNameToken == DriverPlugin.developerPrefix + "_DRIVER_BODY_PRIMARY_PISTOL_NAME" &&
-                self.TryGetComponent<DriverController>(out var iDrive))
-            {
-                iDrive.ServerResetTimer();
-            }
-        }
-
-        private static void GlobalEventManager_onCharacterDeathGlobal(DamageReport damageReport)
-        {
-            if (damageReport.attackerBody && damageReport.attackerMaster && damageReport.victim)
-            {
-                bool isDriverOnPlayerTeam = false;
-                foreach (CharacterBody i in CharacterBody.readOnlyInstancesList)
-                {
-                    if (i && i.teamComponent && i.teamComponent.teamIndex == TeamIndex.Player && i.baseNameToken == Driver.bodyNameToken)
-                    {
-                        isDriverOnPlayerTeam = true;
-                        break;
-                    }
-                }
-
-                // weapon drops
-                if (isDriverOnPlayerTeam)
-                {
-                    // headshot first
-                    if (damageReport.attackerBody.baseNameToken == Driver.bodyNameToken && 
-                       (damageReport.victim.TryGetComponent<DriverHeadshotTracker>(out _) ||
-                        damageReport.damageInfo.HasModdedDamageType(DamageTypes.bloodExplosionIdentifier)))
-                    {
-                        if (damageReport.victim.gameObject.TryGetComponent<NetworkIdentity>(out var identity))
-                        {
-                            new SyncDecapitation(identity.netId, damageReport.victim.gameObject).Send(NetworkDestination.Clients);
-                        }
-                            
-                        // rav orb yep
-                        if (damageReport.attackerBody.skillLocator.primary.skillDef.skillNameToken == DriverWeaponCatalog.RavSword.primarySkillDef.skillNameToken)
-                        {
-                            RoR2.Orbs.OrbManager.instance.AddOrb(new ConsumeOrb
-                            {
-                                origin = damageReport.victim.transform.position,
-                                target = Util.FindBodyMainHurtBox(damageReport.attackerBody)
-                            });
-                        }
-                    }
-
-                    // 7
-                    float chance = Modules.Config.baseDropRate.Value;
-                    if (chance <= 0) return; // drop nothing
-
-                    bool fuckMyAss = chance >= 100f;
-
-                    // higher chance if it's a big guy
-                    if (damageReport.victimBody.hullClassification == HullClassification.Golem) chance = Mathf.Clamp(1.1f * chance, 0f, 100f);
-
-                    // minimum 25% chance if the slain enemy is an elite
-                    if (damageReport.victimBody.isElite) chance = Mathf.Clamp(chance, 25f, 100f);
-
-                    // halved on swarms, fuck You
-                    if (Run.instance && RoR2.RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.Swarms)) chance *= 0.5f;
-
-                    chance *= Driver.instance.pityMultiplier;
-
-                    bool droppedWeapon = Util.CheckRoll(chance, damageReport.attackerMaster);
-
-                    // guaranteed if the slain enemy is a boss
-                    bool isBoss = damageReport.victimBody.isChampion || damageReport.victimIsChampion;
-
-                    // simulacrum boss wave fix
-                    if ((damageReport.victimBody.isBoss || damageReport.victimIsBoss) && !InfiniteTowerRun.instance) isBoss = true;
-
-                    // terminal enemies from starstorm's relic of termination
-                    if (DriverPlugin.CheckIfBodyIsTerminal(damageReport.victimBody)) isBoss = true;
-
-                    if (isBoss || fuckMyAss) droppedWeapon = true;
-
-                    // all the above checks were originally checking the ATTACKER body
-                    // not the fucking victim
-                    // how
-
-                    // stop dropping weapons when void monsters kill each other plz this is an annoying bug
-                    if (damageReport.attackerTeamIndex != TeamIndex.Player) droppedWeapon = false;
-
-                    if (DriverWeaponCatalog.weaponDrops.TryGetValue(damageReport.victimBody.gameObject.name,
-                        out var uniqueDrop) && uniqueDrop.dropChance >= 100f)
-                    {
-                        droppedWeapon = true;
-                    }
-
-                    if (droppedWeapon)
-                    {
-                        Driver.instance.pityMultiplier = 0.8f;
-
-                        Vector3 position = damageReport.victim.transform ? damageReport.victim.transform.position : Vector3.zero;
-
-                        //if (Modules.Config.oldPickupModel.Value) pickupPrefab = Modules.Assets.weaponPickupOld;
-
-                        DriverWeaponTier weaponTier = damageReport.victimBody.isChampion ? DriverWeaponTier.Legendary : DriverWeaponTier.Uncommon;
-
-                        // use unique drop, otherwise roll random
-                        DriverWeaponDef weaponDef;
-                        if (uniqueDrop && Util.CheckRoll(uniqueDrop.dropChance)) weaponDef = uniqueDrop;
-                        else weaponDef = DriverWeaponCatalog.GetRandomWeaponFromTier(weaponTier);
-
-                        GameObject weaponPickup = UnityEngine.Object.Instantiate<GameObject>(weaponDef.pickupPrefab, position, UnityEngine.Random.rotation);
-                        var weaponComponent = weaponPickup.GetComponent<SyncPickup>();
-
-                        // add passive specific stuff
-                        // give the poor godsling players the ultra rare weapons, nobody likes getting bullets from michael
-                        if (!uniqueDrop || uniqueDrop.dropChance < 100)
-                            weaponComponent.isNewAmmoType = Util.CheckRoll(Config.godslingDropRateSplit.Value);
-
-                        // non-legendary gets rerolled
-                        weaponComponent.bulletDef = isBoss ? DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary) : 
-                            DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Uncommon);
-
-                        if (weaponPickup.TryGetComponent<TeamFilter>(out var teamFilter) && teamFilter)
-                            teamFilter.teamIndex = damageReport.attackerTeamIndex;
-
-                        NetworkServer.Spawn(weaponPickup);
-                    }
-                    else
-                    {
-                        // add pity
-                        Driver.instance.pityMultiplier += 0.025f;
-                    }
-                }
-
-                // combo extension would be huge but i need to network it and that's annoying
-                /*if (damageReport.attackerBody.baseNameToken == Driver.bodyNameToken)
-                {
-                    // combo extension
-                    Components.DriverController iDrive = damageReport.attackerBody.gameObject.GetComponent<Components.DriverController>();
-                    if (iDrive) iDrive.ExtendTimer();
-                }*/
-            }
-        }
-
-        internal static void HUDSetup(RoR2.UI.HUD hud)
-        {
-            if (hud.targetBodyObject && hud.targetMaster && hud.targetMaster.bodyPrefab == Driver.characterPrefab)
-            {
-                if (!hud.targetMaster.hasAuthority) return;
-
-                if (DriverPlugin.riskUIInstalled)
-                {
-                    RiskUIHudSetup(hud);
-                    return;
-                }
-
-                Transform skillsContainer = hud.equipmentIcons[0].gameObject.transform.parent;
-
-                // remove existing
-                if (skillsContainer.Find("WeaponSlot")) GameObject.Destroy(skillsContainer.Find("WeaponSlot").gameObject);
-
-                var oldUI = hud.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas").Find("CrosshairExtras").Find("AmmoTracker");
-                if (oldUI) GameObject.Destroy(oldUI.gameObject);
-
-                // no one will notice these missing
-                skillsContainer.Find("SprintCluster").gameObject.SetActive(false);
-                skillsContainer.Find("InventoryCluster").gameObject.SetActive(false);
-
-                GameObject weaponSlot = GameObject.Instantiate(skillsContainer.Find("EquipmentSlot").gameObject, skillsContainer);
-                weaponSlot.name = "WeaponSlot";
-
-                EquipmentIcon equipmentIconComponent = weaponSlot.GetComponent<EquipmentIcon>();
-                Components.WeaponIcon weaponIconComponent = weaponSlot.AddComponent<Components.WeaponIcon>();
-
-                weaponIconComponent.iconImage = equipmentIconComponent.iconImage;
-                weaponIconComponent.displayRoot = equipmentIconComponent.displayRoot;
-                weaponIconComponent.flashPanelObject = equipmentIconComponent.stockFlashPanelObject;
-                weaponIconComponent.reminderFlashPanelObject = equipmentIconComponent.reminderFlashPanelObject;
-                weaponIconComponent.isReadyPanelObject = equipmentIconComponent.isReadyPanelObject;
-                weaponIconComponent.tooltipProvider = equipmentIconComponent.tooltipProvider;
-                weaponIconComponent.targetHUD = hud;
-                weaponSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(-480f, -17.1797f);
-
-                HGTextMeshProUGUI keyText = weaponSlot.transform.Find("DisplayRoot").Find("EquipmentTextBackgroundPanel").Find("EquipmentKeyText").gameObject.GetComponent<HGTextMeshProUGUI>();
-                keyText.gameObject.GetComponent<InputBindingDisplayController>().enabled = false;
-                keyText.text = "Weapon";
-
-                weaponSlot.transform.Find("DisplayRoot").Find("EquipmentStack").gameObject.SetActive(false);
-                weaponSlot.transform.Find("DisplayRoot").Find("CooldownText").gameObject.SetActive(false);
-
-                // duration bar
-                GameObject chargeBar = GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("WeaponChargeBar"));
-                chargeBar.transform.SetParent(weaponSlot.transform.Find("DisplayRoot"));
-
-                RectTransform rect = chargeBar.GetComponent<RectTransform>();
-
-                rect.localScale = new Vector3(0.75f, 0.1f, 1f);
-                rect.anchorMin = new Vector2(0f, 0f);
-                rect.anchorMax = new Vector2(0f, 0f);
-                rect.pivot = new Vector2(0.5f, 0f);
-                rect.anchoredPosition = new Vector2(-10f, 13f);
-                rect.localPosition = new Vector3(-33f, -10f, 0f);
-                rect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
-
-                weaponIconComponent.durationDisplay = chargeBar;
-                weaponIconComponent.durationBar = chargeBar.transform.GetChild(1).gameObject.GetComponent<UnityEngine.UI.Image>();
-                weaponIconComponent.durationBarRed = chargeBar.transform.GetChild(0).gameObject.GetComponent<UnityEngine.UI.Image>();
-
-                MonoBehaviour.Destroy(equipmentIconComponent);
-
-                // weapon pickup notification
-
-                GameObject notificationPanel = GameObject.Instantiate(hud.transform.Find("MainContainer").Find("NotificationArea").gameObject);
-                notificationPanel.transform.SetParent(hud.transform.Find("MainContainer"), true);
-                notificationPanel.GetComponent<RectTransform>().localPosition = new Vector3(0f, -265f, -150f);
-                notificationPanel.transform.localScale = Vector3.one;
-
-                NotificationUIController _old = notificationPanel.GetComponent<NotificationUIController>();
-                WeaponNotificationUIController _new = notificationPanel.AddComponent<WeaponNotificationUIController>();
-
-                _new.hud = _old.hud;
-                _new.genericNotificationPrefab = Modules.Assets.weaponNotificationPrefab;
-                _new.notificationQueue = hud.targetMaster.gameObject.AddComponent<WeaponNotificationQueue>();
-
-                _old.enabled = false;
-
-                // ammo display for alt passive
-                Transform healthbarContainer = hud.transform.Find("MainContainer").Find("MainUIArea").Find("SpringCanvas").Find("BottomLeftCluster").Find("BarRoots").Find("LevelDisplayCluster");
-
-                GameObject ammoTracker = GameObject.Instantiate(healthbarContainer.gameObject, hud.transform.Find("MainContainer").Find("MainUIArea").Find("SpringCanvas").Find("BottomLeftCluster"));
-                ammoTracker.name = "AmmoTracker";
-                ammoTracker.transform.SetParent(hud.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas").Find("CrosshairExtras"));
-
-                GameObject.DestroyImmediate(ammoTracker.transform.GetChild(0).gameObject);
-                MonoBehaviour.Destroy(ammoTracker.GetComponentInChildren<LevelText>());
-                MonoBehaviour.Destroy(ammoTracker.GetComponentInChildren<ExpBar>());
-
-                ammoTracker.transform.Find("LevelDisplayRoot").Find("ValueText").gameObject.SetActive(false);
-                GameObject.DestroyImmediate(ammoTracker.transform.Find("ExpBarRoot").gameObject);
-
-                ammoTracker.transform.Find("LevelDisplayRoot").GetComponent<RectTransform>().anchoredPosition = new Vector2(-12f, 0f);
-
-                rect = ammoTracker.GetComponent<RectTransform>();
-                rect.localScale = new Vector3(0.8f, 0.8f, 1f);
-                rect.anchorMin = new Vector2(0f, 0f);
-                rect.anchorMax = new Vector2(0f, 0f);
-                rect.offsetMin = new Vector2(120f, -40f);
-                rect.offsetMax = new Vector2(120f, -40f);
-                rect.pivot = new Vector2(0.5f, 0f);
-                //positional data doesnt get sent to clients? Manually making offsets works..
-                rect.anchoredPosition = new Vector2(50f, 0f);
-                rect.localPosition = new Vector3(120f, -40f, 0f);
-
-                GameObject chargeBarAmmo = GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("WeaponChargeBar"));
-                chargeBarAmmo.name = "AmmoBar";
-                chargeBarAmmo.transform.SetParent(hud.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas").Find("CrosshairExtras"));
-
-                rect = chargeBarAmmo.GetComponent<RectTransform>();
-
-                rect.localScale = new Vector3(0.75f, 0.1f, 1f);
-                rect.anchorMin = new Vector2(100f, 2f);
-                rect.anchorMax = new Vector2(100f, 2f);
-                rect.pivot = new Vector2(0.5f, 0f);
-                rect.anchoredPosition = new Vector2(100f, 2f);
-                rect.localPosition = new Vector3(100f, 2f, 0f);
-                rect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
-
-                AmmoDisplay ammoTrackerComponent = ammoTracker.AddComponent<AmmoDisplay>();
-
-                ammoTrackerComponent.targetHUD = hud;
-                ammoTrackerComponent.targetText = ammoTracker.transform.Find("LevelDisplayRoot").Find("PrefixText").gameObject.GetComponent<LanguageTextMeshController>();
-                ammoTrackerComponent.durationDisplay = chargeBarAmmo;
-                ammoTrackerComponent.durationBar = chargeBarAmmo.transform.GetChild(1).gameObject.GetComponent<UnityEngine.UI.Image>();
-                ammoTrackerComponent.durationBarRed = chargeBarAmmo.transform.GetChild(0).gameObject.GetComponent<UnityEngine.UI.Image>();
-
-            }
-        }
-
-        internal static void RiskUIHudSetup(RoR2.UI.HUD hud)
-        {
-            // Get rid of old hud, im tired of fighting this
-            GameObject weaponSlot = hud.equipmentIcons.First().transform.parent.Find("WeaponSlot")?.gameObject;
-            if (weaponSlot) GameObject.Destroy(weaponSlot);
-
-            weaponSlot = GameObject.Instantiate(hud.equipmentIcons.First().gameObject);
-            weaponSlot.name = "WeaponSlot";
-            MonoBehaviour.Destroy(weaponSlot.GetComponent<BepinConfigParentManager>());
-
-            EquipmentIcon equipmentIconComponent = weaponSlot.GetComponent<EquipmentIcon>();
-            Components.WeaponIcon weaponIconComponent = weaponSlot.AddComponent<Components.WeaponIcon>();
-
-            // whoever deleted the stock flash animations is a bad guy
-            weaponIconComponent.iconImage = equipmentIconComponent.iconImage;
-            weaponIconComponent.displayRoot = equipmentIconComponent.displayRoot;
-            weaponIconComponent.flashPanelObject = equipmentIconComponent.stockFlashPanelObject;
-            weaponIconComponent.reminderFlashPanelObject = equipmentIconComponent.reminderFlashPanelObject;
-            weaponIconComponent.isReadyPanelObject = equipmentIconComponent.isReadyPanelObject;
-            weaponIconComponent.tooltipProvider = equipmentIconComponent.tooltipProvider;
-            weaponIconComponent.targetHUD = hud;
-
-            var weaponIcon = weaponSlot.AddComponent<Components.MaterialWeaponIcon>();
-            
-            weaponIcon.targetHUD = hud;
-            weaponIcon.icon = weaponIconComponent;
-            weaponIcon.mask = weaponSlot.transform.Find("DisplayRoot").Find("Mask").gameObject.GetComponent<UnityEngine.UI.Image>();
-            weaponIcon.cooldownRing = weaponSlot.transform.Find("DisplayRoot").Find("Mask").Find("CooldownRing").gameObject.GetComponent<UnityEngine.UI.Image>();
-            weaponIcon.cooldownRing.fillCenter = false;
-
-            RectTransform iconRect = weaponSlot.GetComponent<RectTransform>();
-            iconRect.localScale = new Vector3(2f, 2f, 2f);
-            iconRect.anchoredPosition = new Vector2(-128f, 60f);
-
-            if (DriverPlugin.extendedLoadoutInstalled)
-            {
-                iconRect.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-                iconRect.anchoredPosition = new Vector2(-110f, 60f);
-            }
-            // text for ammo type
-            weaponIcon.ammoBackground = weaponSlot.transform.Find("DisplayRoot").Find("BottomContainer").Find("StockTextContainer").gameObject;
-            weaponIcon.ammoBackground.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 2.5f);
-            weaponIcon.ammoBackground.GetComponent<RectTransform>().localScale = new Vector3(0.8f, -0.8f, 0.8f);
-            weaponIcon.ammoBackground.transform.SetAsFirstSibling();
-
-            weaponIcon.ammoText = weaponIcon.ammoBackground.transform.Find("StockText").gameObject.GetComponent<TextMeshProUGUI>();
-
-            GameObject.Destroy(weaponSlot.transform.Find("DisplayRoot").Find("BottomContainer").Find("SkillBackgroundPanel").gameObject);
-            GameObject.Destroy(weaponSlot.transform.Find("DisplayRoot").Find("CooldownText").gameObject);
-            weaponSlot.transform.Find("DisplayRoot").Find("BgImage").Find("IconPanel").Find("OnCooldown").gameObject.SetActive(false);
-            MonoBehaviour.Destroy(weaponIcon.cooldownRing.GetComponent<RedToColorRemapperIndividual>());
-            MonoBehaviour.Destroy(weaponSlot.transform.Find("DisplayRoot").Find("BottomContainer").gameObject.GetComponent<HideFromBepinConfig>());
-            MonoBehaviour.Destroy(weaponSlot.GetComponent<MaterialHud.MaterialEquipmentIcon>());
-            MonoBehaviour.Destroy(equipmentIconComponent);
-
-            // duration bar
-            /**
-            GameObject chargeBar = GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("WeaponChargeBar"));
-            chargeBar.transform.SetParent(weaponSlot.transform.Find("DisplayRoot"));
-
-            RectTransform rect = chargeBar.GetComponent<RectTransform>();
-
-            rect.localScale = new Vector3(0.75f, 0.1f, 1f);
-            rect.anchorMin = new Vector2(0f, 0f);
-            rect.anchorMax = new Vector2(0f, 0f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.localPosition = new Vector3(0f, 0f, 0f);
-            rect.anchoredPosition = new Vector2(-8f, 36f);
-            rect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
-
-            weaponIconComponent.durationDisplay = chargeBar;
-            weaponIconComponent.durationBar = chargeBar.transform.GetChild(1).gameObject.GetComponent<UnityEngine.UI.Image>();
-            weaponIconComponent.durationBarRed = chargeBar.transform.GetChild(0).gameObject.GetComponent<UnityEngine.UI.Image>();
-            **/
-            // weapon pickup notification
-
-            GameObject notificationPanel = GameObject.Instantiate(hud.transform.Find("MainContainer").Find("NotificationArea").gameObject);
-            notificationPanel.transform.SetParent(hud.transform.Find("MainContainer"), true);
-            notificationPanel.GetComponent<RectTransform>().localPosition = new Vector3(0f, -210f, -50f);
-            notificationPanel.transform.localScale = Vector3.one;
-
-            NotificationUIController _old = notificationPanel.GetComponent<NotificationUIController>();
-            WeaponNotificationUIController _new = notificationPanel.AddComponent<WeaponNotificationUIController>();
-
-            _new.hud = _old.hud;
-            _new.genericNotificationPrefab = Modules.Assets.weaponNotificationPrefab;
-            _new.notificationQueue = hud.targetMaster.gameObject.AddComponent<WeaponNotificationQueue>();
-
-            _old.enabled = false;
-        }
-
-        private static void PlayVisionsAnimation(On.EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle.orig_OnEnter orig, EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle self)
-        {
-            orig(self);
-
-            if (self.characterBody.baseNameToken == bodyNameToken)
-            {
-                self.PlayAnimation("Gesture, Override", "Shoot", "Shoot.playbackRate", self.duration * 12f);
-                EffectManager.SimpleMuzzleFlash(EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle.muzzleFlashEffectPrefab, self.gameObject, "PistolMuzzle", false);
-            }
-        }
-
-        private static void PlayChargeLunarAnimation(On.EntityStates.GlobalSkills.LunarNeedle.ChargeLunarSecondary.orig_PlayChargeAnimation orig, EntityStates.GlobalSkills.LunarNeedle.ChargeLunarSecondary self)
-        {
-            orig(self);
-
-            if (self.characterBody.baseNameToken == bodyNameToken)
-            {
-                self.PlayAnimation("Gesture, Override", "ChargeHooks", "Hooks.playbackRate", self.duration * 0.5f);
-            }
-        }
-
-        private static void PlayThrowLunarAnimation(On.EntityStates.GlobalSkills.LunarNeedle.ThrowLunarSecondary.orig_PlayThrowAnimation orig, EntityStates.GlobalSkills.LunarNeedle.ThrowLunarSecondary self)
-        {
-            orig(self);
-
-            if (self.characterBody.baseNameToken == bodyNameToken)
-            {
-                self.PlayAnimation("Gesture, Override", "ThrowHooks", "Hooks.playbackRate", self.duration);
-            }
-        }
-
-        private static void PlayRuinAnimation(On.EntityStates.GlobalSkills.LunarDetonator.Detonate.orig_OnEnter orig, EntityStates.GlobalSkills.LunarDetonator.Detonate self)
-        {
-            orig(self);
-
-            if (self.characterBody.baseNameToken == bodyNameToken)
-            {
-                //self.PlayAnimation("Gesture, Override", "CastRuin", "Ruin.playbackRate", self.duration * 0.5f);
-                //Util.PlaySound("PaladinFingerSnap", self.gameObject);
-                self.PlayAnimation("Gesture, Override", "PressVoidButton", "Action.playbackRate", 0.5f * self.duration);
-                self.StartAimMode(self.duration + 0.5f);
-
-                EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidSurvivor/VoidSurvivorMegaBlasterExplosion.prefab").WaitForCompletion(),
-                    new EffectData
-                    {
-                        origin = self.FindModelChild("HandL").position,
-                        rotation = Quaternion.identity,
-                        scale = 0.5f
-                    }, false);
-            }
         }
     }
 }

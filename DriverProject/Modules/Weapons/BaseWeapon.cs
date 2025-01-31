@@ -1,7 +1,7 @@
-﻿using EntityStates;
 using R2API;
-using System.Linq;
-using System.Security.Cryptography;
+using RobDriver.Modules.Survivors;
+using RoR2.Skills;
+using System;
 using UnityEngine;
 
 namespace RobDriver.Modules.Weapons
@@ -15,7 +15,6 @@ namespace RobDriver.Modules.Weapons
         public abstract string weaponName { get; }
         public abstract string weaponDesc { get; }
         public abstract string iconName { get; }
-
         public override string nameToken => "ROB_DRIVER_WEAPON_" + weaponNameToken + "_NAME";
         public override string descriptionToken => "ROB_DRIVER_WEAPON_" + weaponNameToken + "_DESC";
         public override Texture icon

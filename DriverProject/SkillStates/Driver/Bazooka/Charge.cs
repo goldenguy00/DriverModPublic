@@ -1,7 +1,6 @@
 ﻿using EntityStates;
 using RoR2;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace RobDriver.SkillStates.Driver.Bazooka
 {
@@ -58,7 +57,7 @@ namespace RobDriver.SkillStates.Driver.Bazooka
             bool shit = false;
 
             if (base.isAuthority && ((!base.IsKeyDownAuthority() && base.fixedAge >= Charge.minChargeDuration) || base.fixedAge >= this.duration))shit = true;
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken) shit = true;
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef) shit = true;
 
             if (shit)
             {

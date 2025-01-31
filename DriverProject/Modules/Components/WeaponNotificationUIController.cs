@@ -1,11 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using RoR2;
 using RoR2.UI;
 
 namespace RobDriver.Modules.Components
 {
-	public class WeaponNotificationUIController : MonoBehaviour
+    public class WeaponNotificationUIController : MonoBehaviour
 	{
 		public HUD hud;
 		public GameObject genericNotificationPrefab;

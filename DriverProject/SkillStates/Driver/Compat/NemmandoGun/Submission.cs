@@ -1,8 +1,6 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using RobDriver.Modules.Components;
-using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
 using R2API;
 
@@ -54,7 +52,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoGun
 
             base.PlayAnimation("Gesture, Override", "ShootSubmission", "Shoot.playbackRate", 1.4f / this.attackSpeedStat);
 
-            if (DriverPlugin.starstormInstalled) Util.PlaySound("NemmandoSubmissionFire", base.gameObject);
+            if (DriverPlugin.StarstormInstalled) Util.PlaySound("NemmandoSubmissionFire", base.gameObject);
             else Util.PlaySound("sfx_driver_rocket_launcher_shoot", base.gameObject);
 
             float recoilAmplitude = Submission.recoil / this.attackSpeedStat;
@@ -101,7 +99,6 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoGun
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                     HitEffectNormal = false,
                 };
-                bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                 bulletAttack.minSpread = 0;
                 bulletAttack.maxSpread = 0;
                 bulletAttack.bulletCount = 1;
@@ -168,7 +165,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoGun
                 }
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
                 this.outer.SetNextStateToMain();

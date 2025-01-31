@@ -1,12 +1,11 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using UnityEngine.AddressableAssets;
 using R2API;
 
 namespace RobDriver.SkillStates.Driver.GolemGun
 {
-	public class FireLaser : BaseDriverSkillState
+    public class FireLaser : BaseDriverSkillState
 	{
 		public static float damageCoefficient = 14f;
 		public static float blastRadius = 5f;
@@ -64,7 +63,6 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 					falloffModel = BlastAttack.FalloffModel.None,
 					bonusForce = FireLaser.force * this.modifiedAimRay.direction
 				};
-				blastAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 				blastAttack.Fire();
 
 				Vector3 origin = this.modifiedAimRay.origin;
@@ -108,7 +106,7 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 		{
 			base.FixedUpdate();
 
-			if (base.fixedAge >= (0.5f * this.duration) && this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+			if (base.fixedAge >= (0.5f * this.duration) && this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
 			{
 				base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
 				this.outer.SetNextStateToMain();

@@ -1,23 +1,13 @@
-﻿using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using Moonstorm.Starstorm2;
-using R2API;
-using RobDriver.Modules.Components;
-using RoR2;
-using System;
+﻿using RoR2;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
 
 namespace RobDriver.Modules
 {
     public static class Buffs
     {
         internal static List<BuffDef> buffDefs = new List<BuffDef>();
-
-        internal static DotController.DotIndex gougeIndex;
 
         internal static BuffDef dazedDebuff;
         internal static BuffDef woundDebuff;
@@ -38,8 +28,6 @@ namespace RobDriver.Modules
             syringeNewBuff = AddNewBuff("RobDriverSyringeNewBuff", Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBuffSyringe"), new Color(1f, 70f / 255f, 75f / 255f), false, false);
             syringeScepterBuff = AddNewBuff("RobDriverSyringeScepterBuff", Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBuffSyringe"), Modules.Survivors.Driver.characterColor, false, false);
             gougeDebuff = AddNewBuff("RobDriverGougeDebuff", Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texIconBuffGouge"), new Color (0.67058825f, 0.15686275f, 0.16862746f), false, false);
-
-            gougeIndex = DotAPI.RegisterDotDef(0.25f, 0.25f, DamageColorIndex.SuperBleed, gougeDebuff);
         }
 
         // simple helper method

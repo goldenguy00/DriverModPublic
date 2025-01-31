@@ -2,8 +2,6 @@
 using RoR2;
 using EntityStates;
 using static RoR2.CameraTargetParams;
-using RobDriver.Modules.Components;
-using RoR2.UI;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
 
@@ -42,7 +40,7 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
             this.characterBody.isSprinting = false;
             base.characterBody.SetAimTimer(0.2f);
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 this.cancelling = true;
                 this.outer.SetNextStateToMain();

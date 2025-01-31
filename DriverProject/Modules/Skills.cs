@@ -1,11 +1,9 @@
 ﻿using EntityStates;
-using R2API;
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
 namespace RobDriver.Modules
@@ -14,7 +12,6 @@ namespace RobDriver.Modules
     {
         internal static List<SkillFamily> skillFamilies = new List<SkillFamily>();
         internal static List<SkillDef> skillDefs = new List<SkillDef>();
-        internal static List<UnlockableDef> unlockableDefs = new List<UnlockableDef>();
 
         #region genericskills
         public static void CreateSkillFamilies(GameObject targetPrefab, int families = 15, bool destroyExisting = true) {
@@ -197,7 +194,7 @@ namespace RobDriver.Modules
             return CreateSkillDef(info);
         }
 
-        internal static SkillDef CreateWeaponSkillDef(string skillNameToken, string skillDescriptionToken, Sprite skillIcon)
+        public static SkillDef CreateWeaponSkillDef(string skillNameToken, string skillDescriptionToken, Sprite skillIcon)
         {
             return CreateSkillDef(new SkillDefInfo(
                 skillName: skillNameToken,
@@ -211,7 +208,7 @@ namespace RobDriver.Modules
                 baseRechargeInterval: 0));
         }
 
-        internal static SkillDef CreateWeaponSkillDef(DriverWeaponDef weaponDef)
+        public static SkillDef CreateWeaponSkillDef(DriverWeaponDef weaponDef)
         {
             return CreateWeaponSkillDef(weaponDef.nameToken, weaponDef.descriptionToken, Sprite.Create(weaponDef.icon
                 as Texture2D, new Rect(0, 0, weaponDef.icon.width, weaponDef.icon.height), new Vector2(0.5f, 0.5f)));
@@ -221,20 +218,7 @@ namespace RobDriver.Modules
         /// <summary>
         /// Creates an unlockable def for the weapon. By default, picking up a weapon will grant this unlock.
         /// </summary>
-        internal static UnlockableDef CreateUnlockableDef(DriverWeaponDef weaponDef)
-        {
-            var unlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
-            unlockableDef.cachedName = weaponDef.nameToken;
-            unlockableDef.nameToken = weaponDef.nameToken;
-            unlockableDef.getHowToUnlockString = () => Language.GetString(weaponDef.descriptionToken);
-            unlockableDef.getUnlockedString = () => Language.GetString(weaponDef.descriptionToken);
-            unlockableDef.hidden = false;
-            unlockableDef.achievementIcon = Sprite.Create(weaponDef.icon as Texture2D,
-                new Rect(0, 0, weaponDef.icon.width, weaponDef.icon.height), new Vector2(0.5f, 0.5f));
-
-            unlockableDefs.Add(unlockableDef);
-            return unlockableDef;
-        }
+        public static UnlockableDef CreateUnlockableDef(DriverWeaponDef weaponDef) => Unlockables.CreateAndAddWeaponUnlockableDef(weaponDef);
 
         #endregion skilldefs
     }

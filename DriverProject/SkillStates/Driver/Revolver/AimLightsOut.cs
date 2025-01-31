@@ -53,7 +53,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
             base.StartAimMode(0.5f);
             this.animator.SetFloat("aimY", this.inputBank.aimDirection.y);
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", "BufferEmpty");
                 this.outer.SetNextStateToMain();

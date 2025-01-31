@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using RoR2;
-using System.Collections.Generic;
 using System.Linq;
 using EntityStates;
-using RobDriver.Modules;
 using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.Compat

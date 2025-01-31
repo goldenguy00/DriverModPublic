@@ -42,7 +42,6 @@ namespace RobDriver.SkillStates.Driver.GoldenGun
                 queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                 hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
             };
-            bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
             bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
             {

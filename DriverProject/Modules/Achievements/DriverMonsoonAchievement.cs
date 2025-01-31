@@ -1,70 +1,21 @@
-﻿using R2API;
-using R2API.Utils;
-using RoR2;
-using System;
+﻿using RoR2;
 using UnityEngine;
 
 namespace RobDriver.Modules.Achievements
 {
-    internal class MasteryAchievement : ModdedUnlockable
+    //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
+    //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
+    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
+    internal class MasteryAchievement : BaseMasteryAchievement
     {
-        public override string AchievementIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_ID";
-        public override string UnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_REWARD_ID";
-        public override string AchievementNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_NAME";
-        public override string PrerequisiteUnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_REWARD_ID";
-        public override string UnlockableNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_UNLOCKABLE_NAME";
-        public override string AchievementDescToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_DESC";
-        public override Sprite Sprite { get; } = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMonsoonSkin");
+        public const string identifier = "ROB_DRIVER_MONSOON";
+        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_MONSOON_NAME";
+        public const string unlockableIdentifier = "ROB_DRIVER_MONSOON_UNLOCKABLE";
 
-        public override Func<string> GetHowToUnlock { get; } = (() => Language.GetStringFormatted("UNLOCK_VIA_ACHIEVEMENT_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
-        public override Func<string> GetUnlocked { get; } = (() => Language.GetStringFormatted("UNLOCKED_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
+        public static Sprite Sprite => Assets.mainAssetBundle.LoadAsset<Sprite>("texMonsoonSkin");
 
-        public override BodyIndex LookUpRequiredBodyIndex()
-        {
-            return BodyCatalog.FindBodyIndex("RobDriverBody");
-        }
-        
-        public void ClearCheck(Run run, RunReport runReport)
-        {
-            if (run is null) return;
-            if (runReport is null) return;
-
-            if (!runReport.gameEnding) return;
-
-            if (runReport.gameEnding.isWin)
-            {
-                DifficultyDef difficultyDef = DifficultyCatalog.GetDifficultyDef(runReport.ruleBook.FindDifficulty());
-
-                if (difficultyDef != null && difficultyDef.countsAsHardMode)
-                {
-                    if (base.meetsBodyRequirement)
-                    {
-                        base.Grant();
-                    }
-                }
-            }
-        }
-
-        public override void OnInstall()
-        {
-            base.OnInstall();
-
-            Run.onClientGameOverGlobal += this.ClearCheck;
-        }
-
-        public override void OnUninstall()
-        {
-            base.OnUninstall();
-
-            Run.onClientGameOverGlobal -= this.ClearCheck;
-        }
+        //difficulty coeff 3 is monsoon. 3.5 is typhoon for grandmastery skins
+        public override float RequiredDifficultyCoefficient => 3;
+        public override DifficultyIndex RequiredEclipseLevel => DifficultyIndex.Eclipse1;
     }
 }
