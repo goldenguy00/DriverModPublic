@@ -4,7 +4,6 @@ using EntityStates;
 using static RoR2.CameraTargetParams;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.SniperRifle
 {
@@ -222,6 +221,7 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
                     queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
                 };
+                bulletAttack.damageType.damageSource = DamageSource.Secondary;
                 bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
                 {
                     if (BulletAttack.IsSniperTargetHit(hitInfo))

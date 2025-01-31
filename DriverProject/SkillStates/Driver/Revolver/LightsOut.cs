@@ -3,7 +3,6 @@ using UnityEngine;
 using EntityStates;
 using RoR2.UI;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Revolver
 {
@@ -87,6 +86,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
                 queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                 hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
             };
+            bulletAttack.damageType.damageSource = DamageSource.Secondary;
 
             bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
             {

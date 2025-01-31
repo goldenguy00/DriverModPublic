@@ -3,7 +3,6 @@ using EntityStates;
 using RobDriver.SkillStates.BaseStates;
 using UnityEngine;
 using R2API;
-using RobDriver.Modules;
 
 namespace RobDriver.SkillStates.Driver
 {
@@ -48,7 +47,10 @@ namespace RobDriver.SkillStates.Driver
 
             base.OnEnter();
 
+            this.attack.damageType.damageSource = DamageSource.Special;
             this.attack.AddModdedDamageType(DriverDamageTypes.KnifeWound);
+
+            this.moddedDamageTypes = [DriverDamageTypes.KnifeWound];
 
             Util.PlaySound("sfx_driver_foley_knife", this.gameObject);
         }

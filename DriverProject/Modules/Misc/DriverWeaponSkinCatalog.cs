@@ -25,5 +25,18 @@ namespace RobDriver
             }
             return null;
         }
+
+        public static bool GetWeaponSkin(ModelSkinController skinController, DriverWeaponDef weaponDef, out DriverWeaponSkinDef weaponSkinDef)
+        {
+            weaponSkinDef = null;
+            var catalog = GetWeaponSkinCatalog(skinController);
+
+            if (catalog != null && catalog.ContainsKey(weaponDef.index))
+            {
+                weaponSkinDef = catalog[weaponDef.index];
+            }
+            
+            return weaponSkinDef != null;
+        }
     }
 }

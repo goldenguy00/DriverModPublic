@@ -24,6 +24,8 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
             if (base.isAuthority)
             {
                 Ray aimRay = base.GetAimRay();
+                var damageType = iDrive.DamageType;
+                damageType.damageSource = DamageSource.Secondary;
 
                 FireProjectileInfo fireProjectileInfo = new FireProjectileInfo
                 {
@@ -39,7 +41,7 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
                     useSpeedOverride = false,
                     target = null,
                     projectilePrefab = this.projectilePrefab,
-                    damageTypeOverride = iDrive.DamageType
+                    damageTypeOverride = damageType
                 };
 
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);

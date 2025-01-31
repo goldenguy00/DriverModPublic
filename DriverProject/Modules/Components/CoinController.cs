@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using HG;
+using R2API;
 using RoR2;
 using RoR2.Orbs;
 using RoR2.Projectile;
@@ -51,8 +52,7 @@ namespace RobDriver.Modules.Components
         private void Start()
         {
             this.gameObject.layer = LayerIndex.fakeActor.intVal;
-            float speed = UnityEngine.Random.Range(500f, 2000f);
-            this.rotationSpeed = new Vector3(speed, 0f, 0f);
+            this.rotationSpeed = new Vector3(Random.Range(500f, 2000f), 0f, 0f);
 
             this.StartCoroutine(nameof(SwitchLayer));
         }
@@ -90,22 +90,19 @@ namespace RobDriver.Modules.Components
                 if (damageInfo.attacker && this.coolStopwatchScale <= 0f)
                 {
                     this.canRicochet = false;
-                    TeamComponent teamComponent = damageInfo.attacker.GetComponent<TeamComponent>();
-                    float co = damageInfo.damage / teamComponent.body.damage;
+                    var attackerBody = this.damageInfo.attacker.GetComponent<CharacterBody>();
                     var orb = new CoinRicochetOrb
                     {
-                        coinPosition = base.transform.position,
                         origin = base.transform.position,
                         speed = 180f + (10f * bounceCountStored),
                         attacker = this.damageInfo.attacker,
-                        inflictor = this.damageInfo.inflictor,
-                        damageCoefficient = co,
+                        damageCoefficient = this.damageInfo.damage / attackerBody.damage,
                         damageValue = this.damageInfo.damage * this.ricochetMultiplier,
-                        teamIndex = teamComponent.teamIndex,
+                        damageType = this.iDrive.DamageType,
+                        teamIndex = attackerBody.teamComponent.teamIndex,
                         procCoefficient = 1f,
                         isCrit = this.damageInfo.crit,
                         bounceCount = bounceCountStored,
-                        iDrive = this.iDrive
                     };
 
                     this.GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -126,7 +123,8 @@ namespace RobDriver.Modules.Components
         }
 
         [Command]
-        public void CmdRicochetMelee(GameObject attacker, GameObject inflictor, bool isCrit, float damage, uint procChainMask, Vector3 force, bool canRejectForce, byte colorIndex, uint damageType)
+        public void CmdRicochetMelee(GameObject attacker, GameObject inflictor, bool isCrit, float damage, uint procChainMask, Vector3 force,
+            bool canRejectForce, byte colorIndex, uint damageType, uint damageTypeExtended, byte damageSource, int[] moddedDamageTypes)
         {
             this.damageInfo = new DamageInfo
             {
@@ -137,10 +135,19 @@ namespace RobDriver.Modules.Components
                 procCoefficient = 0f,
                 force = force,
                 canRejectForce = canRejectForce,
+                procChainMask = new ProcChainMask { mask = procChainMask },
                 damageColorIndex = (DamageColorIndex)colorIndex,
-                damageType = (DamageType)damageType
+                damageType = new DamageTypeCombo
+                {
+                    damageType = (DamageType)damageType,
+                    damageTypeExtended = (DamageTypeExtended)damageTypeExtended,
+                    damageSource = (DamageSource)damageSource,
+                },
             };
-            this.damageInfo.procChainMask.mask = procChainMask;
+            for (int i = 0; i < moddedDamageTypes.Length; i++)
+            {
+                this.damageInfo.AddModdedDamageType((DamageAPI.ModdedDamageType)moddedDamageTypes[i]);
+            }
 
             bounceCountStored++;
             coolStopwatchScale = (coolStopwatchScale * bounceCountStored) + 0.01f;

@@ -7,15 +7,32 @@ namespace RobDriver.Modules.Components
     {
         public WeaponPickup weaponPickupComponent;
 
+        [SyncVar]
         public bool cutAmmo;
+        [SyncVar]
         public bool isNewAmmoType;
-        public DriverBulletDef bulletDef = DriverBulletCatalog.Default;
-        public DriverWeaponDef weaponDef = DriverWeaponCatalog.Pistol;
+        [SyncVar]
+        public ushort bulletIndex;
+        [SyncVar]
+        public ushort weaponIndex;
+
+        public DriverWeaponDef weaponDef
+        {
+            get => DriverWeaponCatalog.GetWeaponFromIndex(weaponIndex);
+            set => weaponIndex = value?.index ?? DriverWeaponCatalog.Pistol.index;
+        }
+
+        public DriverBulletDef bulletDef
+        {
+            get => DriverBulletCatalog.GetBulletDefFromIndex(bulletIndex);
+            set => bulletIndex = value?.index ?? DriverBulletCatalog.Default.index;
+        }
 
         public void SpawnWeapon(TeamIndex teamIndex, DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo = false, bool isNewAmmoType = false)
         {
             if (NetworkServer.active)
             {
+                Log.Warning("Spawn weapon called");
                 this.weaponPickupComponent.teamFilter.teamIndex = teamIndex;
                 this.weaponDef = weaponDef;
                 this.bulletDef = bulletDef;
@@ -28,25 +45,8 @@ namespace RobDriver.Modules.Components
 
         private void Start()
         {
-            if (NetworkServer.active && this.isClient)
-            {
-                CmdUpdateVisuals();
-            }
-        }
-
-        [Command]
-        public void CmdUpdateVisuals()
-        {
-            RpcUpdateVisuals(this.weaponDef.index, this.bulletDef.index, this.cutAmmo, this.isNewAmmoType);
-        }
-
-        [ClientRpc]
-        public void RpcUpdateVisuals(ushort weaponIndex, ushort bulletIndex, bool cutAmmo, bool isNewAmmoType)
-        {
-            var weaponDef = DriverWeaponCatalog.GetWeaponFromIndex(weaponIndex);
-            var bulletDef = DriverBulletCatalog.GetBulletDefFromIndex(bulletIndex);
-
-            this.weaponPickupComponent.UpdateWeaponPickup(weaponDef, bulletDef, cutAmmo, isNewAmmoType);
+            Log.Warning("Start called " + this.weaponIndex + " | " + this.bulletIndex + " | " + this.cutAmmo + " | " + this.isNewAmmoType);
+            this.weaponPickupComponent.UpdateWeaponPickup(this.weaponDef, this.bulletDef, this.cutAmmo, this.isNewAmmoType);
         }
     }
 }

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1500429952
+CRC: 489705630
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d7358ce3d689e9232b7b52305b6f5c1e
+    Hash: f924b3c996b845b7159299529461b1d9
   TypeTreeHash:
     serializedVersion: 2
     Hash: ce45ceba70adf8b6daea624248c4b20e
@@ -147,6 +147,7 @@ Assets:
 - Assets/Driver/HUD/Textures/texBulletIndicator.png
 - Assets/Driver/Textures/texDriver.png
 - Assets/Driver/Animations/Shotgun/Descend.anim
+- Assets/Driver/Animations/Default/FreefallF.anim
 - Assets/Driver/WeaponPickupUnique.prefab
 - Assets/Driver/Textures/texNemKatanaNormal.png
 - Assets/Driver/VFX/BackWeapon.prefab
@@ -312,6 +313,7 @@ Assets:
 - Assets/Driver/Icons/Skill/texStunGrenadeIcon.png
 - Assets/Driver/Textures/texRocketLauncherAlt.png
 - Assets/Driver/Animations/Hammer/RunF.anim
+- Assets/Driver/Animations/Default/FreefallR.anim
 - Assets/Driver/Animations/Default/RunL.anim
 - Assets/Driver/Icons/texTyphoonSkin.png
 - Assets/Driver/Icons/Skill/texPassiveIcon.png
@@ -323,6 +325,7 @@ Assets:
 - Assets/Driver/FBX/meshWispJar.mesh
 - Assets/Driver/Icons/Weapon/texGoldenGunWeaponIcon.png
 - Assets/Driver/Materials/matPlasmaCannon.mat
+- Assets/Driver/Animations/Default/maskDriverFreefall.mask
 - Assets/Driver/Animations/Default/ReadyVoidButtonLoop.anim
 - Assets/Driver/VFX/Badass/TinyExplosion.prefab
 - Assets/Driver/VFX/Badass/SandHitEffect.prefab
@@ -353,6 +356,7 @@ Assets:
 - Assets/Driver/Projectiles/coin.asset
 - Assets/Driver/WeaponPickupLegendary.prefab
 - Assets/Driver/Animations/maskDriverGesture.mask
+- Assets/Driver/Animations/Default/FreefallL.anim
 - Assets/Driver/Textures/texSluggerEmission.png
 - Assets/Driver/Icons/Skill/texSyringeLegacyIcon.png
 - Assets/Driver/Icons/Weapon/texNemmercWeaponIcon.png
@@ -387,6 +391,7 @@ Assets:
 - Assets/Driver/FBX/Rockets.fbx
 - Assets/Driver/FBX/meshGoldenGun.mesh
 - Assets/Driver/Icons/Weapon/texRevolverWeaponIcon.png
+- Assets/Driver/Animations/Default/FreefallN.anim
 - Assets/Driver/FBX/meshDriver.controller
 - Assets/Driver/FBX/meshArmBFG.mesh
 - Assets/Driver/Materials/matGoldenGun.mat
@@ -408,11 +413,13 @@ Assets:
 - Assets/Driver/Materials/matDriver.mat
 - Assets/Driver/Icons/Skill/texNemmandoPrimaryIcon.png
 - Assets/Driver/Animations/Skateboard/Ascend.anim
+- Assets/Driver/Animations/Default/FreefallB.anim
 - Assets/Driver/FBX/DriverWeapons.fbx
 - Assets/Driver/FBX/meshHeavyMachineGun.mesh
 - Assets/Driver/Projectiles/DriverStunGrenadeGhost.prefab
 - Assets/Driver/FBX/meshLunarGrenade.mesh
 - Assets/Driver/Animations/Shotgun/AimPitchShotgun.anim
+- Assets/Driver/FBX/animDriverShotgun2.fbx
 - Assets/Driver/Materials/matMinecraftDriver.mat
 - Assets/Driver/Textures/texRavagerSword.png
 - Assets/Driver/Icons/Weapon/texPistolWeaponIcon.png

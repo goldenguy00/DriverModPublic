@@ -7,7 +7,7 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop.Scepter
     public class FireVoidDrop : FireSupplyDrop
     {
         protected override DriverWeaponDef weaponDef => DriverWeaponCatalog.PlasmaCannon;
-        protected override DriverBulletDef bulletDef => DriverBulletCatalog.VoidLightning;
+        protected override DriverBulletDef bulletDef => DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary);
 
         public override void OnEnter()
         {

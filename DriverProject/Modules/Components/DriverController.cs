@@ -1,5 +1,4 @@
-﻿using R2API;
-using R2API.Networking;
+﻿using R2API.Networking;
 using R2API.Networking.Interfaces;
 using RobDriver.Modules.Survivors;
 using RoR2;
@@ -21,7 +20,6 @@ namespace RobDriver.Modules.Components
         public DriverBulletDef currentBulletDef { get; private set; }
         public DriverWeaponDef defaultWeaponDef { get; private set; }
 
-        public bool HasLoadoutWeapon => this.weaponDef == arsenal.DefaultWeapon;
         public bool HasSpecialBullets => this.currentBulletDef.index != DriverBulletCatalog.Default.index;
         public DamageTypeCombo DamageType => this.currentBulletDef.bulletType;
         public float ammo => this.weaponTimer;
@@ -73,7 +71,6 @@ namespace RobDriver.Modules.Components
         private GameObject hammerEffectInstance;
         private GameObject hammerEffectInstance2;
 
-        private Dictionary<ushort, DriverWeaponSkinDef> weaponSkinCatalog;
         private DriverWeaponDef lastWeaponDef;
         private WeaponNotificationQueue notificationQueue;
         private bool needReload = false;
@@ -128,9 +125,9 @@ namespace RobDriver.Modules.Components
 
             this.currentBulletDef = DriverBulletCatalog.Default;
             this.defaultWeaponDef = DriverWeaponCatalog.Pistol;
-            this.lastWeaponDef = defaultWeaponDef;
+            this.lastWeaponDef = DriverWeaponCatalog.Pistol;
 
-            PickUpWeapon(defaultWeaponDef);
+            PickUpWeapon(DriverWeaponCatalog.Pistol);
 
             this.skillLocator.special.AddOneStock();
 
@@ -167,8 +164,6 @@ namespace RobDriver.Modules.Components
 
         private void SetInventoryHook()
         {
-            this.weaponSkinCatalog = DriverWeaponSkinCatalog.GetWeaponSkinCatalog(this.skinController);
-
             // modelskinswapper compat
             // i hate this as much as you do.
             this.weaponRenderer.enabled = true;
@@ -807,7 +802,7 @@ namespace RobDriver.Modules.Components
 
             // weapon reskin
             Mesh mesh;
-            if (this.weaponSkinCatalog != null && this.weaponSkinCatalog.TryGetValue(this.weaponDef.index, out var skinOverride))
+            if (DriverWeaponSkinCatalog.GetWeaponSkin(this.skinController, this.weaponDef, out var skinOverride))
             {
                 mesh = skinOverride.weaponSkinMesh;
                 this.weaponRenderer.material = skinOverride.weaponSkinMaterial;

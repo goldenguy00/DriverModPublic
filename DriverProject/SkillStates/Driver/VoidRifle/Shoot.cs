@@ -2,7 +2,6 @@
 using UnityEngine;
 using EntityStates;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.VoidRifle
 {

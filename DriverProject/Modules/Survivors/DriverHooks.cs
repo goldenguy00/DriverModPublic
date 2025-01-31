@@ -145,10 +145,9 @@ namespace RobDriver.Modules.Survivors
 
             if (isDriver && damageInfo.HasModdedDamageType(DriverDamageTypes.MysteryShot))
             {
-                var bulletInfo = DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Legendary);
-
-                damageInfo.damageType |= bulletInfo.bulletType;
                 damageInfo.RemoveModdedDamageType(DriverDamageTypes.MysteryShot);
+                var bulletInfo = DriverBulletCatalog.GetWeightedRandomBullet(DriverWeaponTier.Legendary);
+                damageInfo.damageType |= bulletInfo.bulletType;
             }
 
             orig(self, damageInfo, victim);

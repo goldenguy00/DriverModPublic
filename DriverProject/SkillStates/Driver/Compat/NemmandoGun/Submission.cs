@@ -2,7 +2,6 @@
 using UnityEngine;
 using EntityStates;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat.NemmandoGun
 {
@@ -99,6 +98,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoGun
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                     HitEffectNormal = false,
                 };
+                bulletAttack.damageType.damageSource = DamageSource.Secondary;
                 bulletAttack.minSpread = 0;
                 bulletAttack.maxSpread = 0;
                 bulletAttack.bulletCount = 1;

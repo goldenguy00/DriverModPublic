@@ -1,7 +1,6 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.DualShotgun
 {

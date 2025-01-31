@@ -1,4 +1,5 @@
 ﻿using RobDriver.Modules;
+using RobDriver.Modules.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace RobDriver
 
         public static DriverWeaponDef CreateAndAddWeapon(DriverWeaponDefInfo weaponDefInfo)
         {
-            DriverWeaponDef weaponDef = (DriverWeaponDef)ScriptableObject.CreateInstance(typeof(DriverWeaponDef));
+            DriverWeaponDef weaponDef = ScriptableObject.CreateInstance<DriverWeaponDef>();
             weaponDef.name = weaponDefInfo.nameToken;
 
             weaponDef.nameToken = weaponDefInfo.nameToken;
@@ -59,6 +60,7 @@ namespace RobDriver
 
             weaponDef.primarySkillDef = weaponDefInfo.primarySkillDef;
             weaponDef.secondarySkillDef = weaponDefInfo.secondarySkillDef;
+            weaponDef.arsenalSkillDef = weaponDefInfo.arsenalSkillDef;
 
             weaponDef.mesh = weaponDefInfo.mesh;
             weaponDef.material = weaponDefInfo.material;
@@ -112,8 +114,11 @@ namespace RobDriver
                 }
             }
 
+            weaponDef.arsenalSkillDef ??= Skills.CreateWeaponSkillDef(weaponDef);
+            DriverArsenal.passiveSkillsToWeaponIndex[weaponDef.arsenalSkillDef] = weaponDef.index;
+
             // add config
-            Modules.Config.InitWeaponConfig(weaponDef);
+            Config.InitWeaponConfig(weaponDef);
 
             Debug.Log("Added " + weaponDef.nameToken + " to catalog with index: " + weaponDef.index);
         }
@@ -133,14 +138,6 @@ namespace RobDriver
             weaponDrops.Add(bodyName, weaponDef);
         }
 
-        public static bool HasWeaponDrop(string bodyNameToken, out DriverWeaponDef weaponDef)
-        {
-            //TODO
-            if (weaponDrops.TryGetValue(bodyNameToken, out weaponDef))
-                return true;
-            return false;
-        }
-
         public static bool IsWeaponPistol(DriverWeaponDef weaponDef)
         {
             // These are all the pistol options that are forced upgrades with steadyaim
@@ -152,10 +149,7 @@ namespace RobDriver
                 weaponDef == PyriteGun;
         }
 
-        public static DriverWeaponDef GetWeaponFromIndex(int index)
-        {
-            return weaponDefs.ElementAtOrDefault(index) ?? Pistol;
-        }
+        public static DriverWeaponDef GetWeaponFromIndex(int index) => weaponDefs.ElementAtOrDefault(index) ?? Pistol;
 
         public static DriverWeaponDef GetRandomWeapon()
         {
@@ -163,7 +157,8 @@ namespace RobDriver
 
             for (int i = 0; i < weaponDefs.Length; i++)
             {
-                if (Modules.Config.GetWeaponConfigEnabled(weaponDefs[i]) && weaponDefs[i].shotCount > 0) validWeapons.Add(weaponDefs[i]);
+                if (Config.GetWeaponConfigEnabled(weaponDefs[i]) && weaponDefs[i].shotCount > 0)
+                    validWeapons.Add(weaponDefs[i]);
             }
 
             if (validWeapons.Count <= 0) return Pistol; // pistol failsafe

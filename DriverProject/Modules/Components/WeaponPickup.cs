@@ -2,7 +2,6 @@
 using RoR2;
 using UnityEngine.Networking;
 using RoR2.UI;
-using RobDriver.Modules.Survivors;
 
 namespace RobDriver.Modules.Components
 {
@@ -79,8 +78,8 @@ namespace RobDriver.Modules.Components
             DriverController iDrive = null;
             foreach (var localUser in LocalUserManager.readOnlyLocalUsersList)
             {
-                if (localUser?.cachedBody && localUser.cachedBody.hasEffectiveAuthority && localUser.cachedBody.bodyIndex == Driver.bodyIndex)
-                    iDrive = localUser.cachedBody.GetComponent<DriverController>();
+                if (localUser?.cachedBody && localUser.cachedBody.hasEffectiveAuthority)
+                    iDrive ??= localUser.cachedBody.GetComponent<DriverController>();
             }
 
             if (!Config.sharedPickupVisuals.Value && !iDrive)

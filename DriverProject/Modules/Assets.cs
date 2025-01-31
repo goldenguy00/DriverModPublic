@@ -201,10 +201,8 @@ namespace RobDriver.Modules
         {
             if (mainAssetBundle == null)
             {
-                using (var assetStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DriverMod.robdriver"))
-                {
-                    mainAssetBundle = AssetBundle.LoadFromStream(assetStream);
-                }
+                var path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(DriverPlugin.instance.Info.Location), "robdriver");
+                mainAssetBundle = AssetBundle.LoadFromFile(path);
             }
 
             using (Stream manifestResourceStream2 = Assembly.GetExecutingAssembly().GetManifestResourceStream("DriverMod.driver_bank.bnk"))
@@ -1233,6 +1231,8 @@ namespace RobDriver.Modules
             Transform helpMe = whatTheFuckIsThis.transform;
             MonoBehaviour.DestroyImmediate(whatTheFuckIsThis);
             helpMe.transform.localScale = Vector3.one * 1.25f;
+
+            textShit.GetComponentInChildren<TextMeshPro>().isOverlay = true;
 
             return pickupModel;
         }

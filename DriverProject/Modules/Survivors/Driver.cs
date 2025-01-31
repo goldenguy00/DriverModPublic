@@ -148,6 +148,7 @@ namespace RobDriver.Modules.Survivors
                 DriverHooks.Init();
 
                 RoR2.ContentManagement.ContentManager.onContentPacksAssigned += LateSetup;
+                BodyCatalog.availability.CallWhenAvailable(() => bodyIndex = BodyCatalog.FindBodyIndex(Driver.characterPrefab));
             }
         }
 
@@ -155,8 +156,6 @@ namespace RobDriver.Modules.Survivors
         {
             SetItemDisplays();
             LateSkinSetup();
-
-            bodyIndex = BodyCatalog.FindBodyIndex(bodyName);
         }
 
         private static GameObject CreateBodyPrefab(bool isPlayer)
@@ -511,7 +510,7 @@ namespace RobDriver.Modules.Survivors
 
         private static void CreateSkills(GameObject prefab)
         {
-            bool hasArsenal = Modules.Config.enableArsenal.Value;
+            bool hasArsenal = Config.enableArsenal.Value;
             DriverPassive passive = prefab.AddComponent<DriverPassive>();
             DriverArsenal arsenal = prefab.AddComponent<DriverArsenal>();
             Modules.Skills.CreateSkillFamilies(prefab);
@@ -599,6 +598,7 @@ namespace RobDriver.Modules.Survivors
             #endregion Misc
 
             #region Passive
+            //ROB_DRIVER_BODY_PASSIVE_NAME
             passive.defaultPassive = Modules.Skills.CreateSkillDef(new SkillDefInfo
             {
                 skillName = prefix + "_DRIVER_BODY_PASSIVE_NAME",

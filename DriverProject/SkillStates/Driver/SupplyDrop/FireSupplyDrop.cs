@@ -92,6 +92,7 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
                 blastAttack.baseForce = 4000f;
                 blastAttack.teamIndex = this.teamComponent.teamIndex;
                 blastAttack.damageType = DamageType.Stun1s;
+                blastAttack.damageType.damageSource = DamageSource.Special;
                 blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
 
                 blastAttack.Fire();

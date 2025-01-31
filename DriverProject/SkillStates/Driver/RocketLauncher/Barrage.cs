@@ -59,6 +59,9 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
 
                 var isCrit = base.RollCrit();
 
+                var damageType = iDrive.DamageType;
+                damageType.damageSource = DamageSource.Secondary;
+
                 // copied from moff's rocket
                 // the fact that this item literally has to be hardcoded into character skillstates makes me so fucking angry you have no idea
                 if (this.characterBody.inventory && this.characterBody.inventory.GetItemCount(DLC1Content.Items.MoreMissile) > 0)
@@ -86,7 +89,7 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
                             target = null,
                             speedOverride = 120f,
                             useSpeedOverride = true,
-                            damageTypeOverride = iDrive.DamageType
+                            damageTypeOverride = damageType
                         });
                         
                         aimRay2.direction = rotation * aimRay2.direction;
@@ -107,7 +110,7 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
                         target = null,
                         speedOverride = 120f,
                         useSpeedOverride = true,
-                        damageTypeOverride = iDrive.DamageType
+                        damageTypeOverride = damageType
                     });
                 }
             }

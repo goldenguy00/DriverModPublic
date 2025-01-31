@@ -8,19 +8,17 @@ namespace RobDriver.Modules.Components
     public class CoinRicochetOrb : GenericDamageOrb
     {
         public static float redDamageCoefficient = 16f;
-
         public static float searchRadius = 50f;
-        public BullseyeSearch search;
-        public Vector3 coinPosition;
-        public DriverController iDrive;
-        public GameObject inflictor;
-        public int bounceCount = 1;
 
+        public int bounceCount = 1;
         public float damageCoefficient = 1f;
 
         public override void Begin()
         {
-            this.target = PickNextTarget(this.coinPosition);
+            this.damageType.damageSource = DamageSource.Special;
+            this.damageType.damageType |= DamageType.Stun1s;
+
+            this.target = PickNextTarget(this.origin);
 
             this.duration = this.distanceToTarget / this.speed;
 
@@ -29,7 +27,7 @@ namespace RobDriver.Modules.Components
             EffectData effectData = new EffectData
             {
                 scale = this.scale * scale,
-                origin = this.coinPosition,
+                origin = this.origin,
                 genericFloat = this.duration,
                 color = color
             };
@@ -40,71 +38,69 @@ namespace RobDriver.Modules.Components
 
         public override void OnArrival()
         {
-            if (this.target)
+            var targetHc = this.target ? this.target.healthComponent : null;
+            if (!targetHc)
+                return;
+            
+            var iCoin = this.target.healthComponent.GetComponent<CoinController>();
+
+            if (!iCoin && bounceCount > 1)
             {
-                HealthComponent healthComponent = target.healthComponent;
-                if (healthComponent)
+                BlastAttack blastAttack = new BlastAttack
                 {
-                    if (!target.TryGetComponent<CoinController>(out var iCoin) && bounceCount > 1)
-                    {
-                        BlastAttack blastAttack = new BlastAttack
-                        {
-                            baseDamage = this.damageValue,
-                            attacker = this.attacker,
-                            inflictor = this.inflictor,
-                            teamIndex = this.teamIndex,
-                            baseForce = 1000f,
-                            bonusForce = Vector3.zero,
-                            crit = this.isCrit,
-                            procChainMask = this.procChainMask,
-                            procCoefficient = this.procCoefficient,
-                            falloffModel = BlastAttack.FalloffModel.Linear,
-                            position = target.transform.position,
-                            radius = bounceCount * 2f,
-                            damageColorIndex = this.damageColorIndex,
-                            damageType = iDrive.DamageType
-                        };
-                        blastAttack.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
-                        blastAttack.Fire();
+                    baseDamage = this.damageValue,
+                    attacker = this.attacker,
+                    teamIndex = this.teamIndex,
+                    baseForce = 1000f,
+                    bonusForce = Vector3.zero,
+                    crit = this.isCrit,
+                    procChainMask = this.procChainMask,
+                    procCoefficient = this.procCoefficient,
+                    falloffModel = BlastAttack.FalloffModel.Linear,
+                    position = this.target.transform.position,
+                    radius = this.bounceCount * 2f,
+                    damageColorIndex = this.damageColorIndex,
+                    damageType = this.damageType
+                };
 
-                        EffectData effectData = new EffectData
-                        {
-                            origin = target.transform.position,
-                            scale = bounceCount
-                        };
-                        EffectManager.SpawnEffect(Assets.coinImpact, effectData, transmit: true);
-                    }
-                    else
-                    {
-                        DamageInfo damageInfo = new DamageInfo
-                        {
-                            damage = this.damageValue,
-                            attacker = this.attacker,
-                            inflictor = this.inflictor,
-                            force = Vector3.zero,
-                            crit = this.isCrit,
-                            procChainMask = this.procChainMask,
-                            procCoefficient = this.procCoefficient,
-                            position = this.target.transform.position,
-                            damageColorIndex = this.damageColorIndex
-                        };
+                blastAttack.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
+                blastAttack.Fire();
 
-                        if (iCoin)
-                        {
-                            damageInfo.procCoefficient = 0f;
-                            iCoin.bounceCountStored = bounceCount;
-                            healthComponent.TakeDamage(damageInfo);
-                        }
-                        else
-                        {
-                            damageInfo.damageType = DamageType.Stun1s | iDrive.DamageType;
-                            damageInfo.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
+                EffectData effectData = new EffectData
+                {
+                    origin = this.target.transform.position,
+                    scale = bounceCount
+                };
+                EffectManager.SpawnEffect(Assets.coinImpact, effectData, transmit: true);
+            }
+            else
+            {
+                DamageInfo damageInfo = new DamageInfo
+                {
+                    damage = this.damageValue,
+                    attacker = this.attacker,
+                    force = Vector3.zero,
+                    crit = this.isCrit,
+                    procChainMask = this.procChainMask,
+                    procCoefficient = this.procCoefficient,
+                    position = this.target.transform.position,
+                    damageColorIndex = this.damageColorIndex
+                };
 
-                            healthComponent.TakeDamage(damageInfo);
-                            GlobalEventManager.instance.OnHitEnemy(damageInfo, healthComponent.gameObject);
-                            GlobalEventManager.instance.OnHitAll(damageInfo, healthComponent.gameObject);
-                        }
-                    }
+                if (iCoin)
+                {
+                    damageInfo.procCoefficient = 0f;
+
+                    iCoin.bounceCountStored = bounceCount;
+                    targetHc.TakeDamage(damageInfo);
+                }
+                else
+                {
+                    damageInfo.AddModdedDamageType(DriverDamageTypes.BloodExplosionIdentifier);
+
+                    targetHc.TakeDamage(damageInfo);
+                    GlobalEventManager.instance.OnHitEnemy(damageInfo, targetHc.gameObject);
+                    GlobalEventManager.instance.OnHitAll(damageInfo, targetHc.gameObject);
                 }
             }
         }
@@ -113,7 +109,7 @@ namespace RobDriver.Modules.Components
         {
             HurtBox target = null;
 
-            this.search = new BullseyeSearch
+            var search = new BullseyeSearch
             {
                 queryTriggerInteraction = QueryTriggerInteraction.Ignore,
                 filterByDistinctEntity = true,
@@ -138,6 +134,7 @@ namespace RobDriver.Modules.Components
                     target = hurtBox;
                 }
             }
+
             return target;
         }
     }

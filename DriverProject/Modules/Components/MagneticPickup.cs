@@ -26,7 +26,7 @@ namespace RobDriver.Modules.Components
             if (teamComponent && teamComponent.teamIndex == teamFilter.teamIndex && teamComponent.body && teamComponent.body.bodyIndex == Driver.bodyIndex)
             {
                 var iDrive = teamComponent.body.GetComponent<DriverController>();
-                if (iDrive && (!Config.enableMagenticConditionalPickups.Value || (!iDrive.HasSpecialBullets && iDrive.HasLoadoutWeapon)))
+                if (iDrive && (!Config.enableMagenticConditionalPickups.Value || (!iDrive.HasSpecialBullets && iDrive.weaponDef == iDrive.defaultWeaponDef)))
                 {
                     gravitateTarget = other.transform;
                 }

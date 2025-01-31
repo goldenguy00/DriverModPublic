@@ -92,7 +92,6 @@ namespace RobDriver
             Ruinous = CreateBulletType("Ruinous", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageType.LunarRuin);
             GiantSlayer = CreateBulletType("Giant Slayer", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.DamagePercentOfMaxHealth);
             Disabling = CreateBulletType("Disabling", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.DisableAllSkills);
-            Warping = CreateBulletType("Warping", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.Warp);
             Amputating = CreateBulletType("Amputating", DriverWeaponTier.Legendary, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.Amputate);
 
             // Void
@@ -118,6 +117,8 @@ namespace RobDriver
             bulletDef.index = (ushort)bulletDefs.Count;
             bulletDefs.Add(bulletDef);
 
+            Debug.Log("Added " + bulletDef.nameToken + " to catalog with index: " + bulletDef.index);
+
             return bulletDef;
         }
 
@@ -141,6 +142,20 @@ namespace RobDriver
 
         public static DriverBulletDef GetWeightedRandomBullet(DriverWeaponTier maxTier)
         {
+            WeightedSelection<DriverBulletDef> weightedSelection = new WeightedSelection<DriverBulletDef>();
+
+            for (int i = 0; i < bulletDefs.Count; i++)
+            {
+                var bulletDef = bulletDefs[i];
+                if (bulletDef.tier <= maxTier)
+                    weightedSelection.AddChoice(bulletDef, GetWeightForTier(bulletDef.tier));
+            }
+
+            if (weightedSelection.Count > 0)
+                return weightedSelection.Evaluate(Random.Range(0f, 1f));
+            return Default;
+            /*
+            weightedSelection.a
             int commonWeight = 5;
             int uncommonWeight = maxTier >= DriverWeaponTier.Uncommon ? 3 : 0;
             int legendaryWeight = maxTier >= DriverWeaponTier.Legendary ? 1 : 0;
@@ -152,7 +167,7 @@ namespace RobDriver
             if (rnd < commonWeight + uncommonWeight)
                 return GetRandomBulletFromTier(DriverWeaponTier.Uncommon);
 
-            return GetRandomBulletFromTier(DriverWeaponTier.Legendary);
+            return GetRandomBulletFromTier(DriverWeaponTier.Legendary);*/
         }
 
         public static DriverBulletDef GetRandomBulletFromTier(DriverWeaponTier tier)
@@ -171,5 +186,12 @@ namespace RobDriver
                 ? validBullets[Random.Range(0, validBullets.Count)]
                 : Default;
         }
+
+        public static int GetWeightForTier(DriverWeaponTier tier) => tier switch 
+        {
+            DriverWeaponTier.Common => 5,
+            DriverWeaponTier.Uncommon => 3,
+            _ => 2
+        }; 
     }
 }

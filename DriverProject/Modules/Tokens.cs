@@ -28,7 +28,7 @@ namespace RobDriver.Modules
             lore += "\"I drive.\"";
 
 
-            string prefix = "ROB_DRIVER_BODY";
+            string prefix = "ROB_DRIVER_BODY_";
 
             LanguageAPI.Add(prefix + "NAME", "Driver");
             LanguageAPI.Add(prefix + "DESCRIPTION", desc);
@@ -50,6 +50,7 @@ namespace RobDriver.Modules
             #endregion
 
             #region Passive
+            //ROB_DRIVER_BODY_PASSIVE_NAME
             LanguageAPI.Add(prefix + "PASSIVE_NAME", "Survivalist");
             LanguageAPI.Add(prefix + "PASSIVE_DESCRIPTION", $"Enemies have a chance to drop a new <style=cIsUtility>weapon</style>. These give you <style=cIsDamage>powerful attacks</style> for a limited time!");
 

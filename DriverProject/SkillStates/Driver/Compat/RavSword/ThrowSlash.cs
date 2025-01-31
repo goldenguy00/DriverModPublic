@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using RoR2;
 using RobDriver.SkillStates.BaseStates;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat
 {
@@ -37,6 +36,8 @@ namespace RobDriver.SkillStates.Driver.Compat
             this.impactSound = Modules.Assets.knifeImpactSoundDef.index;
 
             this.damageType = this.iDrive.DamageType;
+
+            this.moddedDamageTypes = [this.iDrive.currentBulletDef.moddedDamageType];
 
             this.muzzleString = "KnifeSwingMuzzle";
 

@@ -2,7 +2,6 @@
 using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using R2API;
-using RobDriver.Modules;
 
 namespace RobDriver.SkillStates.Driver.Compat.NemmandoSword
 {
@@ -40,6 +39,8 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmandoSword
             this.damageType = this.iDrive.DamageType;
             this.damageType.damageType |= DamageType.Stun1s;
             this.damageType.AddModdedDamageType(DriverDamageTypes.Gouge);
+
+            this.moddedDamageTypes = [this.iDrive.currentBulletDef.moddedDamageType, DriverDamageTypes.Gouge];
 
             this.muzzleString = this.swingIndex == 0 ? "SwingMuzzle1" : "SwingMuzzle2";
 

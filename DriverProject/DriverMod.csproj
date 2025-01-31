@@ -23,18 +23,20 @@
 
   <ItemGroup>
 	  <None Remove=".gitignore" />
+	  <None Remove="DriverProject" />
+	  <None Remove="DriverProject.manifest" />
 	  <None Remove="nuget.config" />
     <None Remove="driver_bank.bnk" />
     <None Remove="mechorilla" />
     <None Remove="MechorillaBank.bnk" />
+    <None Remove="regigigas2" />
+    <None Remove="regigigas2.manifest" />
     <None Remove="RegigigasBank.bnk" />
-    <None Remove="robdriver" />
     <None Remove="robninja" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="driver_bank.bnk" />
-    <EmbeddedResource Include="robdriver" />
   </ItemGroup>
 
 	<ItemGroup>
@@ -80,7 +82,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call &quot;$(ProjectDir)weave.bat&quot;&#xD;&#xA;" />
+    <Exec Command="./weave.bat $(TargetDir)&#xD;&#xA;" />
   </Target>
 
 </Project>

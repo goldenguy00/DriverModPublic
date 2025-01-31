@@ -111,10 +111,19 @@ namespace RobDriver.Modules
         /// <param name="locked">If true, weapons will need to be randomly encountered before they are selectable</param>
         public static void AddWeaponSkills(GameObject targetPrefab, IEnumerable<DriverWeaponDef> weaponDefs, bool locked)
         {
-            var family = targetPrefab.GetComponent<DriverArsenal>().weaponSkillSlot.skillFamily;
-            foreach (DriverWeaponDef weapon in weaponDefs)
+
+            var arsenal = targetPrefab.GetComponent<DriverArsenal>();
+            var family = arsenal.weaponSkillSlot.skillFamily;
+
+            foreach (DriverWeaponDef weaponDef in weaponDefs)
             {
-                AddSkillToFamily(family, CreateWeaponSkillDef(weapon), locked ? CreateUnlockableDef(weapon) : null);
+                if (!weaponDef.arsenalSkillDef)
+                {
+                    Log.Error("Arsenal skilldef is null! " + weaponDef.nameToken);
+                    continue;
+                }
+
+                AddSkillToFamily(family, weaponDef.arsenalSkillDef, locked ? CreateUnlockableDef(weaponDef) : null);
             }
         }
         /// <summary>
@@ -123,8 +132,16 @@ namespace RobDriver.Modules
         /// <param name="locked">If true, weapon will need to be randomly encountered before they are selectable</param>
         public static void AddWeaponSkill(GameObject targetPrefab, DriverWeaponDef weaponDef, bool locked)
         {
-            AddSkillToFamily(targetPrefab.GetComponent<DriverArsenal>().weaponSkillSlot.skillFamily, 
-                CreateWeaponSkillDef(weaponDef), locked ? CreateUnlockableDef(weaponDef) : null);
+            if (!weaponDef.arsenalSkillDef)
+            {
+                Log.Error("Arsenal skilldef is null! " + weaponDef.nameToken);
+                return;
+            }
+
+            var arsenal = targetPrefab.GetComponent<DriverArsenal>();
+            var family = arsenal.weaponSkillSlot.skillFamily;
+
+            AddSkillToFamily(family, weaponDef.arsenalSkillDef, locked ? CreateUnlockableDef(weaponDef) : null);
         }
 
         /// <summary>
@@ -187,20 +204,18 @@ namespace RobDriver.Modules
             skillDef.keywordTokens = skillDefInfo.keywordTokens;
         }
 
-        internal static SkillDef CreatePrimarySkillDef(SerializableEntityStateType state, string stateMachine, string skillNameToken, string skillDescriptionToken, Sprite skillIcon, bool agile)
+        public static SkillDef CreatePrimarySkillDef(SerializableEntityStateType state, string stateMachine, string skillNameToken, string skillDescriptionToken, Sprite skillIcon, bool agile)
         {
-            SkillDefInfo info = new SkillDefInfo(skillNameToken, skillNameToken, skillDescriptionToken, skillIcon, state, stateMachine, agile);
-
-            return CreateSkillDef(info);
+            return CreateSkillDef(new SkillDefInfo(skillNameToken, skillNameToken, skillDescriptionToken, skillIcon, state, stateMachine, agile));
         }
 
-        public static SkillDef CreateWeaponSkillDef(string skillNameToken, string skillDescriptionToken, Sprite skillIcon)
+        public static SkillDef CreateWeaponSkillDef(string nameToken, string descriptionToken, Sprite icon)
         {
             return CreateSkillDef(new SkillDefInfo(
-                skillName: skillNameToken,
-                skillNameToken: skillNameToken,
-                skillDescriptionToken: skillDescriptionToken,
-                skillIcon: skillIcon,
+                skillName: nameToken,
+                skillNameToken: nameToken,
+                skillDescriptionToken: descriptionToken,
+                skillIcon: icon,
                 activationState: new SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName: "",
                 interruptPriority: InterruptPriority.Any,
@@ -212,7 +227,6 @@ namespace RobDriver.Modules
         {
             return CreateWeaponSkillDef(weaponDef.nameToken, weaponDef.descriptionToken, Sprite.Create(weaponDef.icon
                 as Texture2D, new Rect(0, 0, weaponDef.icon.width, weaponDef.icon.height), new Vector2(0.5f, 0.5f)));
-
         }
 
         /// <summary>

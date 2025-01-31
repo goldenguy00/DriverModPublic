@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using R2API;
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Audio;
@@ -16,6 +17,7 @@ namespace RobDriver.SkillStates.BaseStates
         protected string hitboxName = "Sword";
 
         protected DamageTypeCombo damageType = DamageTypeCombo.Generic;
+        protected DamageAPI.ModdedDamageType[] moddedDamageTypes = [];
         protected float damageCoefficient = 3.5f;
         protected float procCoefficient = 1f;
         protected float pushForce = 300f;
@@ -145,6 +147,12 @@ namespace RobDriver.SkillStates.BaseStates
             }
             if (base.isAuthority)
             {
+                var moddedDamageIndex = new int[moddedDamageTypes.Length];
+                for (int i = 0; i < moddedDamageTypes.Length; i++)
+                {
+                    moddedDamageIndex[i] = (int)moddedDamageTypes[i];
+                }
+
                 foreach (var healthComponent in attack.ignoredHealthComponentList)
                 {
                     if (healthComponent && healthComponent.TryGetComponent<CoinController>(out var coin) && coin.canRicochet)
@@ -157,7 +165,10 @@ namespace RobDriver.SkillStates.BaseStates
                             attack.forceVector,
                             attack.forceVector == null,
                             (byte)attack.damageColorIndex,
-                            (uint)attack.damageType);
+                            (uint)attack.damageType.damageType,
+                            (uint)attack.damageType.damageTypeExtended,
+                            (byte)attack.damageType.damageSource,
+                            moddedDamageIndex);
                     }
                 }
             }

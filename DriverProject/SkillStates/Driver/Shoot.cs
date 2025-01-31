@@ -1,6 +1,5 @@
 ﻿using EntityStates;
 using RoR2;
-using R2API;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 

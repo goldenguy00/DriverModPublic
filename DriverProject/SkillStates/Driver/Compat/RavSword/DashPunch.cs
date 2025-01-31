@@ -3,7 +3,6 @@ using RoR2;
 using RoR2.Audio;
 using RoR2.Projectile;
 using UnityEngine;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat
 {
@@ -169,6 +168,8 @@ namespace RobDriver.SkillStates.Driver.Compat
                             inflictor = base.gameObject,
                             crit = base.RollCrit()
                         };
+                        blastAttack.damageType.damageSource = DamageSource.Secondary;
+                        blastAttack.Fire();
 
                         // shockwave
                         ProjectileManager.instance.FireProjectile(new FireProjectileInfo

@@ -31,6 +31,7 @@ public class DriverWeaponDef : ScriptableObject
     [Header("Skills")]
     public SkillDef primarySkillDef;
     public SkillDef secondarySkillDef;
+    public SkillDef arsenalSkillDef;
 
     [Header("Visuals")]
     public Mesh mesh;
@@ -74,7 +75,7 @@ public class DriverWeaponDef : ScriptableObject
 
     public static DriverWeaponDef CreateWeaponDefFromInfo(DriverWeaponDefInfo weaponDefInfo)
     {
-        DriverWeaponDef weaponDef = (DriverWeaponDef)ScriptableObject.CreateInstance(typeof(DriverWeaponDef));
+        DriverWeaponDef weaponDef = ScriptableObject.CreateInstance<DriverWeaponDef>();
         weaponDef.name = weaponDefInfo.nameToken;
 
         weaponDef.nameToken = weaponDefInfo.nameToken;
@@ -87,6 +88,7 @@ public class DriverWeaponDef : ScriptableObject
 
         weaponDef.primarySkillDef = weaponDefInfo.primarySkillDef;
         weaponDef.secondarySkillDef = weaponDefInfo.secondarySkillDef;
+        weaponDef.arsenalSkillDef = weaponDefInfo.arsenalSkillDef;
 
         weaponDef.mesh = weaponDefInfo.mesh;
         weaponDef.material = weaponDefInfo.material;
@@ -113,6 +115,7 @@ public struct DriverWeaponDefInfo
 
     public SkillDef primarySkillDef;
     public SkillDef secondarySkillDef;
+    public SkillDef arsenalSkillDef;
 
     public Mesh mesh;
     public Material material;

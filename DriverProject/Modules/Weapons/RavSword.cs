@@ -1,5 +1,4 @@
 ﻿using RoR2.Skills;
-using System.Linq;
 using UnityEngine;
 
 namespace RobDriver.Modules.Weapons

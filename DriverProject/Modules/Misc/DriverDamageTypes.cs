@@ -6,6 +6,7 @@ namespace RobDriver
 {
     public static class DriverDamageTypes
     {
+        public static DamageAPI.ModdedDamageType Generic;
         public static DamageAPI.ModdedDamageType HookShot;
         public static DamageAPI.ModdedDamageType MissileShot;
         public static DamageAPI.ModdedDamageType VoidMissileShot;
@@ -30,6 +31,7 @@ namespace RobDriver
 
         internal static void Init()
         {
+            Generic = DamageAPI.ReserveDamageType();
             HookShot = DamageAPI.ReserveDamageType();
             MissileShot = DamageAPI.ReserveDamageType();
             VoidMissileShot = DamageAPI.ReserveDamageType();
