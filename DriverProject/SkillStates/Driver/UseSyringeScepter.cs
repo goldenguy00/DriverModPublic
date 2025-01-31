@@ -25,13 +25,13 @@ namespace RobDriver.SkillStates.Driver
 
             if (this.modelTransform)
             {
-                TemporaryOverlay temporaryOverlay = this.modelTransform.gameObject.AddComponent<TemporaryOverlay>();
+                var temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                 temporaryOverlay.duration = 12f;
                 temporaryOverlay.animateShaderAlpha = true;
                 temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 1f, 0f);
                 temporaryOverlay.destroyComponentOnEnd = true;
                 temporaryOverlay.originalMaterial = Modules.Assets.syringeScepterOverlayMat;
-                temporaryOverlay.AddToCharacerModel(this.modelTransform.GetComponent<CharacterModel>());
+                temporaryOverlay.AddToCharacterModel(this.modelTransform.GetComponent<CharacterModel>());
             }
         }
     }

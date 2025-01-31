@@ -29,7 +29,7 @@ namespace RobDriver.SkillStates.Driver.Compat
 
             PlayAnim();
 
-            if (DriverPlugin.ravagerInstalled) playID = Util.PlaySound("sfx_ravager_charge_jump", this.gameObject);
+            if (DriverPlugin.RavagerInstalled) playID = Util.PlaySound("sfx_ravager_charge_jump", this.gameObject);
             else playID = Util.PlaySound("HenryBazookaCharge", this.gameObject);
         }
 

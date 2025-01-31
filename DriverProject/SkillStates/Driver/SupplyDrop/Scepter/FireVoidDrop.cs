@@ -7,18 +7,19 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop.Scepter
     public class FireVoidDrop : FireSupplyDrop
     {
         protected override DriverWeaponDef weaponDef => DriverWeaponCatalog.PlasmaCannon;
+        protected override DriverBulletDef bulletDef => DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary);
 
         public override void OnEnter()
         {
             base.OnEnter();
 
             EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidSurvivor/VoidSurvivorMegaBlasterExplosion.prefab").WaitForCompletion(),
-    new EffectData
-    {
-        origin = this.FindModelChild("HandL").position,
-        rotation = Quaternion.identity,
-        scale = AimSupplyDrop.radius * 0.5f
-    }, false);
+                new EffectData
+                {
+                    origin = this.FindModelChild("HandL").position,
+                    rotation = Quaternion.identity,
+                    scale = AimSupplyDrop.radius * 0.5f
+                }, false);
         }
 
         protected override void PlayAnim()

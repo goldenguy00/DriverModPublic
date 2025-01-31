@@ -1,26 +1,25 @@
-﻿using RoR2;
-using System.Linq;
+﻿using System.Collections.Generic;
+using RoR2;
+using RoR2.Skills;
 using UnityEngine;
 
 namespace RobDriver.Modules.Components
 {
     public class DriverArsenal : MonoBehaviour
     {
-        public GenericSkill weaponSkillSlot;
+        public static Dictionary<SkillDef, ushort> passiveSkillsToWeaponIndex = [];
 
-        public DriverWeaponDef weaponDef;
+        public GenericSkill weaponSkillSlot;
 
         public DriverWeaponDef DefaultWeapon
         {
             get
             {
-                if (!this.weaponSkillSlot) return DriverWeaponCatalog.Pistol;
-                // what the fuck was i smoking, this is hideous
-                if (this.weaponSkillSlot?.skillDef is null) this.weaponDef = DriverWeaponCatalog.Pistol;
-                else if (this.weaponDef is null) this.weaponDef = DriverWeaponCatalog.weaponDefs.FirstOrDefault(def =>
-                        def.name == this.weaponSkillSlot.skillDef.skillName) ?? DriverWeaponCatalog.Pistol;
+                var skillDef = this.weaponSkillSlot ? this.weaponSkillSlot.skillDef : null;
+                if (!skillDef || !passiveSkillsToWeaponIndex.ContainsKey(skillDef))
+                    return DriverWeaponCatalog.Pistol;
 
-                return this.weaponDef;
+                return DriverWeaponCatalog.GetWeaponFromIndex(passiveSkillsToWeaponIndex[skillDef]);
             }
         }
     }

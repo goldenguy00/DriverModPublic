@@ -43,13 +43,7 @@ namespace RobDriver.SkillStates
 		{
 		}
 
-		public override bool shouldAutoDestroy
-		{
-			get
-			{
-				return false;
-			}
-		}
+        public override bool shouldAutoDestroy => false;
 
 		public override void FixedUpdate()
 		{

@@ -9,185 +9,141 @@ namespace RobDriver.Modules.Components
     {
         [Tooltip("The base object to destroy when this pickup is consumed.")]
         public GameObject baseObject;
+
         [Tooltip("The team filter object which determines who can pick up this pack.")]
         public TeamFilter teamFilter;
 
-        public DriverWeaponDef weaponDef;
-        private DriverBulletDef bulletDef;
+        [Tooltip("Parent of the model object.")]
+        public Transform modelParent;
+
+        [Tooltip("Blinking thing")]
+        public BeginRapidlyActivatingAndDeactivating blinker;
+
+        [Tooltip("DestroyTimer thing")]
+        public DestroyOnTimer destroyOnTimer;
+
+        // visuals
+        private GameObject pickupModelInstance;
+
+        // weapon info
+        private DriverWeaponDef weaponDef = DriverWeaponCatalog.Pistol;
+        private DriverBulletDef bulletDef = DriverBulletCatalog.Default;
         private bool cutAmmo;
         private bool isNewAmmoType;
 
-        public GameObject pickupEffect;
-        public GameObject ammoPickup;
-
-        public bool alive { get; private set; } = false;
-
-        public void UpdateWeaponPickup(DriverBulletDef bulletDef, bool cutAmmo, bool isNewAmmoType)
-        {
-            // make sure this is called before handling the collider logic
-            alive = true;
-            this.bulletDef = bulletDef;
-            this.cutAmmo = cutAmmo;
-            this.isNewAmmoType = isNewAmmoType;
-
-            UpdateVisuals();
-        }
-
-        private void Awake()
-        {
-            // default text
-            SetTextComponent(this.transform.parent.GetComponentInChildren<RoR2.UI.LanguageTextMeshController>(), this.weaponDef.nameToken, this.weaponDef.tier);
-
-            // disable visuals for non driver
-            if (!Modules.Config.sharedPickupVisuals.Value)
-            {
-                BeginRapidlyActivatingAndDeactivating blinker = this.transform.parent.GetComponentInChildren<BeginRapidlyActivatingAndDeactivating>();
-                if (blinker)
-                {
-                    bool isDriver = false;
-
-                    var localPlayers = LocalUserManager.readOnlyLocalUsersList;
-                    foreach (LocalUser i in localPlayers)
-                    {
-                        if (i.cachedBody.baseNameToken == Modules.Survivors.Driver.bodyNameToken) isDriver = true;
-                    }
-
-                    if (!isDriver)
-                    {
-                        blinker.blinkingRootObject.SetActive(false);
-                        Destroy(blinker);
-                    }
-                    else
-                    {
-                        SetTextComponent(this.transform.parent.GetComponentInChildren<RoR2.UI.LanguageTextMeshController>(), this.weaponDef.nameToken, this.weaponDef.tier);
-                    }
-                }
-            }
-
-            // uh will this work?
-            /*if (Run.instance)
-			{
-				float rng = Run.instance.stageRng.nextNormalizedFloat;
-
-				if (rng > 0.5f) this.SetWeapon(DriverWeapon.MachineGun);
-				else this.SetWeapon(DriverWeapon.Shotgun);
-			}*/
-            // no it doesn't, clients don't have the rng
-
-            // i'm a dirty hack
-            // lock me up and throw away the key
-            this.Invoke("Fuck", 59.5f);
-        }
+        private bool alive;
 
         private void OnTriggerStay(Collider collider)
         {
-            // can this run on every client? i don't know but let's find out
-            if (NetworkServer.active && this.alive/* && TeamComponent.GetObjectTeam(collider.gameObject) == this.teamFilter.teamIndex*/)
+            if (NetworkServer.active && this.alive)
             {
-                // well it can but it's not a fix.
-                DriverController iDrive = collider.GetComponent<DriverController>();
+                var iDrive = collider.GetComponent<DriverController>();
                 if (iDrive)
                 {
                     this.alive = false;
 
-                    Modules.Achievements.DriverPistolPassiveAchievement.weaponPickedUp = true;
-                    Modules.Achievements.DriverGodslingPassiveAchievement.weaponPickedUpHard = true;
+                    Achievements.DriverPistolPassiveAchievement.weaponPickedUp = true;
+                    Achievements.DriverGodslingPassiveAchievement.weaponPickedUpHard = true;
 
                     iDrive.ServerPickUpWeapon(iDrive, this.weaponDef, this.bulletDef, this.cutAmmo, this.isNewAmmoType);
-                    EffectManager.SimpleEffect(this.pickupEffect, this.transform.position, Quaternion.identity, true);
-                    UnityEngine.Object.Destroy(this.baseObject);
+                    EffectManager.SimpleEffect(Assets.weaponPickupEffect, this.transform.position, Quaternion.identity, true);
+                    Destroy(this.baseObject);
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            if (this.alive)
+            {
+                Achievements.SupplyDropAchievement.weaponHasDespawned = true;
+            }
+        }
+
+        public void UpdateWeaponPickup(DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo, bool isNewAmmoType)
+        {
+            this.weaponDef = weaponDef;
+            this.bulletDef = bulletDef;
+            this.cutAmmo = cutAmmo;
+            this.isNewAmmoType = isNewAmmoType;
+
+            // make sure this is called before handling the collider logic
+            alive = true;
+
+            UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            // non - driver player, ignore all
-            var blinker = this.transform.parent.GetComponentInChildren<BeginRapidlyActivatingAndDeactivating>();
-            if (!blinker) return;
-
-            // swap to ammo visuals
-            foreach (LocalUser i in LocalUserManager.readOnlyLocalUsersList)
+            DriverController iDrive = null;
+            foreach (var localUser in LocalUserManager.readOnlyLocalUsersList)
             {
-                if (i?.cachedBody && i.cachedBody.hasEffectiveAuthority)
+                if (localUser?.cachedBody && localUser.cachedBody.hasEffectiveAuthority)
+                    iDrive ??= localUser.cachedBody.GetComponent<DriverController>();
+            }
+
+            if (!Config.sharedPickupVisuals.Value && !iDrive)
+            {
+                modelParent.gameObject.SetActive(false);
+                Destroy(blinker);
+            }
+
+            // ammo pickup visuals
+            if (iDrive && (iDrive.passive.isPistolOnly || iDrive.passive.isBullets || (iDrive.passive.isRyan && this.isNewAmmoType)))
+            {
+                CreateModel(Assets.ammoPickupModel, this.bulletDef.nameToken, this.bulletDef.tier);
+
+                var textComponent = pickupModelInstance.GetComponentInChildren<LanguageTextMeshController>();
+                textComponent.textMeshPro.outlineColor = this.bulletDef.trailColor;
+                textComponent.textMeshPro.outlineWidth *= 0.75f;
+            }
+            else
+            {
+                // normal visuals
+                var baseAsset = weaponDef.tier switch
                 {
-                    if (i.cachedBody.baseNameToken == Modules.Survivors.Driver.bodyNameToken && i.cachedBody.TryGetComponent<DriverController>(out var iDrive) && iDrive)
-                    {
-                        if (iDrive.passive.isPistolOnly || iDrive.passive.isBullets || (iDrive.passive.isRyan && this.isNewAmmoType))
-                        {
-                            if (!ammoPickup)
-                            {
-                                foreach (MeshRenderer h in blinker.blinkingRootObject.GetComponentsInChildren<MeshRenderer>())
-                                {
-                                    h.enabled = false;
-                                }
+                    DriverWeaponTier.Legendary => Assets.legendaryPickupModel,
+                    DriverWeaponTier.Unique => Assets.uniquePickupModel,
+                    DriverWeaponTier.Void => Assets.legendaryPickupModel,
+                    DriverWeaponTier.Lunar => Assets.lunarPickupModel,
+                    _ => Assets.commonPickupModel,
+                };
 
-                                ammoPickup = GameObject.Instantiate(Modules.Assets.ammoPickupModel, blinker.blinkingRootObject.transform);
-                                ammoPickup.transform.localPosition = Vector3.zero;
-                                ammoPickup.transform.localRotation = Quaternion.identity;
-                            }
-
-                            var ammoText = ammoPickup.transform.GetComponentInChildren<RoR2.UI.LanguageTextMeshController>();
-                            if (this.bulletDef)
-                            {
-                                SetTextComponent(ammoText, this.bulletDef.nameToken, this.bulletDef.tier);
-                                ammoText.textMeshPro.outlineColor = this.bulletDef.trailColor;
-                                ammoText.textMeshPro.outlineWidth *= 0.75f;
-                            }
-                            else
-                            {
-                                // this should never happen, but juuuust in case
-                                SetTextComponent(ammoText, "Bullets", DriverWeaponTier.Uncommon);
-                            }
-                        }
-                    }
-                    break;
-                }
+                CreateModel(baseAsset, this.weaponDef.nameToken, this.weaponDef.tier);
             }
         }
 
-        private void SetTextComponent(RoR2.UI.LanguageTextMeshController textComponent, string nameToken, DriverWeaponTier tier)
+        private void CreateModel(GameObject baseAsset, string nameToken, DriverWeaponTier tier)
         {
-            if (textComponent)
+            pickupModelInstance = GameObject.Instantiate(baseAsset, modelParent);
+            pickupModelInstance.transform.localPosition = Vector3.zero;
+            pickupModelInstance.transform.localRotation = Quaternion.identity;
+
+            // always use weapon tier, fuck it
+            if (weaponDef.tier > DriverWeaponTier.Uncommon)
             {
-                textComponent.token = nameToken;
-
-                if (this.cutAmmo)
-                {
-                    textComponent.textMeshPro.color = Modules.Helpers.badColor;
-                    return;
-                }
-
-                switch (tier)
-                {
-                    case DriverWeaponTier.Common:
-                        textComponent.textMeshPro.color = Modules.Helpers.whiteItemColor;
-                        break;
-                    case DriverWeaponTier.Uncommon:
-                        textComponent.textMeshPro.color = Modules.Helpers.greenItemColor;
-                        break;
-                    case DriverWeaponTier.Legendary:
-                        textComponent.textMeshPro.color = Modules.Helpers.redItemColor;
-                        break;
-                    case DriverWeaponTier.Unique:
-                        textComponent.textMeshPro.color = Modules.Helpers.yellowItemColor;
-                        break;
-                    case DriverWeaponTier.Lunar:
-                        textComponent.textMeshPro.color = Modules.Helpers.lunarItemColor;
-                        break;
-                    case DriverWeaponTier.Void:
-                        textComponent.textMeshPro.color = Modules.Helpers.voidItemColor;
-                        break;
-                }
+                blinker.delayBeforeBeginningBlinking = 285f;
+                destroyOnTimer.duration = 300f;
             }
-        }
 
-        private void Fuck()
-        {
-            if (this.alive)
+            Color color = Helpers.badColor;
+            if (!this.cutAmmo)
             {
-                Modules.Achievements.SupplyDropAchievement.weaponHasDespawned = true;
+                color = tier switch
+                {
+                    DriverWeaponTier.Common => Helpers.whiteItemColor,
+                    DriverWeaponTier.Uncommon => Helpers.greenItemColor,
+                    DriverWeaponTier.Legendary => Helpers.redItemColor,
+                    DriverWeaponTier.Unique => Helpers.yellowItemColor,
+                    DriverWeaponTier.Lunar => Helpers.lunarItemColor,
+                    DriverWeaponTier.Void => Helpers.voidItemColor,
+                    _ => Helpers.badColor,
+                };
             }
+
+            var textComponent = pickupModelInstance.GetComponentInChildren<LanguageTextMeshController>();
+            textComponent.token = nameToken;
+            textComponent.textMeshPro.color = color;
         }
     }
 }

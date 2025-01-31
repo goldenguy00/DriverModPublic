@@ -1,10 +1,11 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using RobDriver.Modules.Components;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
-using R2API;
+using static UnityEngine.ParticleSystem.PlaybackState;
+using static UnityEngine.UI.GridLayoutGroup;
+using UnityEngine.UIElements;
 
 namespace RobDriver.SkillStates.Driver.SMG
 {
@@ -58,8 +59,26 @@ namespace RobDriver.SkillStates.Driver.SMG
                 if (base.isAuthority)
                 {
                     Ray aimRay = this.GetAimRay();
-                    ProjectileManager.instance.FireProjectile(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion(), 
-                        aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), this.gameObject, this.damageStat * this._damageCoefficient, 1200f, this.isCrit, DamageColorIndex.Default, null, 120f);
+
+                    var fireProjectileInfo = new FireProjectileInfo
+                    {
+                        projectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion(),
+                        position = aimRay.origin,
+                        rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
+                        owner = this.gameObject,
+                        damage = this.damageStat * this._damageCoefficient,
+                        force = 1200f,
+                        crit = this.isCrit,
+                        damageColorIndex = DamageColorIndex.Default,
+                        target = null,
+                        speedOverride = 120f,
+                        fuseOverride = -1f
+                    };
+                    var damageType = fireProjectileInfo.projectilePrefab.GetComponent<ProjectileDamage>().damageType;
+                    damageType.damageSource = DamageSource.Secondary;
+                    fireProjectileInfo.damageTypeOverride = damageType;
+
+                    ProjectileManager.instance.FireProjectile(fireProjectileInfo);
                 }
             }
         }
@@ -73,7 +92,7 @@ namespace RobDriver.SkillStates.Driver.SMG
                 this.Fire();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
                 this.outer.SetNextStateToMain();

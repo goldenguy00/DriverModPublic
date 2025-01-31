@@ -1,7 +1,5 @@
 ﻿using RoR2;
-using UnityEngine;
 using EntityStates;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat
 {
@@ -12,7 +10,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             base.OnEnter();
 
             base.PlayCrossfade("Gesture, Override", "ChargeSlash", "Slash.playbackRate", 0.3f, 0.1f);
-            if(DriverPlugin.ravagerInstalled) Util.PlaySound("sfx_ravager_foley_01", this.gameObject);
+            if(DriverPlugin.RavagerInstalled) Util.PlaySound("sfx_ravager_foley_01", this.gameObject);
             else Util.PlaySound("sfx_driver_aim_foley", this.gameObject);
         }
 

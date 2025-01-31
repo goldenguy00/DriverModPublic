@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using EntityStates;
 using RoR2;
 using RobDriver.SkillStates.BaseStates;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat
 {
@@ -15,7 +13,7 @@ namespace RobDriver.SkillStates.Driver.Compat
         public override void OnEnter()
         {
             this.RefreshState();
-            this.hitboxName = "Knife";
+            this.hitboxName = "Hammer";
 
             this.damageCoefficient = _damageCoefficient;
             this.pushForce = 200f;
@@ -29,7 +27,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             this.hitStopDuration = 0.08f;
             this.smoothHitstop = true;
 
-            if (DriverPlugin.ravagerInstalled) this.swingSoundString = "sfx_ravager_swing";
+            if (DriverPlugin.RavagerInstalled) this.swingSoundString = "sfx_ravager_swing";
             else this.swingSoundString = "sfx_driver_swing_knife";
             this.swingEffectPrefab = Modules.Assets.redSwingEffect;
             this.hitSoundString = "";
@@ -37,6 +35,8 @@ namespace RobDriver.SkillStates.Driver.Compat
             this.impactSound = Modules.Assets.knifeImpactSoundDef.index;
 
             this.damageType = iDrive.DamageType;
+
+            this.moddedDamageTypes = [this.iDrive.currentBulletDef.moddedDamageType];
 
             if (this.swingIndex == 0) this.muzzleString = "SwingMuzzle1";
             else this.muzzleString = this.muzzleString = "SwingMuzzle2";
@@ -50,22 +50,20 @@ namespace RobDriver.SkillStates.Driver.Compat
                 this.hitStopDuration *= 2.5f;
                 this.attackStartTime = 0.22f;
                 this.damageType |= DamageType.Stun1s;
-                if (DriverPlugin.ravagerInstalled) this.swingSoundString = "sfx_ravager_bigswing";
+                if (DriverPlugin.RavagerInstalled) this.swingSoundString = "sfx_ravager_bigswing";
                 else this.swingSoundString = "sfx_driver_swing_hammer";
                 this.impactSound = Modules.Assets.hammerImpactSoundDef.index;
                 this.damageCoefficient = finisherDamageCoefficient;
             }
 
             base.OnEnter();
-
-            this.attack.AddModdedDamageType(iDrive.ModdedDamageType);
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
                 this.outer.SetNextStateToMain();

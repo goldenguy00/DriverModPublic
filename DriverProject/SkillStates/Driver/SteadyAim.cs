@@ -6,7 +6,6 @@ using static RoR2.CameraTargetParams;
 using UnityEngine.Networking;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver
 {
@@ -22,30 +21,9 @@ namespace RobDriver.SkillStates.Driver
 
         public bool skipAnim = false;
 
-        protected virtual bool isPiercing
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        protected virtual float _damageCoefficient
-        {
-            get
-            {
-                return SteadyAim.damageCoefficient;
-            }
-        }
-
-        protected virtual GameObject tracerPrefab
-        {
-            get
-            {
-                if (this.isCrit) return Shoot.critTracerEffectPrefab;
-                return Shoot.tracerEffectPrefab;
-            }
-        }
+        protected virtual bool isPiercing => false;
+        protected virtual float _damageCoefficient => SteadyAim.damageCoefficient;
+        protected virtual GameObject tracerPrefab => this.isCrit ? Shoot.critTracerEffectPrefab : Shoot.tracerEffectPrefab;
 
         public CameraParamsOverrideHandle camParamsOverrideHandle;
         private OverlayController overlayController;
@@ -56,7 +34,6 @@ namespace RobDriver.SkillStates.Driver
         private bool isCrit;
         private int cachedShots;
         private float cachedShotTimer;
-        private PrimarySkillShurikenBehavior shurikenComponent;
         private bool _autoFocus;
         private bool autoFocus;
         private bool cancelling;
@@ -77,13 +54,6 @@ namespace RobDriver.SkillStates.Driver
 
             if (NetworkServer.active) this.characterBody.AddBuff(RoR2Content.Buffs.Slow50);
 
-            this.shurikenComponent = this.GetComponent<PrimarySkillShurikenBehavior>();
-
-            if (this.characterBody.master && this.characterBody.master.inventory)
-            {
-                this.characterBody.master.inventory.onInventoryChanged += Inventory_onInventoryChanged;
-            }
-
             this.characterBody._defaultCrosshairPrefab = Modules.Assets.pistolAimCrosshairPrefab;
             this._autoFocus = Modules.Config.autoFocus.Value;
             this.adaptiveFocus = Modules.Config.adaptiveFocus.Value;
@@ -101,17 +71,13 @@ namespace RobDriver.SkillStates.Driver
 
             this.FindModelChild("PistolSight").gameObject.SetActive(true);
 
-            if (this.iDrive.passive.isPistolOnly || this.iDrive.passive.isBullets || this.iDrive.passive.isRyan)
+            this.overlayController = HudOverlayManager.AddOverlay(this.gameObject, new OverlayCreationParams
             {
-                this.overlayController = HudOverlayManager.AddOverlay(this.gameObject, new OverlayCreationParams
-                {
-                    prefab = Modules.Assets.headshotOverlay,
-                    childLocatorEntry = "ScopeContainer"
-                });
+                prefab = Modules.Assets.headshotOverlay,
+                childLocatorEntry = "ScopeContainer"
+            });
 
-                if(!Config.defaultPistolAnims.Value) this.animator.SetLayerWeight(this.animator.GetLayerIndex("AltPistol, Override"), 1f);
-                else this.animator.SetLayerWeight(this.animator.GetLayerIndex("AltPistol, Override"), 0f);
-            }
+            if(!Config.defaultPistolAnims.Value) this.animator.SetLayerWeight(this.animator.GetLayerIndex("AltPistol, Override"), 1f);
             else this.animator.SetLayerWeight(this.animator.GetLayerIndex("AltPistol, Override"), 0f);
 
             this.lightEffectInstance = GameObject.Instantiate(Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("GunLight"));
@@ -125,11 +91,6 @@ namespace RobDriver.SkillStates.Driver
         protected virtual void PlayExitAnim()
         {
             base.PlayAnimation("Gesture, Override", "SteadyAimEnd", "Action.playbackRate", 0.2f);
-        }
-
-        private void Inventory_onInventoryChanged()
-        {
-            this.shurikenComponent = this.GetComponent<PrimarySkillShurikenBehavior>();
         }
 
         private void UpdateLightEffect()
@@ -162,7 +123,7 @@ namespace RobDriver.SkillStates.Driver
 
             this.UpdateLightEffect();
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 this.cancelling = true;
                 this.outer.SetNextStateToMain();
@@ -311,7 +272,7 @@ namespace RobDriver.SkillStates.Driver
         {
             if (this.iDrive.maxWeaponTimer > 0) this.iDrive.ConsumeAmmo(1f, false);
 
-            if (this.shurikenComponent) shurikenComponent.OnSkillActivated(base.skillLocator.primary);
+            if (this.iDrive.shurikenComponent) this.iDrive.shurikenComponent.OnSkillActivated(base.skillLocator.primary);
 
             if (base.fixedAge <= 0.25f) this.jamFlag = true;
 
@@ -359,107 +320,66 @@ namespace RobDriver.SkillStates.Driver
 
                 this.lastCharge = wasCharged;
 
-                BulletAttack.FalloffModel falloffModel = BulletAttack.FalloffModel.DefaultBullet;
-                if (this.lastCharge) falloffModel = BulletAttack.FalloffModel.None;
+                var falloffModel = this.lastCharge ? BulletAttack.FalloffModel.None : BulletAttack.FalloffModel.DefaultBullet;
+                var stopperMask = this.isPiercing ? LayerIndex.world.mask : LayerIndex.CommonMasks.bullet;
 
-                if (this.isPiercing)
+                var bulletAttack = new BulletAttack
                 {
-                    BulletAttack bulletAttack = new BulletAttack
-                    {
-                        bulletCount = 1,
-                        aimVector = aimRay.direction,
-                        origin = aimRay.origin,
-                        damage = dmg * this.damageStat,
-                        damageColorIndex = DamageColorIndex.Default,
-                        damageType = iDrive.DamageType,
-                        falloffModel = falloffModel,
-                        maxDistance = Shoot.range,
-                        force = Shoot.force,
-                        hitMask = LayerIndex.CommonMasks.bullet,
-                        minSpread = 0f,
-                        maxSpread = 0f,
-                        isCrit = isCrit,
-                        owner = base.gameObject,
-                        muzzleName = "PistolMuzzle",
-                        smartCollision = true,
-                        procChainMask = default(ProcChainMask),
-                        procCoefficient = Shoot.procCoefficient,
-                        radius = 1f,
-                        sniper = false,
-                        stopperMask = LayerIndex.world.mask,
-                        weapon = null,
-                        tracerEffectPrefab = this.tracerPrefab,
-                        spreadPitchScale = 0f,
-                        spreadYawScale = 0f,
-                        queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                        hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
-                    };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
-                    bulletAttack.Fire();
-                }
-                else
+                    bulletCount = 1,
+                    aimVector = aimRay.direction,
+                    origin = aimRay.origin,
+                    damage = dmg * this.damageStat,
+                    damageColorIndex = DamageColorIndex.Default,
+                    damageType = iDrive.DamageType,
+                    falloffModel = falloffModel,
+                    maxDistance = Shoot.range,
+                    force = Shoot.force,
+                    hitMask = LayerIndex.CommonMasks.bullet,
+                    minSpread = 0f,
+                    maxSpread = 0f,
+                    isCrit = isCrit,
+                    owner = base.gameObject,
+                    muzzleName = "PistolMuzzle",
+                    smartCollision = true,
+                    procChainMask = default,
+                    procCoefficient = Shoot.procCoefficient,
+                    radius = 1f,
+                    sniper = false,
+                    stopperMask = stopperMask,
+                    weapon = null,
+                    tracerEffectPrefab = this.tracerPrefab,
+                    spreadPitchScale = 0f,
+                    spreadYawScale = 0f,
+                    queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
+                    hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
+                };
+                bulletAttack.damageType.damageSource = DamageSource.Secondary;
+                bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
                 {
-                    BulletAttack bulletAttack = new BulletAttack
+                    if (BulletAttack.IsSniperTargetHit(hitInfo))
                     {
-                        bulletCount = 1,
-                        aimVector = aimRay.direction,
-                        origin = aimRay.origin,
-                        damage = dmg * this.damageStat,
-                        damageColorIndex = DamageColorIndex.Default,
-                        damageType = iDrive.DamageType,
-                        falloffModel = falloffModel,
-                        maxDistance = Shoot.range,
-                        force = Shoot.force,
-                        hitMask = LayerIndex.CommonMasks.bullet,
-                        minSpread = 0f,
-                        maxSpread = 0f,
-                        isCrit = isCrit,
-                        owner = base.gameObject,
-                        muzzleName = "PistolMuzzle",
-                        smartCollision = true,
-                        procChainMask = default(ProcChainMask),
-                        procCoefficient = Shoot.procCoefficient,
-                        radius = 1f,
-                        sniper = false,
-                        stopperMask = LayerIndex.CommonMasks.bullet,
-                        weapon = null,
-                        tracerEffectPrefab = this.tracerPrefab,
-                        spreadPitchScale = 0f,
-                        spreadYawScale = 0f,
-                        queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                        hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
-                    };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
+                        if (this.iDrive.passive.isPistolOnly) damageInfo.damage *= 2f;
+                        else if (this.iDrive.passive.isBullets) damageInfo.damage *= 1.5f;
+                        else damageInfo.damage *= 1.25f;
+                        damageInfo.damageColorIndex = DamageColorIndex.Sniper;
 
-                    if (this.iDrive.passive.isPistolOnly || this.iDrive.passive.isBullets || this.iDrive.passive.isRyan)
-                    {
-                        bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
+                        if (wasCharged)
                         {
-                            if (BulletAttack.IsSniperTargetHit(hitInfo))
+                            EffectData effectData = new EffectData
                             {
-                                if (this.iDrive.passive.isPistolOnly) damageInfo.damage *= 2f;
-                                else if (this.iDrive.passive.isBullets) damageInfo.damage *= 1.5f;
-                                else damageInfo.damage *= 1.25f;
-                                damageInfo.damageColorIndex = DamageColorIndex.Sniper;
+                                origin = hitInfo.point,
+                                rotation = Quaternion.LookRotation(-hitInfo.direction)
+                            };
 
-                                if (wasCharged)
-                                {
-                                    EffectData effectData = new EffectData
-                                    {
-                                        origin = hitInfo.point,
-                                        rotation = Quaternion.LookRotation(-hitInfo.direction)
-                                    };
-
-                                    effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
-                                    EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
-                                    Util.PlaySound("sfx_driver_headshot", base.gameObject);
-                                    hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
-                                }
-                            }
-                        };
+                            effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
+                            EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
+                            Util.PlaySound("sfx_driver_headshot", base.gameObject);
+                            hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
+                        }
                     }
-                    bulletAttack.Fire();
-                }
+                };
+
+                bulletAttack.Fire();
             }
         }
 
@@ -520,34 +440,30 @@ namespace RobDriver.SkillStates.Driver
                     queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
                 };
-                bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
-
-                if (this.iDrive.passive.isPistolOnly || this.iDrive.passive.isBullets || this.iDrive.passive.isRyan)
+                bulletAttack.damageType.damageSource = DamageSource.Secondary;
+                bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
                 {
-                    bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
+                    if (BulletAttack.IsSniperTargetHit(hitInfo))
                     {
-                        if (BulletAttack.IsSniperTargetHit(hitInfo))
+                        if (this.iDrive.passive.isPistolOnly) damageInfo.damage *= 2f;
+                        else damageInfo.damage *= 1.25f;
+                        damageInfo.damageColorIndex = DamageColorIndex.Sniper;
+
+                        if (this.lastCharge)
                         {
-                            if (this.iDrive.passive.isPistolOnly) damageInfo.damage *= 2f;
-                            else damageInfo.damage *= 1.25f;
-                            damageInfo.damageColorIndex = DamageColorIndex.Sniper;
-
-                            if (this.lastCharge)
+                            EffectData effectData = new EffectData
                             {
-                                EffectData effectData = new EffectData
-                                {
-                                    origin = hitInfo.point,
-                                    rotation = Quaternion.LookRotation(-hitInfo.direction)
-                                };
+                                origin = hitInfo.point,
+                                rotation = Quaternion.LookRotation(-hitInfo.direction)
+                            };
 
-                                effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
-                                EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
-                                Util.PlaySound("sfx_driver_headshot", base.gameObject);
-                                hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
-                            }
+                            effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
+                            EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
+                            Util.PlaySound("sfx_driver_headshot", base.gameObject);
+                            hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
                         }
-                    };
-                }
+                    }
+                };
                 bulletAttack.Fire();
             }
         }
@@ -565,11 +481,6 @@ namespace RobDriver.SkillStates.Driver
             this.PlayExitAnim();
             base.PlayAnimation("AimPitch", "AimPitch");
             if (!this.reloading) this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
-
-            if (this.characterBody.master && this.characterBody.master.inventory)
-            {
-                this.characterBody.master.inventory.onInventoryChanged -= Inventory_onInventoryChanged;
-            }
 
             if (this.overlayController != null)
             {

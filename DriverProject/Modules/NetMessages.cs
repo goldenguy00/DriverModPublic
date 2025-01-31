@@ -1,8 +1,4 @@
-﻿using RoR2;
-using UnityEngine;
-using UnityEngine.Networking;
-
-using R2API.Networking.Interfaces;
+﻿using R2API.Networking;
 
 namespace RobDriver.Modules
 {
@@ -10,9 +6,12 @@ namespace RobDriver.Modules
     {
         public static void RegisterNetworkMessages()
         {
-            //R2API.Networking.NetworkingAPI.RegisterMessageType<SyncLifeSteal>();
+            NetworkingAPI.RegisterMessageType<Components.SyncWeapon>();
+            NetworkingAPI.RegisterMessageType<Components.SyncOverlay>();
+            NetworkingAPI.RegisterMessageType<Components.SyncStoredWeapon>();
+            NetworkingAPI.RegisterMessageType<Components.SyncDecapitation>();
         }
-
+        /*
         public class SyncLifeSteal : INetMessage
         {
             NetworkInstanceId netId;
@@ -47,6 +46,6 @@ namespace RobDriver.Modules
                 }
                 bodyObject.GetComponent<HealthComponent>().Heal(healAmount, default(ProcChainMask));
             }
-        }
+        }*/
     }
 }

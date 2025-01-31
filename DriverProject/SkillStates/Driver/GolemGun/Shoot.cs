@@ -2,7 +2,6 @@
 using UnityEngine;
 using EntityStates;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.GolemGun
 {
@@ -45,7 +44,8 @@ namespace RobDriver.SkillStates.Driver.GolemGun
 
             this.fireDuration = 0;
 
-            if (this.iDrive) this.iDrive.ConsumeAmmo();
+            if (this.iDrive)
+                this.iDrive.ConsumeAmmo();
         }
 
         public virtual void FireBullet()
@@ -101,7 +101,6 @@ namespace RobDriver.SkillStates.Driver.GolemGun
                         hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                         HitEffectNormal = false,
                     };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                     bulletAttack.minSpread = 0;
                     bulletAttack.maxSpread = 0;
                     bulletAttack.bulletCount = 1;
@@ -132,7 +131,7 @@ namespace RobDriver.SkillStates.Driver.GolemGun
                 this.FireBullet();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", "BufferEmpty");
                 this.outer.SetNextStateToMain();

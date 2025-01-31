@@ -1,7 +1,10 @@
-﻿using RoR2;
+﻿using System.Collections;
+using System.Linq;
+using HG;
+using R2API;
+using RoR2;
 using RoR2.Orbs;
 using RoR2.Projectile;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,15 +12,6 @@ namespace RobDriver.Modules.Components
 {
     public class CoinController : NetworkBehaviour, IProjectileImpactBehavior, IOnIncomingDamageServerReceiver
     {
-        public enum RicochetPriority
-        {
-            None,
-            Body,
-            Coin
-        }
-
-        public HealthComponent projectileHealthComponent;
-        public ProjectileController controller;
         public DriverController iDrive;
 
         public NetworkSoundEventDef ricochetSound;
@@ -26,15 +20,15 @@ namespace RobDriver.Modules.Components
         private float coolStopwatchScale = 0.01f;
         private bool startCoolStopwatch = false;
         public float ricochetMultiplier = 2f;
-        private Vector3 rotationSpeed = new Vector3(2000f, 0f, 0f);
+        private Vector3 rotationSpeed;
         public int bounceCountStored = 0;
         private DamageInfo damageInfo;
 
         public void OnIncomingDamageServer(DamageInfo damageInfo)
         {
-            if (damageInfo.attacker && 
-               (damageInfo.attacker.TryGetComponent<DriverController>(out _) ||
-                damageInfo.attacker.TryGetComponent<CoinController>(out _)))
+            if (damageInfo.attacker && iDrive &&
+               (damageInfo.attacker == iDrive.gameObject ||
+                damageInfo.attacker.GetComponent<CoinController>()))
             {
                 RicochetBullet(damageInfo);
             }
@@ -57,11 +51,34 @@ namespace RobDriver.Modules.Components
 
         private void Start()
         {
-            float speed = UnityEngine.Random.Range(500f, 2000f);
-            this.rotationSpeed = new Vector3(speed, 0f, 0f);
+            this.gameObject.layer = LayerIndex.fakeActor.intVal;
+            this.rotationSpeed = new Vector3(Random.Range(500f, 2000f), 0f, 0f);
 
-            iDrive = controller.owner.GetComponent<DriverController>();
-            this.GetComponent<TeamFilter>().teamIndex = TeamIndex.Neutral;
+            this.StartCoroutine(nameof(SwitchLayer));
+        }
+
+        private IEnumerator SwitchLayer()
+        {
+            yield return null;
+
+            if (this.TryGetComponent<ProjectileController>(out var pc))
+                iDrive = pc.owner.GetComponent<DriverController>();
+
+            if (this.TryGetComponent<HealthComponent>(out var hc))
+            {
+                IOnIncomingDamageServerReceiver value = this;
+
+                if (!hc.onIncomingDamageReceivers.Contains(value))
+                    ArrayUtils.ArrayAppend(ref hc.onIncomingDamageReceivers, in value);
+            }
+
+            yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
+
+            this.gameObject.layer = LayerIndex.defaultLayer.intVal;
+            var hurtBox = this.GetComponentInChildren<HurtBox>();
+            if (hurtBox)
+                hurtBox.gameObject.layer = LayerIndex.entityPrecise.intVal;
         }
 
         private void FixedUpdate()
@@ -73,22 +90,19 @@ namespace RobDriver.Modules.Components
                 if (damageInfo.attacker && this.coolStopwatchScale <= 0f)
                 {
                     this.canRicochet = false;
-                    TeamComponent teamComponent = damageInfo.attacker.GetComponent<TeamComponent>();
-                    float co = damageInfo.damage / teamComponent.body.damage;
-                    CoinRicochetOrb orb = new CoinRicochetOrb
+                    var attackerBody = this.damageInfo.attacker.GetComponent<CharacterBody>();
+                    var orb = new CoinRicochetOrb
                     {
-                        coinPosition = base.transform.position,
                         origin = base.transform.position,
                         speed = 180f + (10f * bounceCountStored),
                         attacker = this.damageInfo.attacker,
-                        inflictor = this.damageInfo.inflictor,
-                        damageCoefficient = co,
+                        damageCoefficient = this.damageInfo.damage / attackerBody.damage,
                         damageValue = this.damageInfo.damage * this.ricochetMultiplier,
-                        teamIndex = teamComponent.teamIndex,
+                        damageType = this.iDrive.DamageType,
+                        teamIndex = attackerBody.teamComponent.teamIndex,
                         procCoefficient = 1f,
                         isCrit = this.damageInfo.crit,
                         bounceCount = bounceCountStored,
-                        iDrive = this.iDrive
                     };
 
                     this.GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -109,7 +123,8 @@ namespace RobDriver.Modules.Components
         }
 
         [Command]
-        public void CmdRicochetBullet(GameObject attacker, GameObject inflictor, bool isCrit, float damage, uint procChainMask, Vector3 force, bool canRejectForce, byte colorIndex, uint damageType)
+        public void CmdRicochetMelee(GameObject attacker, GameObject inflictor, bool isCrit, float damage, uint procChainMask, Vector3 force,
+            bool canRejectForce, byte colorIndex, uint damageType, uint damageTypeExtended, byte damageSource, int[] moddedDamageTypes)
         {
             this.damageInfo = new DamageInfo
             {
@@ -120,14 +135,24 @@ namespace RobDriver.Modules.Components
                 procCoefficient = 0f,
                 force = force,
                 canRejectForce = canRejectForce,
+                procChainMask = new ProcChainMask { mask = procChainMask },
                 damageColorIndex = (DamageColorIndex)colorIndex,
-                damageType = (DamageType)damageType
+                damageType = new DamageTypeCombo
+                {
+                    damageType = (DamageType)damageType,
+                    damageTypeExtended = (DamageTypeExtended)damageTypeExtended,
+                    damageSource = (DamageSource)damageSource,
+                },
             };
-            this.damageInfo.procChainMask.mask = procChainMask;
+            for (int i = 0; i < moddedDamageTypes.Length; i++)
+            {
+                this.damageInfo.AddModdedDamageType((DamageAPI.ModdedDamageType)moddedDamageTypes[i]);
+            }
 
             bounceCountStored++;
             coolStopwatchScale = (coolStopwatchScale * bounceCountStored) + 0.01f;
             startCoolStopwatch = true;
+            canRicochet = false;
         }
 
         public void RicochetBullet(DamageInfo damageInfo)
@@ -144,19 +169,6 @@ namespace RobDriver.Modules.Components
             bounceCountStored++;
             coolStopwatchScale = (coolStopwatchScale * bounceCountStored) + 0.01f;
             startCoolStopwatch = true;
-        }
-
-        public static List<CoinController> OverlapAttackGetCoins(OverlapAttack attack)
-        {
-            List<CoinController> coinList = new List<CoinController>();
-            foreach (HealthComponent healthComponent in attack.ignoredHealthComponentList)
-            {
-                if (healthComponent && healthComponent.TryGetComponent<CoinController>(out var coin))
-                {
-                    coinList.Add(coin);
-                }
-            }
-            return coinList;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.SniperRifle
 {
@@ -117,8 +116,6 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
                         bulletCount = 1
                     };
 
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
-
                     if (this.aiming)
                     {
                         bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
@@ -156,7 +153,7 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
                 this.FireBullet();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
                 this.outer.SetNextStateToMain();

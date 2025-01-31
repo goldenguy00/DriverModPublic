@@ -1,5 +1,4 @@
-﻿using R2API;
-using RoR2;
+﻿using RoR2;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -41,7 +40,6 @@ namespace RobDriver.SkillStates.Driver.Revolver
                 queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                 hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
             };
-            bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
             bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
             {

@@ -67,6 +67,7 @@ namespace RobDriver.SkillStates.Driver.Shotgun
                     blastAttack.teamIndex = TeamComponent.GetObjectTeam(blastAttack.attacker);
                     blastAttack.damageType = DamageType.Stun1s;
                     blastAttack.attackerFiltering = AttackerFiltering.NeverHitSelf;
+                    blastAttack.damageType.damageSource = DamageSource.Secondary;
 
                     blastAttack.Fire();
 

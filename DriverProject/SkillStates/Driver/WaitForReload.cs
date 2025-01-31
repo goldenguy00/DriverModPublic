@@ -8,7 +8,7 @@
             if (!base.isAuthority) return;
 
             if (this.iDrive.weaponTimer == this.iDrive.maxWeaponTimer ||
-                this.iDrive.weaponDef.nameToken != this.iDrive.defaultWeaponDef.nameToken ||
+                this.iDrive.weaponDef != this.iDrive.defaultWeaponDef ||
                 this.iDrive.HasSpecialBullets)
             {
                 this.outer.SetNextStateToMain();

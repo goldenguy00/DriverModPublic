@@ -18,7 +18,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             base.OnEnter();
             this.GetModelAnimator().SetFloat("leapDir", this.inputBank.aimDirection.y);
             base.PlayAnimation("FullBody, Override Soft", "Leap");
-            if(DriverPlugin.ravagerInstalled) Util.PlaySound("sfx_ravager_leap", this.gameObject); 
+            if(DriverPlugin.RavagerInstalled) Util.PlaySound("sfx_ravager_leap", this.gameObject); 
         }
 
         public override void FixedUpdate()

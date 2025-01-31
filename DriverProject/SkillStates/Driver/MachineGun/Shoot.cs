@@ -1,8 +1,6 @@
 ﻿using EntityStates;
-using R2API;
 using RoR2;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace RobDriver.SkillStates.Driver.MachineGun
 {
@@ -103,7 +101,6 @@ namespace RobDriver.SkillStates.Driver.MachineGun
                     queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
                     hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
                 };
-                bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                 bulletAttack.Fire();
             }
 

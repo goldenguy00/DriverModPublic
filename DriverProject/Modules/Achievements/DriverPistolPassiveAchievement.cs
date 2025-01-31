@@ -1,45 +1,37 @@
-﻿using R2API;
-using R2API.Utils;
-using RoR2;
-using System;
+﻿using RoR2;
+using RoR2.Achievements;
 using UnityEngine;
 
 namespace RobDriver.Modules.Achievements
 {
-    internal class DriverPistolPassiveAchievement : ModdedUnlockable
+    //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
+    //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
+    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
+    internal class DriverPistolPassiveAchievement : BaseAchievement
     {
-        public override string AchievementIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_ID";
-        public override string UnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_REWARD_ID";
-        public override string AchievementNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_NAME";
-        public override string PrerequisiteUnlockableIdentifier { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_UNLOCKABLE_REWARD_ID";
-        public override string UnlockableNameToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_UNLOCKABLE_NAME";
-        public override string AchievementDescToken { get; } = DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_DESC";
-        public override Sprite Sprite { get; } = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon");
-
-        public override Func<string> GetHowToUnlock { get; } = (() => Language.GetStringFormatted("UNLOCK_VIA_ACHIEVEMENT_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
-        public override Func<string> GetUnlocked { get; } = (() => Language.GetStringFormatted("UNLOCKED_FORMAT", new object[]
-                            {
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_NAME"),
-                                Language.GetString(DriverPlugin.developerPrefix + "_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_DESC")
-                            }));
+        public const string identifier = "ROB_DRIVER_PISTOL_PASSIVE";
+        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_PISTOL_PASSIVE_NAME";
+        public const string unlockableIdentifier = "ROB_DRIVER_PISTOL_PASSIVE_UNLOCKABLE";
+        public static Sprite Sprite => Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon");
 
         public static bool weaponPickedUp;
 
-        public override BodyIndex LookUpRequiredBodyIndex()
-        {
-            return BodyCatalog.FindBodyIndex("RobDriverBody");
-        }
+        public override BodyIndex LookUpRequiredBodyIndex() => Survivors.Driver.bodyIndex;
 
-        public override void OnInstall()
+        public override void OnBodyRequirementMet()
         {
-            base.OnInstall();
+            base.OnBodyRequirementMet();
 
             TeleporterInteraction.onTeleporterBeginChargingGlobal += TeleporterInteraction_onTeleporterBeginChargingGlobal;
             TeleporterInteraction.onTeleporterFinishGlobal += TeleporterInteraction_onTeleporterFinishGlobal;
+        }
+
+        public override void OnBodyRequirementBroken()
+        {
+            base.OnBodyRequirementBroken();
+
+            TeleporterInteraction.onTeleporterBeginChargingGlobal -= TeleporterInteraction_onTeleporterBeginChargingGlobal;
+            TeleporterInteraction.onTeleporterFinishGlobal -= TeleporterInteraction_onTeleporterFinishGlobal;
         }
 
         private void TeleporterInteraction_onTeleporterFinishGlobal(TeleporterInteraction obj)
@@ -53,14 +45,6 @@ namespace RobDriver.Modules.Achievements
         private void TeleporterInteraction_onTeleporterBeginChargingGlobal(TeleporterInteraction obj)
         {
             weaponPickedUp = false;
-        }
-
-        public override void OnUninstall()
-        {
-            base.OnUninstall();
-
-            TeleporterInteraction.onTeleporterBeginChargingGlobal -= TeleporterInteraction_onTeleporterBeginChargingGlobal;
-            TeleporterInteraction.onTeleporterFinishGlobal -= TeleporterInteraction_onTeleporterFinishGlobal;
         }
     }
 }

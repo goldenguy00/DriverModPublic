@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using EntityStates;
-using EntityStates.Commando;
+﻿using EntityStates;
 using RoR2;
 using RoR2.Audio;
 using RoR2.Projectile;
 using UnityEngine;
-using RobDriver.Modules.Components;
-using R2API;
-using RobDriver.Modules;
 
 namespace RobDriver.SkillStates.Driver.Compat
 {
@@ -49,7 +42,7 @@ namespace RobDriver.SkillStates.Driver.Compat
             base.PlayAnimation("FullBody, Override Soft", "BufferEmpty");
             PlayAnimation("FullBody, Override", startAnimString, "Grab.playbackRate", windupDuration);
 
-            if(DriverPlugin.ravagerInstalled) Util.PlaySound("sfx_ravager_shine", gameObject);
+            if(DriverPlugin.RavagerInstalled) Util.PlaySound("sfx_ravager_shine", gameObject);
 
             characterMotor.velocity *= 0.1f;
 
@@ -78,7 +71,7 @@ namespace RobDriver.SkillStates.Driver.Compat
                     stopwatch = 0f;
                     subState = SubState.DashGrab;
                     PlayAnimation("FullBody, Override", dashAnimString, "Grab.playbackRate", grabDuration * 1.25f);
-                    if(DriverPlugin.ravagerInstalled) Util.PlaySound("sfx_ravager_lunge", gameObject);
+                    if(DriverPlugin.RavagerInstalled) Util.PlaySound("sfx_ravager_lunge", gameObject);
                     else Util.PlaySound("sfx_driver_dodge", this.gameObject);
                 }
 
@@ -135,7 +128,7 @@ namespace RobDriver.SkillStates.Driver.Compat
                         scale = 2f
                     }, false);
 
-                    if (DriverPlugin.ravagerInstalled)
+                    if (DriverPlugin.RavagerInstalled)
                     {
                         Util.PlaySound("sfx_ravager_punch", gameObject);
                         Util.PlaySound("sfx_ravager_punch_generic", hurtBox.gameObject);
@@ -155,14 +148,14 @@ namespace RobDriver.SkillStates.Driver.Compat
                         if (hurtBox.healthComponent.body.isChampion) force = 24000f;
 
                         // damage
-                        new BlastAttack
+                        var blastAttack = new BlastAttack
                         {
                             attacker = base.gameObject,
                             procChainMask = default(ProcChainMask),
                             impactEffect = EffectIndex.Invalid,
                             losType = BlastAttack.LoSType.None,
                             damageColorIndex = DamageColorIndex.Default,
-                            damageType = DamageType.Stun1s | DamageType.NonLethal,
+                            damageType = iDrive.DamageType | DamageType.Stun1s | DamageType.NonLethal,
                             procCoefficient = 1f,
                             bonusForce = this.GetAimRay().direction.normalized * force,
                             baseForce = 0f,
@@ -174,7 +167,9 @@ namespace RobDriver.SkillStates.Driver.Compat
                             teamIndex = base.GetTeam(),
                             inflictor = base.gameObject,
                             crit = base.RollCrit()
-                        }.Fire();
+                        };
+                        blastAttack.damageType.damageSource = DamageSource.Secondary;
+                        blastAttack.Fire();
 
                         // shockwave
                         ProjectileManager.instance.FireProjectile(new FireProjectileInfo
@@ -184,8 +179,7 @@ namespace RobDriver.SkillStates.Driver.Compat
                             crit = this.RollCrit(),
                             damage = 10f * this.damageStat,
                             owner = this.gameObject,
-                            projectilePrefab = Modules.Projectiles.punchShockwave,
-                            damageTypeOverride = iDrive.DamageType
+                            projectilePrefab = Modules.Projectiles.punchShockwave
                         });
 
                         this.outer.SetNextState(new PunchRecoil());

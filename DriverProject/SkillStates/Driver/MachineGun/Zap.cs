@@ -9,10 +9,10 @@ namespace RobDriver.SkillStates.Driver.MachineGun
 {
     public class Zap : GenericProjectileBaseState
     {
-        public static float baseDuration = 0.8f;
+        public static new float baseDuration = 0.8f;
         public static float baseDelayDuration = 0.5f * baseDuration;
 
-        public static float damageCoefficient = 3.8f;
+        public static new float damageCoefficient = 3.8f;
 
         private uint playID;
 
@@ -57,6 +57,14 @@ namespace RobDriver.SkillStates.Driver.MachineGun
             Util.PlaySound("sfx_driver_zap", this.gameObject);
 
             AkSoundEngine.StopPlayingID(this.playID);
+        }
+
+        public override void ModifyProjectileInfo(ref FireProjectileInfo fireProjectileInfo)
+        {
+            base.ModifyProjectileInfo(ref fireProjectileInfo);
+            var damageType = base.projectilePrefab.GetComponent<ProjectileDamage>().damageType;
+            damageType.damageSource = DamageSource.Secondary;
+            fireProjectileInfo.damageTypeOverride = damageType;
         }
 
         public override void OnExit()

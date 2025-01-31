@@ -1,33 +1,52 @@
-﻿using UnityEngine.Networking;
-using UnityEngine.Networking.NetworkSystem;
+﻿using RoR2;
+using UnityEngine.Networking;
 
 namespace RobDriver.Modules.Components
 {
-    internal class SyncPickup : NetworkBehaviour
+    public class SyncPickup : NetworkBehaviour
     {
-        public bool cutAmmo;
-        public bool isNewAmmoType;
-        public DriverBulletDef bulletDef = DriverBulletCatalog.Default;
+        public WeaponPickup weaponPickupComponent;
 
-        private void Start()
+        [SyncVar]
+        public bool cutAmmo;
+        [SyncVar]
+        public bool isNewAmmoType;
+        [SyncVar]
+        public ushort bulletIndex;
+        [SyncVar]
+        public ushort weaponIndex;
+
+        public DriverWeaponDef weaponDef
         {
-            if (NetworkServer.active && this.isClient)
+            get => DriverWeaponCatalog.GetWeaponFromIndex(weaponIndex);
+            set => weaponIndex = value?.index ?? DriverWeaponCatalog.Pistol.index;
+        }
+
+        public DriverBulletDef bulletDef
+        {
+            get => DriverBulletCatalog.GetBulletDefFromIndex(bulletIndex);
+            set => bulletIndex = value?.index ?? DriverBulletCatalog.Default.index;
+        }
+
+        public void SpawnWeapon(TeamIndex teamIndex, DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo = false, bool isNewAmmoType = false)
+        {
+            if (NetworkServer.active)
             {
-                CmdUpdateVisuals();
+                Log.Warning("Spawn weapon called");
+                this.weaponPickupComponent.teamFilter.teamIndex = teamIndex;
+                this.weaponDef = weaponDef;
+                this.bulletDef = bulletDef;
+                this.cutAmmo = cutAmmo;
+                this.isNewAmmoType = isNewAmmoType;
+
+                NetworkServer.Spawn(this.gameObject);
             }
         }
 
-        [Command]
-        public void CmdUpdateVisuals()
+        private void Start()
         {
-            RpcUpdateVisuals(this.bulletDef.index, this.cutAmmo, this.isNewAmmoType);
-        }
-
-        [ClientRpc]
-        public void RpcUpdateVisuals(ushort bulletIndex, bool cutAmmo, bool isNewAmmoType)
-        {
-            var weaponPickup = this.gameObject.GetComponentInChildren<WeaponPickup>();
-            weaponPickup.UpdateWeaponPickup(DriverBulletCatalog.GetBulletDefFromIndex(bulletIndex), cutAmmo, isNewAmmoType);
+            Log.Warning("Start called " + this.weaponIndex + " | " + this.bulletIndex + " | " + this.cutAmmo + " | " + this.isNewAmmoType);
+            this.weaponPickupComponent.UpdateWeaponPickup(this.weaponDef, this.bulletDef, this.cutAmmo, this.isNewAmmoType);
         }
     }
 }

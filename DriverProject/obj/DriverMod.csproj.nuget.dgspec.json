@@ -1,38 +1,39 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\rseid\\OneDrive\\Documents\\GitHub\\DriverMod\\DriverProject\\DriverMod.csproj": {}
+    "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj": {}
   },
   "projects": {
-    "C:\\Users\\rseid\\OneDrive\\Documents\\GitHub\\DriverMod\\DriverProject\\DriverMod.csproj": {
+    "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\rseid\\OneDrive\\Documents\\GitHub\\DriverMod\\DriverProject\\DriverMod.csproj",
+        "projectUniqueName": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj",
         "projectName": "DriverMod",
-        "projectPath": "C:\\Users\\rseid\\OneDrive\\Documents\\GitHub\\DriverMod\\DriverProject\\DriverMod.csproj",
-        "packagesPath": "C:\\Users\\rseid\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\rseid\\OneDrive\\Documents\\GitHub\\DriverMod\\DriverProject\\obj\\",
+        "projectPath": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\DriverMod.csproj",
+        "packagesPath": "C:\\Users\\golde\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\DriverProject\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\rseid\\OneDrive\\Documents\\GitHub\\DriverMod\\NuGet.Config",
-          "C:\\Users\\rseid\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\golde\\Documents\\GitHub\\_COLLAB\\Driver\\NuGet.Config",
+          "C:\\Users\\golde\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "netstandard2.0"
+          "netstandard2.1"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Risk of Rain 2\\Risk of Rain 2_Data\\Managed": {},
           "https://api.nuget.org/v3/index.json": {},
           "https://nuget.bepinex.dev/v3/index.json": {}
         },
         "frameworks": {
-          "netstandard2.0": {
-            "targetAlias": "netstandard2.0",
+          "netstandard2.1": {
+            "targetAlias": "netstandard2.1",
             "projectReferences": {}
           }
         },
@@ -40,46 +41,82 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
-        "netstandard2.0": {
-          "targetAlias": "netstandard2.0",
+        "netstandard2.1": {
+          "targetAlias": "netstandard2.1",
           "dependencies": {
             "BepInEx.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[1.0.*, )"
+              "version": "[1.0.8, )"
             },
             "BepInEx.Core": {
               "target": "Package",
-              "version": "[5.4.19, )"
+              "version": "[5.4.21, )"
             },
             "MMHOOK.RoR2": {
               "target": "Package",
-              "version": "[2022.4.19, )",
+              "version": "[2024.12.10, )",
               "noWarn": [
                 "NU1701"
               ]
             },
-            "NETStandard.Library": {
-              "suppressParent": "All",
+            "R2API.ContentManagement": {
               "target": "Package",
-              "version": "[2.0.3, )",
-              "autoReferenced": true
+              "version": "[1.0.8, )"
             },
-            "R2API": {
+            "R2API.Core": {
               "target": "Package",
-              "version": "[4.3.5, )"
+              "version": "[5.1.5, )"
+            },
+            "R2API.DamageType": {
+              "target": "Package",
+              "version": "[1.1.7, )"
+            },
+            "R2API.Dot": {
+              "target": "Package",
+              "version": "[1.0.3, )"
+            },
+            "R2API.Language": {
+              "target": "Package",
+              "version": "[1.0.1, )"
+            },
+            "R2API.Networking": {
+              "target": "Package",
+              "version": "[1.0.3, )"
+            },
+            "R2API.Prefab": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            },
+            "R2API.RecalculateStats": {
+              "target": "Package",
+              "version": "[1.5.0, )"
+            },
+            "R2API.Skins": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "R2API.Sound": {
+              "target": "Package",
+              "version": "[1.0.3, )"
             },
             "RiskOfRain2.GameLibs": {
               "target": "Package",
-              "version": "[1.2.4-r.0, )"
+              "version": "[1.3.6-r.0, )"
             },
-            "UnityEngine.Modules": {
+            "Rune580.Mods.RiskOfRain2.RiskOfOptions": {
               "target": "Package",
-              "version": "[2019.4.26, )"
+              "version": "[2.8.2, )"
             }
           },
           "imports": [
@@ -88,11 +125,17 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

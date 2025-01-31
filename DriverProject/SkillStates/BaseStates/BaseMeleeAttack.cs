@@ -1,12 +1,10 @@
 ﻿using EntityStates;
-using LostInTransit.DamageTypes;
 using R2API;
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Audio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -18,7 +16,8 @@ namespace RobDriver.SkillStates.BaseStates
 
         protected string hitboxName = "Sword";
 
-        protected DamageType damageType = DamageType.Generic;
+        protected DamageTypeCombo damageType = DamageTypeCombo.Generic;
+        protected DamageAPI.ModdedDamageType[] moddedDamageTypes = [];
         protected float damageCoefficient = 3.5f;
         protected float procCoefficient = 1f;
         protected float pushForce = 300f;
@@ -148,17 +147,29 @@ namespace RobDriver.SkillStates.BaseStates
             }
             if (base.isAuthority)
             {
-                foreach (CoinController coin in CoinController.OverlapAttackGetCoins(attack).Where(c => c.canRicochet))
+                var moddedDamageIndex = new int[moddedDamageTypes.Length];
+                for (int i = 0; i < moddedDamageTypes.Length; i++)
                 {
-                    coin.CmdRicochetBullet(attack.attacker,
-                        attack.inflictor, 
-                        attack.isCrit, 
-                        attack.damage, 
-                        attack.procChainMask.mask,
-                        attack.forceVector, 
-                        attack.forceVector == null, 
-                        (byte)attack.damageColorIndex, 
-                        (uint)attack.damageType);
+                    moddedDamageIndex[i] = (int)moddedDamageTypes[i];
+                }
+
+                foreach (var healthComponent in attack.ignoredHealthComponentList)
+                {
+                    if (healthComponent && healthComponent.TryGetComponent<CoinController>(out var coin) && coin.canRicochet)
+                    {
+                        coin.CmdRicochetMelee(attack.attacker,
+                            attack.inflictor,
+                            attack.isCrit,
+                            attack.damage,
+                            attack.procChainMask.mask,
+                            attack.forceVector,
+                            attack.forceVector == null,
+                            (byte)attack.damageColorIndex,
+                            (uint)attack.damageType.damageType,
+                            (uint)attack.damageType.damageTypeExtended,
+                            (byte)attack.damageType.damageSource,
+                            moddedDamageIndex);
+                    }
                 }
             }
 

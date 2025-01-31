@@ -1,7 +1,6 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.Compat.NemmercGun
 {
@@ -29,7 +28,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmercGun
             this.isCrit = base.RollCrit();
             this.earlyExitTime = 0.75f * this.duration;
 
-            if (DriverPlugin.starstormInstalled)
+            if (DriverPlugin.StarstormInstalled)
             {
                 Util.PlaySound("Play_nemmerc_primary_fire2", this.gameObject);
             }
@@ -105,7 +104,6 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmercGun
                         hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
                         HitEffectNormal = false,
                     };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
                     bulletAttack.minSpread = 0;
                     bulletAttack.maxSpread = 0;
                     bulletAttack.bulletCount = 1;
@@ -136,7 +134,7 @@ namespace RobDriver.SkillStates.Driver.Compat.NemmercGun
                 this.FireBullet();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
                 this.outer.SetNextStateToMain();

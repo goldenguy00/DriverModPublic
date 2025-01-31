@@ -12,55 +12,12 @@ namespace RobDriver.Modules.Components
         public SkillDef godslingPassive;
         public GenericSkill passiveSkillSlot;
 
-        public bool isDefault
-        {
-            get
-            {
-                if (this.defaultPassive && this.passiveSkillSlot)
-                {
-                    return this.passiveSkillSlot.skillDef == this.defaultPassive;
-                }
+        public bool isDefault => this.passiveSkillSlot && this.defaultPassive && this.passiveSkillSlot.skillDef == this.defaultPassive;
 
-                return false;
-            }
-        }
+        public bool isPistolOnly => this.passiveSkillSlot && this.pistolOnlyPassive && this.passiveSkillSlot.skillDef == this.pistolOnlyPassive;
 
-        public bool isPistolOnly
-        {
-            get
-            {
-                if (this.pistolOnlyPassive && this.passiveSkillSlot)
-                {
-                    return this.passiveSkillSlot.skillDef == this.pistolOnlyPassive;
-                }
+        public bool isBullets => this.passiveSkillSlot && this.bulletsPassive && this.passiveSkillSlot.skillDef == this.bulletsPassive;
 
-                return false;
-            }
-        }
-
-
-        public bool isBullets
-        {
-            get
-            {
-                if (this.bulletsPassive && this.passiveSkillSlot)
-                {
-                    return this.passiveSkillSlot.skillDef == this.bulletsPassive;
-                }
-                return false;
-            }
-        }
-
-        public bool isRyan
-        {
-            get
-            {
-                if (this.godslingPassive && this.passiveSkillSlot)
-                {
-                    return this.passiveSkillSlot.skillDef == this.godslingPassive;
-                }
-                return false;
-            }
-        }
+        public bool isRyan => this.passiveSkillSlot && this.godslingPassive && this.passiveSkillSlot.skillDef == this.godslingPassive;
     }
 }

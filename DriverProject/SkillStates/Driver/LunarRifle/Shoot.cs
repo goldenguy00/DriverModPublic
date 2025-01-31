@@ -2,7 +2,6 @@
 using UnityEngine;
 using EntityStates;
 using UnityEngine.AddressableAssets;
-using R2API;
 
 namespace RobDriver.SkillStates.Driver.LunarRifle
 {
@@ -101,7 +100,6 @@ namespace RobDriver.SkillStates.Driver.LunarRifle
                         hitEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/LunarGolem/LunarGolemTwinShotExplosion.prefab").WaitForCompletion(),
                         HitEffectNormal = false,
                     };
-                    bulletAttack.AddModdedDamageType(iDrive.ModdedDamageType);
 
                     bulletAttack.minSpread = 0;
                     bulletAttack.maxSpread = 0;
@@ -133,7 +131,7 @@ namespace RobDriver.SkillStates.Driver.LunarRifle
                 this.FireBullet();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef.nameToken != this.cachedWeaponDef.nameToken)
+            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
             {
                 base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
                 this.outer.SetNextStateToMain();

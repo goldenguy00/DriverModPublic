@@ -1,8 +1,4 @@
-﻿using UnityEngine;
-using RoR2;
-using EntityStates;
-
-namespace RobDriver.SkillStates.Driver.Revolver
+﻿namespace RobDriver.SkillStates.Driver.Revolver
 {
     public class Shoot : SkillStates.Driver.Shoot
     {

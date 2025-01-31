@@ -1,11 +1,9 @@
 ﻿using EntityStates;
-using R2API;
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
 namespace RobDriver.Modules
@@ -14,7 +12,6 @@ namespace RobDriver.Modules
     {
         internal static List<SkillFamily> skillFamilies = new List<SkillFamily>();
         internal static List<SkillDef> skillDefs = new List<SkillDef>();
-        internal static List<UnlockableDef> unlockableDefs = new List<UnlockableDef>();
 
         #region genericskills
         public static void CreateSkillFamilies(GameObject targetPrefab, int families = 15, bool destroyExisting = true) {
@@ -114,10 +111,19 @@ namespace RobDriver.Modules
         /// <param name="locked">If true, weapons will need to be randomly encountered before they are selectable</param>
         public static void AddWeaponSkills(GameObject targetPrefab, IEnumerable<DriverWeaponDef> weaponDefs, bool locked)
         {
-            var family = targetPrefab.GetComponent<DriverArsenal>().weaponSkillSlot.skillFamily;
-            foreach (DriverWeaponDef weapon in weaponDefs)
+
+            var arsenal = targetPrefab.GetComponent<DriverArsenal>();
+            var family = arsenal.weaponSkillSlot.skillFamily;
+
+            foreach (DriverWeaponDef weaponDef in weaponDefs)
             {
-                AddSkillToFamily(family, CreateWeaponSkillDef(weapon), locked ? CreateUnlockableDef(weapon) : null);
+                if (!weaponDef.arsenalSkillDef)
+                {
+                    Log.Error("Arsenal skilldef is null! " + weaponDef.nameToken);
+                    continue;
+                }
+
+                AddSkillToFamily(family, weaponDef.arsenalSkillDef, locked ? CreateUnlockableDef(weaponDef) : null);
             }
         }
         /// <summary>
@@ -126,8 +132,16 @@ namespace RobDriver.Modules
         /// <param name="locked">If true, weapon will need to be randomly encountered before they are selectable</param>
         public static void AddWeaponSkill(GameObject targetPrefab, DriverWeaponDef weaponDef, bool locked)
         {
-            AddSkillToFamily(targetPrefab.GetComponent<DriverArsenal>().weaponSkillSlot.skillFamily, 
-                CreateWeaponSkillDef(weaponDef), locked ? CreateUnlockableDef(weaponDef) : null);
+            if (!weaponDef.arsenalSkillDef)
+            {
+                Log.Error("Arsenal skilldef is null! " + weaponDef.nameToken);
+                return;
+            }
+
+            var arsenal = targetPrefab.GetComponent<DriverArsenal>();
+            var family = arsenal.weaponSkillSlot.skillFamily;
+
+            AddSkillToFamily(family, weaponDef.arsenalSkillDef, locked ? CreateUnlockableDef(weaponDef) : null);
         }
 
         /// <summary>
@@ -190,20 +204,18 @@ namespace RobDriver.Modules
             skillDef.keywordTokens = skillDefInfo.keywordTokens;
         }
 
-        internal static SkillDef CreatePrimarySkillDef(SerializableEntityStateType state, string stateMachine, string skillNameToken, string skillDescriptionToken, Sprite skillIcon, bool agile)
+        public static SkillDef CreatePrimarySkillDef(SerializableEntityStateType state, string stateMachine, string skillNameToken, string skillDescriptionToken, Sprite skillIcon, bool agile)
         {
-            SkillDefInfo info = new SkillDefInfo(skillNameToken, skillNameToken, skillDescriptionToken, skillIcon, state, stateMachine, agile);
-
-            return CreateSkillDef(info);
+            return CreateSkillDef(new SkillDefInfo(skillNameToken, skillNameToken, skillDescriptionToken, skillIcon, state, stateMachine, agile));
         }
 
-        internal static SkillDef CreateWeaponSkillDef(string skillNameToken, string skillDescriptionToken, Sprite skillIcon)
+        public static SkillDef CreateWeaponSkillDef(string nameToken, string descriptionToken, Sprite icon)
         {
             return CreateSkillDef(new SkillDefInfo(
-                skillName: skillNameToken,
-                skillNameToken: skillNameToken,
-                skillDescriptionToken: skillDescriptionToken,
-                skillIcon: skillIcon,
+                skillName: nameToken,
+                skillNameToken: nameToken,
+                skillDescriptionToken: descriptionToken,
+                skillIcon: icon,
                 activationState: new SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName: "",
                 interruptPriority: InterruptPriority.Any,
@@ -211,30 +223,16 @@ namespace RobDriver.Modules
                 baseRechargeInterval: 0));
         }
 
-        internal static SkillDef CreateWeaponSkillDef(DriverWeaponDef weaponDef)
+        public static SkillDef CreateWeaponSkillDef(DriverWeaponDef weaponDef)
         {
             return CreateWeaponSkillDef(weaponDef.nameToken, weaponDef.descriptionToken, Sprite.Create(weaponDef.icon
                 as Texture2D, new Rect(0, 0, weaponDef.icon.width, weaponDef.icon.height), new Vector2(0.5f, 0.5f)));
-
         }
 
         /// <summary>
         /// Creates an unlockable def for the weapon. By default, picking up a weapon will grant this unlock.
         /// </summary>
-        internal static UnlockableDef CreateUnlockableDef(DriverWeaponDef weaponDef)
-        {
-            var unlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
-            unlockableDef.cachedName = weaponDef.nameToken;
-            unlockableDef.nameToken = weaponDef.nameToken;
-            unlockableDef.getHowToUnlockString = () => Language.GetString(weaponDef.descriptionToken);
-            unlockableDef.getUnlockedString = () => Language.GetString(weaponDef.descriptionToken);
-            unlockableDef.hidden = false;
-            unlockableDef.achievementIcon = Sprite.Create(weaponDef.icon as Texture2D,
-                new Rect(0, 0, weaponDef.icon.width, weaponDef.icon.height), new Vector2(0.5f, 0.5f));
-
-            unlockableDefs.Add(unlockableDef);
-            return unlockableDef;
-        }
+        public static UnlockableDef CreateUnlockableDef(DriverWeaponDef weaponDef) => Unlockables.CreateAndAddWeaponUnlockableDef(weaponDef);
 
         #endregion skilldefs
     }

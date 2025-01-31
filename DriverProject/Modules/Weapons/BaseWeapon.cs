@@ -1,10 +1,7 @@
-﻿using EntityStates;
-using R2API;
+﻿using R2API;
 using RobDriver.Modules.Survivors;
 using RoR2.Skills;
 using System;
-using System.Linq;
-using System.Security.Cryptography;
 using UnityEngine;
 
 namespace RobDriver.Modules.Weapons
@@ -27,6 +24,7 @@ namespace RobDriver.Modules.Weapons
         public abstract string weaponName { get; }
         public abstract string weaponDesc { get; }
         public abstract string iconName { get; }
+        public virtual Texture icon { get; set; }
         public abstract GameObject crosshairPrefab { get; }
         public abstract DriverWeaponTier tier { get; }
         public abstract int shotCount { get; }
@@ -52,8 +50,8 @@ namespace RobDriver.Modules.Weapons
 
         protected void CreateWeapon()
         {
-            Texture icon = null;
-            if (!string.IsNullOrEmpty(iconName)) icon = Assets.mainAssetBundle.LoadAsset<Texture>(iconName);
+            if (icon == null && !string.IsNullOrEmpty(iconName))
+                icon = Assets.mainAssetBundle.LoadAsset<Texture>(iconName);
 
             weaponDef = DriverWeaponDef.CreateWeaponDefFromInfo(new DriverWeaponDefInfo
             {
