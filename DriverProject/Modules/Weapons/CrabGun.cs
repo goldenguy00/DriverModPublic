@@ -6,24 +6,27 @@ namespace RobDriver.Modules.Weapons
 {
     public class CrabGun : BaseWeapon<CrabGun>
     {
-        public override string weaponNameToken => "VOID_RIFLE";
         public override string weaponName => "Nullifier";
+        public override string weaponNameToken => "ROB_DRIVER_WEAPON_VOID_RIFLE_NAME";
         public override string weaponDesc => "Erase everything in sight.";
-        public override string iconName => "texCrabGunWeaponIcon";
-        public override GameObject crosshairPrefab => Modules.Assets.circleCrosshairPrefab;
-        public override DriverWeaponTier tier => DriverWeaponTier.Void;
-        public override int shotCount => 120;
-        public override Mesh mesh => Modules.Assets.LoadMesh("meshCrabGun");
-        public override Material material => Addressables.LoadAssetAsync<Material>("RoR2/DLC1/VoidMegaCrab/matVoidMegaCrab.mat").WaitForCompletion();
+        public override string weaponDescToken => "ROB_DRIVER_WEAPON_VOID_RIFLE_DESC";
+
+        public override Sprite icon => Assets.mainAssetBundle.LoadAsset<Sprite>("texCrabGunWeaponIcon");
+        public override DriverWeaponTier dropTier => DriverWeaponTier.Void;
         public override DriverWeaponDef.AnimationSet animationSet => DriverWeaponDef.AnimationSet.TwoHanded;
         public override DriverWeaponDef.BuffType buffType => DriverWeaponDef.BuffType.AttackSpeed;
-        public override string calloutSoundString => "sfx_driver_callout_generic";
-        public override string configIdentifier => "Nullifier";
-        public override float dropChance => 25f;
-        public override bool addToPool => false;
+        public override int shotCount => 64;
+
+        public override Mesh mesh => Modules.Assets.LoadMesh("meshCrabGun");
+        public override Material material => Addressables.LoadAssetAsync<Material>("RoR2/DLC1/VoidMegaCrab/matVoidMegaCrab.mat").WaitForCompletion();
+        public override GameObject crosshairPrefab => Modules.Assets.circleCrosshairPrefab;
+        public override GameObject pickupPrefabOverride => Assets.voidPickupModel;
+        public override Color? colorOverride => Helpers.voidItemColor;
+
+        public override float dropChance => 50f;
         public override string uniqueDropBodyName => "VoidMegaCrab";
 
-        public override SkillDef primarySkillDef => Modules.Skills.CreatePrimarySkillDef(
+        public override SkillDef primarySkillDef => Modules.Skills.CreateAndAddPrimarySkillDef(
             new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.VoidRifle.Shoot)),
             "Weapon",
             "ROB_DRIVER_BODY_PRIMARY_VOIDRIFLE_NAME",
@@ -31,34 +34,6 @@ namespace RobDriver.Modules.Weapons
             Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
             false);
 
-        public override SkillDef secondarySkillDef => Modules.Skills.CreateSkillDef(new SkillDefInfo
-        {
-            skillName = "ROB_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-            skillNameToken = "ROB_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-            skillDescriptionToken = "ROB_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-            skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-            activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-            activationStateMachineName = "Weapon",
-            baseMaxStock = 1,
-            baseRechargeInterval = 6f,
-            beginSkillCooldownOnSkillEnd = false,
-            canceledFromSprinting = false,
-            forceSprintDuringState = false,
-            fullRestockOnAssign = true,
-            interruptPriority = EntityStates.InterruptPriority.Skill,
-            resetCooldownTimerOnUse = true,
-            isCombatSkill = true,
-            mustKeyPress = false,
-            cancelSprintingOnActivation = true,
-            rechargeStock = 1,
-            requiredStock = 1,
-            stockToConsume = 1,
-        });
-
-        public override void Init()
-        {
-            CreateLang();
-            CreateWeapon();
-        }
+        public override SkillDef secondarySkillDef => Modules.Skills.bashSkillDef;
     }
 }

@@ -6,18 +6,16 @@ namespace RobDriver.Modules.Components
 {
     public class DriverPassive : MonoBehaviour
     {
-        public SkillDef defaultPassive;
-        public SkillDef pistolOnlyPassive;
-        public SkillDef bulletsPassive;
-        public SkillDef godslingPassive;
+        public static SkillDef defaultPassive;
+        public static SkillDef pistolOnlyPassive;
+        public static SkillDef bulletsPassive;
+        public static SkillDef godslingPassive;
+
         public GenericSkill passiveSkillSlot;
 
-        public bool isDefault => this.passiveSkillSlot && this.defaultPassive && this.passiveSkillSlot.skillDef == this.defaultPassive;
-
-        public bool isPistolOnly => this.passiveSkillSlot && this.pistolOnlyPassive && this.passiveSkillSlot.skillDef == this.pistolOnlyPassive;
-
-        public bool isBullets => this.passiveSkillSlot && this.bulletsPassive && this.passiveSkillSlot.skillDef == this.bulletsPassive;
-
-        public bool isRyan => this.passiveSkillSlot && this.godslingPassive && this.passiveSkillSlot.skillDef == this.godslingPassive;
+        public bool isDefault => this.passiveSkillSlot?.skillDef == DriverPassive.defaultPassive;
+        public bool isBullets => this.passiveSkillSlot?.skillDef == DriverPassive.bulletsPassive;
+        public bool isRyan => this.passiveSkillSlot?.skillDef == DriverPassive.godslingPassive;
+        public bool isPistolOnly => this.passiveSkillSlot?.skillDef == DriverPassive.pistolOnlyPassive;
     }
 }

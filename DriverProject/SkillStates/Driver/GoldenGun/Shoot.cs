@@ -2,11 +2,11 @@
 
 namespace RobDriver.SkillStates.Driver.GoldenGun
 {
-    public class Shoot : SkillStates.Driver.Shoot
+    public class Shoot : Driver.Shoot
     {
-        protected override float _damageCoefficient => 3.9f;
-        protected override float baseCritDuration => 0.9f;
-        public override string shootSoundString => "sfx_driver_pistol_shoot_charged";
-        public override BulletAttack.FalloffModel falloff => BulletAttack.FalloffModel.None;
+        public static new float _damageCoefficient = 3.9f;
+        protected override float damageCoefficient => _damageCoefficient;
+        protected override string shootSoundString => "sfx_driver_pistol_shoot_charged";
+        protected override BulletAttack.FalloffModel falloff => BulletAttack.FalloffModel.None;
     }
 }

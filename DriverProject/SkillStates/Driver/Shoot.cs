@@ -1,224 +1,175 @@
 ﻿using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace RobDriver.SkillStates.Driver
 {
-    public class Shoot : BaseDriverSkillState
+    public class Shoot : BaseDriverShootState
     {
-        public static float damageCoefficient = 2.2f;
-        public static float procCoefficient = 1f;
-        public static float baseDuration = 0.7f;
-        public static float force = 200f;
-        public static float recoil = 2f;
-        public static float range = 2000f;
-        public static GameObject tracerEffectPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerGoldGat");
-        public static GameObject critTracerEffectPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerCaptainShotgun");
+        public static float _damageCoefficient = 2.2f;
 
-        private float duration;
-        private float fireTime;
+        internal static GameObject tracerEffectPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerGoldGat");
+        internal static GameObject critTracerEffectPrefab = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerCaptainShotgun");
+        internal static GameObject spinEffectPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoReloadFX.prefab").WaitForCompletion();
+
+        protected override float damageCoefficient => _damageCoefficient;
+        protected override float earlyExitTime => this.earlyExitFraction * this.duration;
+        protected override float animationDuration => (this.isCrit ? 1f : 1.5f) * this.duration;
+        protected override float maxBulletSpread => this.characterBody.spreadBloomAngle * 2f;
+        protected override string shootSoundString => this.isCrit ? "sfx_driver_pistol_shoot_critical" : "sfx_driver_pistol_shoot";
+        protected override string animationString => this._animationString;
+        protected override DamageTypeCombo damageType => this.iDrive.DamageType;
+        protected override GameObject tracerPrefab => this.isCrit ? Shoot.critTracerEffectPrefab : Shoot.tracerEffectPrefab;
+        protected override GameObject muzzleFlashPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab;
+        protected override GameObject hitEffectPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab;
+
+        protected virtual BulletAttack.FalloffModel falloff => BulletAttack.FalloffModel.DefaultBullet;
+
+        private string _animationString = "Shoot";
+        private float spinDelay;
         private float fireTime2;
-        private bool hasFired;
         private bool hasFired2;
-        private string muzzleString;
-        private bool isCrit;
-        private GameObject effectInstance;
+
+        private GameObject spinEffectInstance;
         private uint spinPlayID;
         private bool oldShoot;
 
-        protected virtual float _damageCoefficient => Shoot.damageCoefficient;
-        protected virtual GameObject tracerPrefab => this.isCrit ? Shoot.critTracerEffectPrefab : Shoot.tracerEffectPrefab;
-        public virtual string shootSoundString => this.isCrit ? "sfx_driver_pistol_shoot_critical" : "sfx_driver_pistol_shoot";
-        public virtual BulletAttack.FalloffModel falloff => BulletAttack.FalloffModel.DefaultBullet;
-        protected virtual float baseCritDuration => 0.9f;
-        protected virtual float baseCritDuration2 => 1.4f;
-
         public override void OnEnter()
         {
-            base.OnEnter();
-            this.duration = Shoot.baseDuration / this.attackSpeedStat;
-            this.characterBody.isSprinting = false;
             this.oldShoot = Modules.Config.oldCritShot.Value;
 
-            this.fireTime = 0.1f * this.duration;
-            this.fireTime2 = 0.2f * this.duration;
-            base.characterBody.SetAimTimer(2f);
-            this.muzzleString = "PistolMuzzle";
+            base.procCoefficient = 1f;
+            base.bulletCount = 1;
+            base.dropShells = 0;
+            base.ammoConsumption = 1f;
+            base.useAttackSpeed = true;
 
-            this.isCrit = base.RollCrit();
+            base.hitMask = LayerIndex.CommonMasks.bullet;
+            base.stopperMask = LayerIndex.world.mask;
+            base.damageColorIndex = DamageColorIndex.Default;
 
+            base.bulletRange = 2000f;
+            base.bulletThiccness = 0.75f;
+            base.bulletForce = 200f;
+            base.selfForce = 0f;
+
+            base.baseDuration = 0.7f;
+            base.earlyExitFraction = 0.5f;
+            base.fireDelayFraction = 0f;
+
+            base.visualRecoilAmplitude = 2f;
+            base.visualRecoilVertical = 2f;
+            base.visualRecoilHorizontal = 0.5f;
+            base.spreadBloom = 1.25f;
+            base.aimTimer = 2f;
+
+            base.playbackRateString = "Shoot.playbackRate";
+            base.muzzleString = "PistolMuzzle";
+
+            base.OnEnter();
+
+            this.characterBody.isSprinting = false;
+        }
+
+        protected override float GetDuration()
+        {
             if (this.isCrit)
             {
-                if (this.oldShoot)
+                if (Modules.Config.oldCritShot.Value)
                 {
-                    this.duration = this.baseCritDuration / this.attackSpeedStat;
-                    this.fireTime = 0.5f * this.duration;
-                    this.fireTime2 = 0.55f * this.duration;
+                    CreateSpinEffect();
 
-                    this.effectInstance = GameObject.Instantiate(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoReloadFX.prefab").WaitForCompletion());
-                    this.effectInstance.transform.parent = this.FindModelChild("Pistol");
-                    this.effectInstance.transform.localRotation = Quaternion.Euler(new Vector3(0f, 80f, 0f));
-                    this.effectInstance.transform.localPosition = Vector3.zero;
-
-                    this.spinPlayID = Util.PlaySound("sfx_driver_pistol_spin", this.gameObject);
-
-                    this.PlayAnimation("Gesture, Override", "ShootCritical", "Shoot.playbackRate", this.duration);
+                    this.spinDelay = 0.4f;
+                    base.baseDuration = 0.9f;
+                    base.earlyExitFraction = 0.75f;
+                    base.fireDelayFraction = 0.5f;
+                    this._animationString = "ShootCritical";
                 }
                 else
                 {
-                    this.duration = this.baseCritDuration2 / this.attackSpeedStat;
-                    this.fireTime = 0f * this.duration;
-                    this.fireTime2 = 0.05f * this.duration;
-
-                    this.PlayAnimation("Gesture, Override", "ShootCriticalAlt", "Shoot.playbackRate", this.duration);
+                    this.spinDelay = 0.55f;
+                    base.baseDuration = 1.4f;
+                    base.earlyExitFraction = 0.5f;
+                    base.fireDelayFraction = 0f;
+                    this._animationString = "ShootCriticalAlt";
                 }
             }
-            else
-            {
-                this.hasFired = true;
-                this.Fire();
 
-                this.PlayAnimation("Gesture, Override", "Shoot", "Shoot.playbackRate", this.duration * 1.5f);
-            }
+            var duration = base.baseDuration / this.attackSpeedStat;
+            this.fireTime2 = (0.05f + this.fireDelayFraction) * duration;
+            this.spinDelay *= duration;
 
-            if (this.iDrive.maxWeaponTimer > 0) this.iDrive.ConsumeAmmo(1f, true);
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
-
-            if (this.spinPlayID != 0u) AkSoundEngine.StopPlayingID(this.spinPlayID);
-            if (this.effectInstance) EntityState.Destroy(this.effectInstance);
-        }
-
-        private void Fire()
-        {
-            EffectManager.SimpleMuzzleFlash(EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab, this.gameObject, this.muzzleString, false);
-            Util.PlaySound(this.shootSoundString, this.gameObject);
-
-            if (base.isAuthority)
-            {
-                Ray aimRay = base.GetAimRay();
-                base.AddRecoil2(-1f * Shoot.recoil, -2f * Shoot.recoil, -0.5f * Shoot.recoil, 0.5f * Shoot.recoil);
-
-                BulletAttack bulletAttack = new BulletAttack
-                {
-                    bulletCount = 1,
-                    aimVector = aimRay.direction,
-                    origin = aimRay.origin,
-                    damage = this._damageCoefficient * this.damageStat,
-                    damageColorIndex = DamageColorIndex.Default,
-                    damageType = iDrive.DamageType,
-                    falloffModel = this.falloff,
-                    maxDistance = Shoot.range,
-                    force = Shoot.force,
-                    hitMask = LayerIndex.CommonMasks.bullet,
-                    minSpread = 0f,
-                    maxSpread = this.characterBody.spreadBloomAngle * 2f,
-                    isCrit = this.isCrit,
-                    owner = base.gameObject,
-                    muzzleName = muzzleString,
-                    smartCollision = true,
-                    procChainMask = default(ProcChainMask),
-                    procCoefficient = procCoefficient,
-                    radius = 0.75f,
-                    sniper = false,
-                    stopperMask = LayerIndex.CommonMasks.bullet,
-                    weapon = null,
-                    tracerEffectPrefab = this.tracerPrefab,
-                    spreadPitchScale = 1f,
-                    spreadYawScale = 1f,
-                    queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                    hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
-                };
-                bulletAttack.Fire();
-            }
-
-            base.characterBody.AddSpreadBloom(1.25f);
+            return duration;
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                base.PlayAnimation("Gesture, Override", "BufferEmpty");
-                this.outer.SetNextStateToMain();
+            if (this.cancelling || !this.isCrit)
                 return;
+
+            if (!this.hasFired2 && base.fixedAge >= this.fireTime2)
+            {
+                this.hasFired2 = true;
+                this.FireBullet();
             }
 
-            if (base.fixedAge >= this.fireTime && base.isAuthority)
+            if (base.fixedAge >= this.spinDelay)
             {
-                if (!this.hasFired)
+                if (!this.oldShoot)
                 {
-                    this.hasFired = true;
-                    this.Fire();
+                    if (!this.spinEffectInstance)
+                        CreateSpinEffect();
                 }
-            }
-
-            if (this.isCrit && base.fixedAge >= this.fireTime2 && base.isAuthority)
-            {
-                if (!this.hasFired2)
+                else if (this.spinEffectInstance)
                 {
-                    this.hasFired2 = true;
-                    this.Fire();
-                }
-            }
+                    DestroySpinEffect();
 
-            if (this.oldShoot)
-            {
-                if (this.effectInstance && base.fixedAge >= (0.4f * this.duration))
-                {
-                    EntityState.Destroy(this.effectInstance);
-
-                    AkSoundEngine.StopPlayingID(this.spinPlayID);
-                    this.spinPlayID = 0u;
                     Util.PlaySound("sfx_driver_pistol_ready", this.gameObject);
                 }
             }
-            else
-            {
-                if (this.isCrit && !this.effectInstance && base.fixedAge >= (0.55f * this.duration))
-                {
-                    this.effectInstance = GameObject.Instantiate(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/CommandoReloadFX.prefab").WaitForCompletion());
-                    this.effectInstance.transform.parent = this.FindModelChild("Pistol");
-                    this.effectInstance.transform.localRotation = Quaternion.Euler(new Vector3(0f, 80f, 0f));
-                    this.effectInstance.transform.localPosition = Vector3.zero;
+        }
 
-                    this.spinPlayID = Util.PlaySound("sfx_driver_pistol_spin", this.gameObject);
-                }
+        private void CreateSpinEffect()
+        {
+            this.spinEffectInstance = GameObject.Instantiate(Shoot.spinEffectPrefab, this.FindModelChild("Pistol"));
+            this.spinEffectInstance.transform.localRotation = Quaternion.Euler(new Vector3(0f, 80f, 0f));
+            this.spinEffectInstance.transform.localPosition = Vector3.zero;
+
+            this.spinPlayID = Util.PlaySound("sfx_driver_pistol_spin", this.gameObject);
+        }
+
+        private void DestroySpinEffect()
+        {
+            if (this.spinEffectInstance)
+            {
+                GameObject.Destroy(this.spinEffectInstance);
+                this.spinEffectInstance = null;
             }
 
-            // pyrite gun made me do this
-            if (this.iDrive.weaponTimer <= 0f && this.iDrive.maxWeaponTimer > 0 &&
-                this.GetMinimumInterruptPriority() == InterruptPriority.Any && base.isAuthority)
+            if (this.spinPlayID != 0u)
             {
-                this.outer.SetNextState(new ReloadPistol());
-                return;
+                AkSoundEngine.StopPlayingID(this.spinPlayID);
+                this.spinPlayID = 0u;
             }
+        }
 
-            if (base.fixedAge >= this.duration && base.isAuthority)
-            {
-                this.outer.SetNextState(new WaitForReload());
-            }
+        public override void OnExit()
+        {
+            base.OnExit();
+
+            DestroySpinEffect();
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
-            float kek = 0.5f;
-            if (this.isCrit && this.oldShoot) kek = 0.75f;
+            if (this.isCrit && !this.hasFired2)
+                return InterruptPriority.PrioritySkill;
 
-            if (base.fixedAge >= kek * this.duration)
-            {
-                return InterruptPriority.Any;
-            }
-
-            if (this.isCrit && !this.hasFired2) return InterruptPriority.PrioritySkill;
-
-            return InterruptPriority.Skill;
+            return base.GetMinimumInterruptPriority();
         }
     }
 }

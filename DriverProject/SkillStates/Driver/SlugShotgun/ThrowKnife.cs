@@ -41,7 +41,7 @@ namespace RobDriver.SkillStates.Driver.SlugShotgun
                 aimRay = this.ModifyProjectileAimRay(aimRay);
                 aimRay.direction = Util.ApplySpread(aimRay.direction, this.minSpread, this.maxSpread, 1f, 1f, 0f, this.projectilePitchBonus);
                 ProjectileManager.instance.FireProjectile(Modules.Projectiles.stunGrenadeProjectilePrefab, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), 
-                    base.gameObject, this.damageStat * ThrowGrenade.damageCoefficient, this.force, this.RollCrit(), DamageColorIndex.Default, null, -1f);
+                    base.gameObject, this.damageStat * ThrowGrenade._damageCoefficient, this.force, this.RollCrit(), DamageColorIndex.Default, null, -1f);
             }
         }
 

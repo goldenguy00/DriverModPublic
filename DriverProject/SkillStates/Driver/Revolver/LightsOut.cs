@@ -3,6 +3,8 @@ using UnityEngine;
 using EntityStates;
 using RoR2.UI;
 using UnityEngine.AddressableAssets;
+using RobDriver.SkillStates.BaseStates;
+using RobDriver.Modules.Components.UI;
 
 namespace RobDriver.SkillStates.Driver.Revolver
 {
@@ -24,9 +26,9 @@ namespace RobDriver.SkillStates.Driver.Revolver
             this.characterBody.SetAimTimer(2f);
             this.duration = this.baseDuration / this.attackSpeedStat;
 
-            base.PlayAnimation("Gesture, Override", "ShootLightsOut", "Action.playbackRate", this.duration);
+            base.PlayAnimation("Gesture, Override", "ShootLightsOut", "Shoot.playbackRate", this.duration);
 
-            if (this.iDrive && iDrive.defaultWeaponDef != iDrive.weaponDef) this.iDrive.weaponTimer = 0.1f;
+            if (this.iDrive.IsHoldingWeapon) this.iDrive.weaponTimer = 0.1f;
 
             this.Fire();
 
@@ -44,7 +46,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
             if (base.isAuthority)
             {
                 float recoil = 24f;
-                base.AddRecoil2(-1f * recoil, -2f * recoil, -0.5f * recoil, 0.5f * recoil);
+                base.AddRecoil(2f * recoil, 0.5f * recoil);
 
                 this.FireBullet();
             }
@@ -104,7 +106,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
                     effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
                     EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
                     Util.PlaySound("sfx_driver_headshot", base.gameObject);
-                    hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
+                    hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<DriverHeadshotTracker>();
                 }
             };
             bulletAttack.Fire();
@@ -134,7 +136,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
 
             if (base.fixedAge >= this.duration && base.isAuthority)
             {
-                this.outer.SetNextState(new WaitForReload());
+                this.outer.SetNextStateToMain();
             }
         }
 

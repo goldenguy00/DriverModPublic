@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{483D7924-84B5-4242-A00B-DCBCB99CB94E}" SchemaVersion="97">
+<WwiseDocument Type="WorkUnit" ID="{483D7924-84B5-4242-A00B-DCBCB99CB94E}" SchemaVersion="119">
 	<AudioObjects>
 		<WorkUnit Name="hunk" ID="{483D7924-84B5-4242-A00B-DCBCB99CB94E}" PersistMode="Standalone">
 			<ChildrenList>
@@ -10,32 +10,6 @@
 							<ValueList>
 								<Value>1</Value>
 							</ValueList>
-							<RTPCList>
-								<RTPC Name="" ID="{14C5FC03-F81A-42FF-91C9-0C4CFD46925B}" ShortID="874479794">
-									<ReferenceList>
-										<Reference Name="ControlInput">
-											<ObjectRef Name="Volume_SFX" ID="{4FF50BF4-04DE-43F4-BCE1-1243931798A7}" WorkUnitID="{86A48E9A-08D2-42C8-A690-503176424BE7}"/>
-										</Reference>
-									</ReferenceList>
-									<Curve Name="" ID="{FCD999EA-A52D-499A-8B3D-2FFBA1F340ED}">
-										<PropertyList>
-											<Property Name="Flags" Type="int32" Value="3"/>
-										</PropertyList>
-										<PointList>
-											<Point>
-												<XPos>0</XPos>
-												<YPos>-200</YPos>
-												<Flags>5</Flags>
-											</Point>
-											<Point>
-												<XPos>100</XPos>
-												<YPos>0</YPos>
-												<Flags>37</Flags>
-											</Point>
-										</PointList>
-									</Curve>
-								</RTPC>
-							</RTPCList>
 						</Property>
 					</PropertyList>
 					<ReferenceList>
@@ -573,7 +547,7 @@
 											<PropertyList>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>1</Value>
+														<Value>4</Value>
 													</ValueList>
 												</Property>
 											</PropertyList>
@@ -943,7 +917,7 @@
 											<PropertyList>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>-2</Value>
+														<Value>-4</Value>
 													</ValueList>
 												</Property>
 											</PropertyList>
@@ -1254,7 +1228,7 @@
 											<PropertyList>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>-4</Value>
+														<Value>-2</Value>
 													</ValueList>
 												</Property>
 											</PropertyList>
@@ -1572,7 +1546,7 @@
 											<PropertyList>
 												<Property Name="Volume" Type="Real64">
 													<ValueList>
-														<Value>1</Value>
+														<Value>5</Value>
 													</ValueList>
 												</Property>
 											</PropertyList>
@@ -1735,7 +1709,1675 @@
 								</SwitchContainer>
 							</ChildrenList>
 						</Folder>
+						<Folder Name="Gun" ID="{FDA5C6FD-3415-4B0C-8F7D-4FE7B2FB2BB0}" ShortID="50344479">
+							<ChildrenList>
+								<ActorMixer Name="RandomPitch" ID="{069AFD52-9365-4AE4-99C2-70474116698B}" ShortID="793363152">
+									<PropertyList>
+										<Property Name="Pitch" Type="int32">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{25A5EEA6-169D-4810-9F18-22D7683FC9B7}">
+														<PropertyList>
+															<Property Name="Enabled" Type="bool" Value="True"/>
+															<Property Name="Max" Type="Real64" Value="250"/>
+															<Property Name="Min" Type="Real64" Value="-250"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ModifierList>
+												<ModifierInfo>
+													<Modifier Name="" ID="{49D2B0B7-FE5D-49FE-9466-9F0D8548C89A}">
+														<PropertyList>
+															<Property Name="Enabled" Type="bool" Value="True"/>
+															<Property Name="Max" Type="Real64" Value="1"/>
+															<Property Name="Min" Type="Real64" Value="-1"/>
+														</PropertyList>
+													</Modifier>
+												</ModifierInfo>
+											</ModifierList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="sfx_hunk_aim_revolver" ID="{E192C327-791A-4E55-B35B-D0603361F13C}" ShortID="90281871">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>2</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_aim_revolver" ID="{1643D663-8E3F-445C-BBA1-6B1BAD2D6818}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_aim_revolver.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="654837585"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_aim_revolver" ID="{1643D663-8E3F-445C-BBA1-6B1BAD2D6818}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_equip_sparkshot" ID="{BC36F0AB-155A-4282-A17A-5CB24143C0E0}" ShortID="232609094">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_equip_sparkshot" ID="{100B59F4-C5AD-4257-B67F-7261809C4E03}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_equip_sparkshot.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1038239869"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_equip_sparkshot" ID="{100B59F4-C5AD-4257-B67F-7261809C4E03}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<RandomSequenceContainer Name="fire_colt" ID="{DBD4506B-4F29-44A0-8403-3B89D5DC9930}" ShortID="99091543">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>4</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_hunk_fire_colt_03" ID="{EB889B8B-86E0-4E8C-BE2E-91751EA5C19F}" ShortID="613964805">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_colt_03" ID="{71521E5D-B20B-402A-B537-DE6722EF5590}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_colt_03.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="1038559907"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_colt_03" ID="{71521E5D-B20B-402A-B537-DE6722EF5590}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_colt_02" ID="{94128A89-7B1E-454C-93B6-48FAC74B1184}" ShortID="915635">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_colt_02" ID="{E9C8A6F4-A15A-45E1-8965-1F259798C4DE}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_colt_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="314354178"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_colt_02" ID="{E9C8A6F4-A15A-45E1-8965-1F259798C4DE}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_colt_01" ID="{66BE1938-8723-4CFA-916E-E25BD9DC84C8}" ShortID="646867112">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_colt_01" ID="{56C5CDA9-25BD-4F33-B93A-2FF396A175D0}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_colt_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="115448276"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_colt_01" ID="{56C5CDA9-25BD-4F33-B93A-2FF396A175D0}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<Sound Name="sfx_hunk_equip_revolver" ID="{687DFB2D-4ACC-42B6-8C06-EC76A1C5938B}" ShortID="546249376">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_equip_revolver" ID="{C9F94098-2EE2-48E9-B54A-B55DF154DD57}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_equip_revolver.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="701609339"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_equip_revolver" ID="{C9F94098-2EE2-48E9-B54A-B55DF154DD57}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_empty_click" ID="{756B607A-D48A-4725-8B88-C84F34568C85}" ShortID="876781073">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_empty_click" ID="{303804AE-A2B0-4B6A-B529-478C1E2788DE}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_empty_click.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="239166961"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_empty_click" ID="{303804AE-A2B0-4B6A-B529-478C1E2788DE}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_fire_gm" ID="{C0412860-0C83-44D7-9A75-1023481B6FD0}" ShortID="818975923">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>4</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_fire_gm" ID="{CCA76CA8-6B89-4DF5-93BF-31EE87CCABBF}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_fire_gm.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="314638715"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_fire_gm" ID="{CCA76CA8-6B89-4DF5-93BF-31EE87CCABBF}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<RandomSequenceContainer Name="fire_m19" ID="{2B1D0B61-453F-4D96-A4D7-0D428A841916}" ShortID="816813578">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>2</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_hunk_fire_m192_01" ID="{C9B9DDFB-20A7-4FE1-B654-187F1F6E02E7}" ShortID="680915307">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_m192_01" ID="{7B2EF7C7-93B4-4495-AAE9-B0C33AD47E74}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_m192_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="863303795"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_m192_01" ID="{7B2EF7C7-93B4-4495-AAE9-B0C33AD47E74}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_m192_02" ID="{D551E757-A56F-4DCF-B7EB-8590D34F6C0F}" ShortID="1029842447">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_m192_02" ID="{7A7FC5D1-D610-4780-8593-4DCE70D7AD6C}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_m192_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="408673996"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_m192_02" ID="{7A7FC5D1-D610-4780-8593-4DCE70D7AD6C}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<Sound Name="sfx_hunk_aim_sparkshot" ID="{BC948278-F527-4149-8561-9369CCCD46B4}" ShortID="887075696">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>2</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_aim_sparkshot" ID="{C72BDFA7-2628-4F3E-A78C-B0F41EBC952E}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_aim_sparkshot.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="319833911"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_aim_sparkshot" ID="{C72BDFA7-2628-4F3E-A78C-B0F41EBC952E}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<RandomSequenceContainer Name="aim_pistol" ID="{563B2C33-137A-40F0-8082-C6743FE39D64}" ShortID="569461265">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-5</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_driver_aim_03" ID="{AE0EC83A-720F-4BD1-9793-2FBC7C1ADE2B}" ShortID="43369702">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>5</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_driver_aim_03" ID="{F6A99AFD-37C5-4053-8D38-8C84E97727FF}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_driver_aim_03.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="290766598"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_driver_aim_03" ID="{F6A99AFD-37C5-4053-8D38-8C84E97727FF}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_driver_aim_01" ID="{3AC7F764-B7FF-49D0-BF66-033D6DF454CD}" ShortID="739112291">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_driver_aim_01" ID="{76EBBEFA-9B6B-4D0F-9152-4DBAFCA93F3A}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_driver_aim_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="936268348"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_driver_aim_01" ID="{76EBBEFA-9B6B-4D0F-9152-4DBAFCA93F3A}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_driver_aim_02" ID="{FA976971-0C29-47B0-859B-FB77D5669F5B}" ShortID="1674231">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>2</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_driver_aim_02" ID="{1181AB7F-13D8-4D37-9CBD-0016E80BDFC1}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_driver_aim_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="601395396"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_driver_aim_02" ID="{1181AB7F-13D8-4D37-9CBD-0016E80BDFC1}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<Sound Name="sfx_hunk_fire_sparkshot" ID="{95BC4B48-310C-42C0-B5D5-1502E13F7C0A}" ShortID="379604155">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>4</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_fire_sparkshot" ID="{3D958735-97A9-4B8B-8F32-64FCE41E508D}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_fire_sparkshot.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="23048053"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_fire_sparkshot" ID="{3D958735-97A9-4B8B-8F32-64FCE41E508D}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_nemesis_snarl" ID="{E32AFD4C-57B7-4237-AD56-C7B32C86D173}" ShortID="718971259">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_nemesis_snarl" ID="{C130E2CA-4195-41BC-B0BA-A2C45C8C4272}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_nemesis_snarl.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="816396000"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_nemesis_snarl" ID="{C130E2CA-4195-41BC-B0BA-A2C45C8C4272}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_aim_magnum" ID="{3B48B09B-D4B1-4156-BA0F-80F199E137AA}" ShortID="430213824">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_aim_magnum" ID="{909FEAA9-080F-4CCD-9530-10D7D6D4A1BE}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_aim_magnum.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1039300819"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_aim_magnum" ID="{909FEAA9-080F-4CCD-9530-10D7D6D4A1BE}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_equip_pistol" ID="{4BAD80AE-79D0-4EC3-B7B9-AAFEF907B782}" ShortID="593314321">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-2</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_equip_pistol" ID="{B9EF4C18-258C-4FFB-95C2-6019477862FE}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_equip_pistol.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="701324028"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_equip_pistol" ID="{B9EF4C18-258C-4FFB-95C2-6019477862FE}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_grenade_impact" ID="{52982080-D9B2-411C-8807-F8C7F841CFE4}" ShortID="144539793">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_grenade_impact" ID="{EE1B27BE-4D8F-4098-A020-F3F8BAC0D9D3}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_grenade_impact.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="715311132"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_grenade_impact" ID="{EE1B27BE-4D8F-4098-A020-F3F8BAC0D9D3}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="sfx_hunk_throw_grenade" ID="{5A3543E1-B7E2-4DB6-9ABF-77CE4548CB65}" ShortID="437049240">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_throw_grenade" ID="{364198A5-10DC-421E-BAF6-20E48E438543}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_throw_grenade.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1005921722"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_throw_grenade" ID="{364198A5-10DC-421E-BAF6-20E48E438543}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<RandomSequenceContainer Name="fire_magnum" ID="{A78DB55B-E0B9-444A-B485-A594BEC93559}" ShortID="146935175">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>5</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_hunk_fire_magnum2_03" ID="{8F43D679-8EBB-4F5F-B36E-B81E3731007E}" ShortID="358646690">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_magnum2_03" ID="{8082D563-6607-445F-8CD1-7EAC8FDEB5FF}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_magnum2_03.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="587066076"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_magnum2_03" ID="{8082D563-6607-445F-8CD1-7EAC8FDEB5FF}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_magnum2_01" ID="{C95507A6-B89A-4939-BD05-49B484BA4D27}" ShortID="344272085">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_magnum2_01" ID="{9D51C4CE-0722-4BF4-B5BB-FBAA5CA74F16}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_magnum2_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="1000271948"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_magnum2_01" ID="{9D51C4CE-0722-4BF4-B5BB-FBAA5CA74F16}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_magnum2_02" ID="{DA7DE05A-7F1B-4383-96F7-1807E2054D86}" ShortID="850895890">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_magnum2_02" ID="{9E6597C0-3C8E-4072-9154-2B76659C1D7D}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_magnum2_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="571857884"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_magnum2_02" ID="{9E6597C0-3C8E-4072-9154-2B76659C1D7D}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="fire_mup" ID="{E072AA7E-0472-4881-9C51-A7E8542149A2}" ShortID="75894363">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>-3</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_hunk_fire_mup2_02" ID="{958B4429-5921-4E46-A894-DCB632ABFFA4}" ShortID="217312464">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_mup2_02" ID="{009BA98B-5A16-49A8-83B2-932A5CBE5DB3}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_mup2_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="960951101"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_mup2_02" ID="{009BA98B-5A16-49A8-83B2-932A5CBE5DB3}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_mup2_01" ID="{5191D39E-3B8F-4D63-B434-DFC46598374A}" ShortID="983013157">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_mup2_01" ID="{46F520CC-7433-4B31-B663-D538572215D5}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_mup2_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="169996143"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_mup2_01" ID="{46F520CC-7433-4B31-B663-D538572215D5}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_mup2_03" ID="{54BD5BDB-0EF6-44B4-B179-5F6DD8192279}" ShortID="1033526471">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_mup2_03" ID="{EF199152-BC9A-4E87-B8C3-D0BC3898C063}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_mup2_03.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="512714232"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_mup2_03" ID="{EF199152-BC9A-4E87-B8C3-D0BC3898C063}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="fire_mup_strong" ID="{CD10E89E-9EBE-4E2E-A519-3337D363DA53}" ShortID="991551834">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Pitch" Type="int32">
+													<ValueList>
+														<Value>-300</Value>
+													</ValueList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>7</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_hunk_fire_mup2_02" ID="{2F1CD926-0B09-47A2-8D30-70B994C4FD47}" ShortID="1000001658">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_mup2_02" ID="{67176075-FAC6-4747-8CDA-97D1550A421A}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_mup2_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="960951101"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_mup2_02" ID="{67176075-FAC6-4747-8CDA-97D1550A421A}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_mup2_01" ID="{A087A3C4-AB40-44DC-BB20-06D21C56D3E8}" ShortID="714533896">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_mup2_01" ID="{D90B4279-AA8C-4CD8-A242-E4D6174E16B1}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_mup2_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="169996143"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_mup2_01" ID="{D90B4279-AA8C-4CD8-A242-E4D6174E16B1}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_mup2_03" ID="{F2D90DE8-4D36-447C-AE09-A17AD3AF4862}" ShortID="693457721">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_mup2_03" ID="{137138C8-38D2-4088-A099-C1C560E472B8}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_mup2_03.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="512714232"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_mup2_03" ID="{137138C8-38D2-4088-A099-C1C560E472B8}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<RandomSequenceContainer Name="fire_m19_strong" ID="{73097170-416D-4551-BD29-1BF8247EC113}" ShortID="690739079">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+												<Property Name="Highpass" Type="int16">
+													<ValueList>
+														<Value>5</Value>
+													</ValueList>
+												</Property>
+												<Property Name="Lowpass" Type="int16">
+													<ValueList>
+														<Value>10</Value>
+													</ValueList>
+												</Property>
+												<Property Name="Pitch" Type="int32">
+													<ValueList>
+														<Value>660</Value>
+													</ValueList>
+													<ModifierList>
+														<ModifierInfo>
+															<Modifier Name="" ID="{2EA3EC87-6830-4B5B-AD4F-5652D8FA025A}"/>
+														</ModifierInfo>
+													</ModifierList>
+												</Property>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>4</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+												</Reference>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<Sound Name="sfx_hunk_fire_m192_01" ID="{7873EB06-F0EF-4E94-A323-D9AFCA5C50A5}" ShortID="761556568">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_m192_01" ID="{4CAAF594-DACF-4D0B-B93F-8AA3668FB984}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_m192_01.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="863303795"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_m192_01" ID="{4CAAF594-DACF-4D0B-B93F-8AA3668FB984}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_hunk_fire_m192_02" ID="{B8A05CF0-D122-4C02-87F9-DFBC5B02F625}" ShortID="37326570">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_hunk_fire_m192_02" ID="{003EC8D5-2D5E-4DE0-8573-B387891658D1}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_hunk_fire_m192_02.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="408673996"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_hunk_fire_m192_02" ID="{003EC8D5-2D5E-4DE0-8573-B387891658D1}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</RandomSequenceContainer>
+										<Sound Name="sfx_hunk_fire_streetsweeper" ID="{7CAF64B9-EE3A-4052-BB3E-B2B19B3E62F3}" ShortID="758123468">
+											<PropertyList>
+												<Property Name="Volume" Type="Real64">
+													<ValueList>
+														<Value>6</Value>
+													</ValueList>
+												</Property>
+											</PropertyList>
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="sfx_hunk_fire_streetsweeper" ID="{FEB85CA6-AE8C-4704-8023-84367ED86BDF}">
+													<Language>SFX</Language>
+													<AudioFile>sfx_hunk_fire_streetsweeper.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="771039398"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="sfx_hunk_fire_streetsweeper" ID="{FEB85CA6-AE8C-4704-8023-84367ED86BDF}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Folder Name="Jacket" ID="{4F052916-D4E1-48ED-A5B7-4C85BF01681C}" ShortID="898605205">
+											<ChildrenList>
+												<Sound Name="sfx_jacket_bash_impact" ID="{F89534BB-62B2-4C53-8A77-3E8629E7783E}" ShortID="686903910">
+													<PropertyList>
+														<Property Name="Pitch" Type="int32">
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{BF6F2A19-3C92-4961-B86A-D04E89AF360E}">
+																		<PropertyList>
+																			<Property Name="Enabled" Type="bool" Value="True"/>
+																			<Property Name="Max" Type="Real64" Value="400"/>
+																			<Property Name="Min" Type="Real64" Value="-400"/>
+																		</PropertyList>
+																	</Modifier>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>-1</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_jacket_bash_impact" ID="{7D392DC3-D27F-41A9-A37B-8D69659FBC94}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_jacket_bash_impact.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="788296311"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_jacket_bash_impact" ID="{7D392DC3-D27F-41A9-A37B-8D69659FBC94}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_jacket_throw" ID="{EB662720-33D2-48B1-8937-EF48DD019642}" ShortID="236953310">
+													<PropertyList>
+														<Property Name="Pitch" Type="int32">
+															<ModifierList>
+																<ModifierInfo>
+																	<Modifier Name="" ID="{028458EE-BD03-489A-9616-A31E97083035}"/>
+																</ModifierInfo>
+															</ModifierList>
+														</Property>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>6</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_jacket_throw" ID="{5EA6A3CD-2F0D-4398-A759-C32FF00516C2}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_jacket_throw.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="25610698"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_jacket_throw" ID="{5EA6A3CD-2F0D-4398-A759-C32FF00516C2}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_jacket_bash_swing" ID="{EE860F03-359C-4A68-B9B8-934A6E3472D4}" ShortID="658218730">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_driver_swing" ID="{1251F10E-5525-4F2D-98A8-8D067D1BE582}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_driver_swing.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="279150818"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_driver_swing" ID="{1251F10E-5525-4F2D-98A8-8D067D1BE582}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="sfx_jacket_bash_foley" ID="{D5931FF6-B9BD-465F-9DAF-8F29C8771BFD}" ShortID="404312990">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+														<Property Name="Volume" Type="Real64">
+															<ValueList>
+																<Value>-2</Value>
+															</ValueList>
+														</Property>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="sfx_driver_bash_prep" ID="{C25FDD56-F8E6-44F9-96C3-125A7E7827B1}">
+															<Language>SFX</Language>
+															<AudioFile>sfx_driver_bash_prep.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="460898076"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="sfx_driver_bash_prep" ID="{C25FDD56-F8E6-44F9-96C3-125A7E7827B1}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+											</ChildrenList>
+										</Folder>
+									</ChildrenList>
+								</ActorMixer>
+							</ChildrenList>
+						</Folder>
+						<Sound Name="sfx_hunk_sample_insert" ID="{2772FA35-9203-43B9-B4F0-C413063289F9}" ShortID="294863610">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="sfx_hunk_sample_insert" ID="{17EE66C4-7110-4E59-B147-D30B64CD9620}">
+									<Language>SFX</Language>
+									<AudioFile>sfx_hunk_sample_insert.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="103889651"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="sfx_hunk_sample_insert" ID="{17EE66C4-7110-4E59-B147-D30B64CD9620}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<ActorMixer Name="Global" ID="{69DD7850-A139-4143-93C8-7D63AAE955D8}" ShortID="806490025">
+							<PropertyList>
+								<Property Name="OverridePositioning" Type="bool" Value="True"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<Sound Name="sfx_jacket_gauge_half" ID="{3A825083-A75B-4059-8816-07D39BF52FDE}" ShortID="949262656">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>6</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_gauge_half" ID="{E1C90187-FECC-44A6-83C9-4CBF486AE436}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_gauge_half.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="499020195"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_gauge_half" ID="{E1C90187-FECC-44A6-83C9-4CBF486AE436}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_gauge_max" ID="{713F7EAC-62F6-4700-AB84-1B687EAF1C6E}" ShortID="128975151">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-4</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_gauge_max" ID="{430D69D8-6609-43DC-B686-0F1DAB704A61}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_gauge_max.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="1009819486"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_gauge_max" ID="{430D69D8-6609-43DC-B686-0F1DAB704A61}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_pause" ID="{7C9853D1-03AE-489A-A55F-FA689296FC1D}" ShortID="253536757">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-2</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_pause" ID="{82CD549A-0485-4D11-9F31-74F2BA3B1A6A}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_pause.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="545130242"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_pause" ID="{82CD549A-0485-4D11-9F31-74F2BA3B1A6A}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_static" ID="{E63B8E08-9E99-48D7-9ED3-065790FE1CE6}" ShortID="492357343">
+									<PropertyList>
+										<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>2</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_static" ID="{6FA545DB-95CE-4C0C-92FC-6EF066C9FCC8}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_static.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="91529642"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_static" ID="{6FA545DB-95CE-4C0C-92FC-6EF066C9FCC8}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_stop" ID="{19FB7780-D13C-460E-B6D4-A29F29CC37F1}" ShortID="144940113">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-6</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_stop" ID="{7D0CBEE4-56D7-43C8-A38B-BA30EBDB6942}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_stop.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="843776261"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_stop" ID="{7D0CBEE4-56D7-43C8-A38B-BA30EBDB6942}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_tick" ID="{0119CE39-5414-42D2-9645-6CA84A216D1D}" ShortID="997720327">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-1</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_tick" ID="{852DA85B-CCB7-4D15-AB45-2DE059214519}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_tick.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="507324804"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_tick" ID="{852DA85B-CCB7-4D15-AB45-2DE059214519}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_unpause" ID="{853B1093-1FA2-4E87-A82C-71C5146F08E2}" ShortID="824134854">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-2</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_unpause" ID="{FA1764E7-D178-4ED0-B914-4B0DBE844AD5}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_unpause.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="568410148"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_unpause" ID="{FA1764E7-D178-4ED0-B914-4B0DBE844AD5}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_jacket_tick_down" ID="{CBEF2381-5E7F-4D53-BECC-14AF921E638B}" ShortID="35859830">
+									<PropertyList>
+										<Property Name="Highpass" Type="int16">
+											<ValueList>
+												<Value>25</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Lowpass" Type="int16">
+											<ValueList>
+												<Value>3</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Pitch" Type="int32">
+											<ValueList>
+												<Value>-560</Value>
+											</ValueList>
+										</Property>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-7</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_jacket_tick" ID="{EE4260CC-9229-4FEA-ADF7-1BDECED94CF0}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_jacket_tick.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="507324804"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_jacket_tick" ID="{EE4260CC-9229-4FEA-ADF7-1BDECED94CF0}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+								<Sound Name="sfx_hunk_uroboros_theme" ID="{14C10F7F-6FCC-4C2D-B413-54A19B43770A}" ShortID="471197867">
+									<PropertyList>
+										<Property Name="Volume" Type="Real64">
+											<ValueList>
+												<Value>-6</Value>
+											</ValueList>
+										</Property>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<AudioFileSource Name="sfx_hunk_uroboros_theme" ID="{39F9E6B7-1FA2-47E4-B298-8127339F52CF}">
+											<Language>SFX</Language>
+											<AudioFile>sfx_hunk_uroboros_theme.wav</AudioFile>
+											<MediaIDList>
+												<MediaID ID="463115526"/>
+											</MediaIDList>
+										</AudioFileSource>
+									</ChildrenList>
+									<ActiveSourceList>
+										<ActiveSource Name="sfx_hunk_uroboros_theme" ID="{39F9E6B7-1FA2-47E4-B298-8127339F52CF}" Platform="Linked"/>
+									</ActiveSourceList>
+								</Sound>
+							</ChildrenList>
+						</ActorMixer>
+						<Sound Name="sfx_hunk_uroboros_recharge" ID="{17654B13-9FB8-4FFA-8F19-8650FCA654CB}" ShortID="608507893">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="1"/>
+								<Property Name="Pitch" Type="int32">
+									<ModifierList>
+										<ModifierInfo>
+											<Modifier Name="" ID="{37220D31-5ACF-4F88-A938-0CC1917727AB}">
+												<PropertyList>
+													<Property Name="Enabled" Type="bool" Value="True"/>
+													<Property Name="Max" Type="Real64" Value="300"/>
+													<Property Name="Min" Type="Real64" Value="-300"/>
+												</PropertyList>
+											</Modifier>
+										</ModifierInfo>
+									</ModifierList>
+								</Property>
+								<Property Name="Volume" Type="Real64">
+									<ValueList>
+										<Value>-5</Value>
+									</ValueList>
+								</Property>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="Default Attenuation" ID="{1C16C885-97A9-48B9-99CA-62239B098C14}" WorkUnitID="{E9A01ADD-D16C-4AEF-92DB-DCF89FC42AD2}"/>
+								</Reference>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{140D52C2-62AC-4006-AE21-98F493D2358C}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{92A1A0F3-7047-4165-95AE-D5CFCC30AE61}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="sfx_hunk_uroboros_recharge" ID="{E2DAB69A-6427-42B5-AA5E-521AF61F56E6}">
+									<Language>SFX</Language>
+									<AudioFile>sfx_hunk_uroboros_recharge.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="1004041679"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="sfx_hunk_uroboros_recharge" ID="{E2DAB69A-6427-42B5-AA5E-521AF61F56E6}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
 					</ChildrenList>
+					<ObjectLists>
+						<ObjectList Name="RTPC">
+							<Reference>
+								<Local>
+									<RTPC Name="" ID="{14C5FC03-F81A-42FF-91C9-0C4CFD46925B}" ShortID="874479794">
+										<PropertyList>
+											<Property Name="PropertyName" Type="string" Value="Volume"/>
+										</PropertyList>
+										<ReferenceList>
+											<Reference Name="ControlInput">
+												<ObjectRef Name="Volume_SFX" ID="{4FF50BF4-04DE-43F4-BCE1-1243931798A7}" WorkUnitID="{86A48E9A-08D2-42C8-A690-503176424BE7}"/>
+											</Reference>
+											<Reference Name="Curve">
+												<Custom>
+													<Curve Name="" ID="{FCD999EA-A52D-499A-8B3D-2FFBA1F340ED}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-200</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>0</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</Custom>
+											</Reference>
+										</ReferenceList>
+									</RTPC>
+								</Local>
+							</Reference>
+						</ObjectList>
+					</ObjectLists>
 				</ActorMixer>
 			</ChildrenList>
 		</WorkUnit>

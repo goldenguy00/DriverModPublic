@@ -1,5 +1,4 @@
 ﻿using BepInEx.Configuration;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using RiskOfOptions;
@@ -12,32 +11,31 @@ namespace RobDriver.Modules
     {
         public static ConfigFile myConfig;
 
+        public static ConfigEntry<bool> badass;
+        public static ConfigEntry<bool> cursed;
+        public static ConfigEntry<bool> enablePickupNotifications;
+        public static ConfigEntry<bool> weaponCallouts;
+        public static ConfigEntry<bool> enableGodslingInMultiplayer;
+
         public static ConfigEntry<bool> enableArsenal;
         public static ConfigEntry<bool> adaptiveFocus;
         public static ConfigEntry<bool> autoFocus;
         public static ConfigEntry<bool> sharedPickupVisuals;
-        public static ConfigEntry<bool> oldPickupModel;
         public static ConfigEntry<float> baseDropRate;
         public static ConfigEntry<float> godslingDropRateSplit;
-        public static ConfigEntry<bool> enableGodslingInMultiplayer;
-        public static ConfigEntry<bool> weaponCallouts;
         public static ConfigEntry<bool> backupMagExtendDuration;
         public static ConfigEntry<bool> classicDodgeSound;
         public static ConfigEntry<bool> enablePistolUpgrade;
-        public static ConfigEntry<bool> enablePickupNotifications;
         public static ConfigEntry<bool> predatoryOnHead;
         public static ConfigEntry<bool> enableCrosshairDot;
         public static ConfigEntry<bool> dynamicCrosshair;
         public static ConfigEntry<bool> dynamicCrosshairUniversal;
         public static ConfigEntry<bool> defaultPistolAnims;
-        public static ConfigEntry<bool> enabledRedVfxForKnife;
         public static ConfigEntry<bool> enableRevengence;
         public static ConfigEntry<bool> randomSupplyDrop;
         public static ConfigEntry<bool> oldCritShot;
         public static ConfigEntry<bool> enableRecoil;
-        public static ConfigEntry<bool> uniqueDropsAreLegendary; 
-        public static ConfigEntry<bool> badass;
-        public static ConfigEntry<bool> cursed;
+        public static ConfigEntry<bool> uniqueDropsAreLegendary;
 
         public static ConfigEntry<bool> enableMagneticPickups;
         public static ConfigEntry<bool> enableMagenticConditionalPickups;
@@ -56,15 +54,6 @@ namespace RobDriver.Modules
         public static ConfigEntry<KeyboardShortcut> restKey;
         public static ConfigEntry<KeyboardShortcut> tauntKey;
         public static ConfigEntry<KeyboardShortcut> danceKey;
-
-        public static List<WeaponConfigBinding> weaponConfigBinding = new List<WeaponConfigBinding>();
-
-        public struct WeaponConfigBinding
-        {
-            public string identifier;
-            public ConfigEntry<bool> enabled;
-            public ConfigEntry<int> shotCount;
-        }
 
         internal static void ReadConfig(ConfigFile config)
         {
@@ -85,7 +74,7 @@ namespace RobDriver.Modules
 
             #region Gameplay
             enableArsenal = Config.BindAndOptions("02 - Gameplay", "Enable Arsenal Passive", true, "If set to false, Driver will no longer be able to choose a default weapon and will only use the Pistol.", true);
-
+            
             adaptiveFocus = Config.BindAndOptions("02 - Gameplay", "Adaptive Focus", true, "If set to true, Focus will always charge up before firing a shot once your attack speed reaches a certain amount. (Client-side)");
             
             autoFocus = Config.BindAndOptions("02 - Gameplay", "Focus Auto Charge", false, "If set to true, Focus will always charge up before firing a shot. Take control of your runs with the illusion of skill! (Client-side)");
@@ -94,7 +83,7 @@ namespace RobDriver.Modules
 
             godslingDropRateSplit = Config.BindAndOptionsSlider("02 - Gameplay", "Godsling Drop Rate Split", 50f, "Controls whether ammo or guns drop while using the Godsling passive, higher number means higher chance for ammo.", 0f, 100f);
             
-            backupMagExtendDuration = Config.BindAndOptions("02 - Gameplay", "Backup Magazine Ammo Extension", false, "If set to true, Backup Magazines will increase the Ammo of weapon pickups by 0.5s.");
+            backupMagExtendDuration = Config.BindAndOptions("02 - Gameplay", "Backup Magazine Ammo Extension", true, "If set to true, Backup Magazines will increase the max Ammo of weapons pickups by 1.");
             
             enablePistolUpgrade = Config.BindAndOptions("02 - Gameplay", "Enable Pistol Upgrade", true, "If set to false, will stop Pistol from upgrading itself for run-ending boss fights.");
             
@@ -104,23 +93,21 @@ namespace RobDriver.Modules
 
             enableRecoil = Config.BindAndOptions("02 - Gameplay", "Enable Recoil", true, "Set to false to disable recoil from shooting guns.");
 
-            uniqueDropsAreLegendary = Config.BindAndOptions("02 - Gameplay", "Unique Drops Are Legendary", false, "Unique weapon drops from survivors are now in the legendary pool.");
+            uniqueDropsAreLegendary = Config.BindAndOptions("02 - Gameplay", "Unique Drops Are Legendary", false, "Adds rare or non-droppable weapons to the Legendary item pool (Unique, Void, Lunar)");
             #endregion
 
             #region Pickups
 
-            enableMagneticPickups = Config.BindAndOptions("03 - Pickups", "Enable Magnetic Pickups", true, "Makes weapon and ammo drops move towards the player when they get close.", true);
+            enableMagneticPickups = Config.BindAndOptions("03 - Pickups", "Enable Magnetic Pickups", true, "Makes weapon and ammo drops move towards the player when they get close.");
 
-            enableMagenticConditionalPickups = Config.BindAndOptions("03 - Pickups", "Only Magnetize Without Pickup Equipped", true, "Only magnetizes weapon and ammo drops when the player runs out of ammo.", true);
+            enableMagenticConditionalPickups = Config.BindAndOptions("03 - Pickups", "Only Magnetize Without Pickup Equipped", true, "Only magnetizes weapon and ammo drops when the player runs out of ammo.");
 
-            pickupRadius = Config.BindAndOptionsSlider("03 - Pickups", "PickupRadius", 10f, "How close a pickup must be before it will begin to move towards a player.", 0f, 15f);
+            pickupRadius = Config.BindAndOptionsSlider("03 - Pickups", "PickupRadius", 15f, "How close a pickup must be before it will begin to move towards a player.", 0f, 25f);
 
             #endregion
 
             #region Visuals and Effects
             sharedPickupVisuals = Config.BindAndOptions("04 - Visuals", "Shared Pickup Visuals", true, "If set to false, weapon pickups will only be visible while playing Driver. Setting this to true lets every character see them. (Client-side)");
-
-            oldPickupModel = Config.BindAndOptions("04 - Visuals", "Old Weapon Pickup Model", false, "If set to true, uses the old goofy crate pickups instead of briefcases. (Client-side)");
             
             classicDodgeSound = Config.BindAndOptions("04 - Visuals", "Classic Dodge Sound", false, "If set to true, will use the old Combat Slide SFX. (Client-side)");
             
@@ -133,10 +120,8 @@ namespace RobDriver.Modules
             dynamicCrosshairUniversal = Config.BindAndOptions("04 - Visuals", "Dynamic Crosshair (Universal)", false, "If set to true, highlight the crosshair while hovering over entities, but for ALL characters. Overrides the other option. (Client-side)", true);
 
             defaultPistolAnims = Config.BindAndOptions("04 - Visuals", "Default Pistol Animations", true, "If set to true, return pistol passive scope animations back to the default.");
-            
-            enabledRedVfxForKnife = Config.BindAndOptions("04 - Visuals", "Red Slashing VFX", false, "If set to true, knife has red VFX.");
 
-            enableRevengence = Config.BindAndOptions("04 - Visuals", "Revengence", false, "Some weapons are turned into Murasama.", true);
+            enableRevengence = Config.BindAndOptions("04 - Visuals", "Revengence", false, "Some weapons are turned into Murasama and some vfx are changed", true);
             #endregion
 
             #region Emotes
@@ -159,76 +144,45 @@ namespace RobDriver.Modules
             #endregion
         }
 
+        internal static ConfigEntry<bool> CharacterEnableConfig(string characterName) => Config.BindAndOptions("01 - General", "Enabled", true, "Set to false to disable this character", true);
+        internal static ConfigEntry<bool> ForceUnlockConfig(string characterName) => Config.BindAndOptions("01 - General", "Force Unlock", false, "Makes this character unlocked by default", true);
+
         public static void InitWeaponConfig(DriverWeaponDef weaponDef)
         {
-            if (!weaponDef) return;
-            if (string.IsNullOrWhiteSpace(weaponDef.configIdentifier)) return;
+            var name = weaponDef.name.Replace("'", string.Empty);
 
-            var x = Config.BindAndOptionsSlider("07 - Weapons", weaponDef.configIdentifier + " - Base Ammo", weaponDef.shotCount, "How many shots this weapon can fire without any bonus attack speed.", 0, 200);
+            var x = Config.BindAndOptions("07 - Weapons", name + " - Enabled", true, "Set to false to remove this weapon from the drop pool.");
 
-            var y = Config.BindAndOptions("07 - Weapons", weaponDef.configIdentifier + " - Enabled", true, "Set to false to remove this weapon from the drop pool.");
+            var y = Config.BindAndOptionsSlider("07 - Weapons", name + " - Base Ammo", weaponDef.shotCount, "How many shots this weapon can fire without any bonus attack speed.", 0, 200);
 
-            foreach (WeaponConfigBinding i in weaponConfigBinding)
-            {
-                if (i.identifier == weaponDef.configIdentifier) return;
-            }
+            var z = Config.BindAndOptionsEnum("07 - Weapons", name + " - Tier", weaponDef.tier, "Sets the random drop tier of the weapon. NoTier, Void and Lunar do not drop randomly.");
 
-            weaponConfigBinding.Add(new WeaponConfigBinding
-            {
-                identifier = weaponDef.configIdentifier,
-                enabled = y,
-                shotCount = x
-            });
+            weaponDef.enabled = x.Value;
+            weaponDef.shotCount = y.Value;
+            weaponDef.tier = z.Value;
+
+            x.SettingChanged += (object sender, System.EventArgs e) => weaponDef.enabled = (bool)(e as SettingChangedEventArgs).ChangedSetting.BoxedValue;
+            y.SettingChanged += (object sender, System.EventArgs e) => weaponDef.shotCount = (int)(e as SettingChangedEventArgs).ChangedSetting.BoxedValue;
+            z.SettingChanged += (object sender, System.EventArgs e) => weaponDef.tier = (DriverWeaponTier)(e as SettingChangedEventArgs).ChangedSetting.BoxedValue;
         }
 
-        public static bool GetWeaponConfig(DriverWeaponDef weaponDef)
+        public static void InitBulletConfig(DriverBulletDef bulletDef)
         {
-            foreach (WeaponConfigBinding i in weaponConfigBinding)
-            {
-                if (i.identifier == weaponDef.configIdentifier)
-                {
-                    return true;
-                }
-            }
+            var x = Config.BindAndOptions("08 - Bullets", bulletDef.bulletName + " - Enabled", true, "Set to false to remove this weapon from the drop pool.");
 
-            return false;
-        }
+            var z = Config.BindAndOptionsEnum("08 - Bullets", bulletDef.bulletName + " - Tier", bulletDef.tier, "Sets the random drop tier of the weapon. NoTier does not drop randomly, Void and Lunar are unused.");
 
-        public static bool GetWeaponConfigEnabled(DriverWeaponDef weaponDef)
-        {
-            foreach (WeaponConfigBinding i in weaponConfigBinding)
-            {
-                if (i.identifier == weaponDef.configIdentifier)
-                {
-                    return i.enabled.Value;
-                }
-            }
+            bulletDef.enabled = x.Value;
+            bulletDef.tier = z.Value;
 
-            return true;
-        }
-
-        public static int GetWeaponConfigShotCount(DriverWeaponDef weaponDef)
-        {
-            foreach (WeaponConfigBinding i in weaponConfigBinding)
-            {
-                if (i.identifier == weaponDef.configIdentifier)
-                {
-                    return i.shotCount.Value;
-                }
-            }
-
-            return 0;
+            x.SettingChanged += (object sender, System.EventArgs e) => bulletDef.enabled = (bool)(e as SettingChangedEventArgs).ChangedSetting.BoxedValue;
+            z.SettingChanged += (object sender, System.EventArgs e) => bulletDef.tier = (DriverWeaponTier)(e as SettingChangedEventArgs).ChangedSetting.BoxedValue;
         }
 
         public static void InitROO(Sprite modSprite, string modDescription)
         {
-            if (DriverPlugin.RooInstalled) _InitROO(modSprite, modDescription);
-        }
-
-        public static void _InitROO(Sprite modSprite, string modDescription)
-        {
-            ModSettingsManager.SetModIcon(modSprite);
-            ModSettingsManager.SetModDescription(modDescription);
+            if (DriverPlugin.RooInstalled) 
+                _InitROO(modSprite, modDescription);
         }
 
         public static ConfigEntry<T> BindAndOptions<T>(string section, string name, T defaultValue, string description = "", bool restartRequired = false)
@@ -301,12 +255,45 @@ namespace RobDriver.Modules
             return configEntry;
         }
 
+        public static ConfigEntry<DriverWeaponTier> BindAndOptionsEnum(string section, string name, DriverWeaponTier defaultValue, string description = "", bool restartRequired = false)
+        {
+            if (string.IsNullOrEmpty(description))
+            {
+                description = name;
+            }
+
+            description += " (Default: " + System.Enum.GetName(typeof(DriverWeaponTier), defaultValue) + ")";
+
+            if (restartRequired)
+            {
+                description += " (restart required)";
+            }
+            var acceptableValues = new AcceptableValueRange<DriverWeaponTier>(DriverWeaponTier.NoTier, DriverWeaponTier.Lunar);
+
+            var configEntry = myConfig.Bind(section, name, defaultValue, new ConfigDescription(description, acceptableValues));
+
+            if (DriverPlugin.RooInstalled)
+            {
+                TryRegisterOption(configEntry, restartRequired);
+            }
+
+            return configEntry;
+        }
+
+        #region RoO
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        public static void _InitROO(Sprite modSprite, string modDescription)
+        {
+            ModSettingsManager.SetModIcon(modSprite);
+            ModSettingsManager.SetModDescription(modDescription);
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void TryRegisterOption<T>(ConfigEntry<T> entry, bool restartRequired)
         {
             if (entry is ConfigEntry<string> stringEntry)
             {
-                ModSettingsManager.AddOption(new StringInputFieldOption(stringEntry, restartRequired));
+                ModSettingsManager.AddOption(new StringInputFieldOption(stringEntry, restartRequired), "com.rob.Driver", "Driver");
             }
             if (entry is ConfigEntry<float>)
             {
@@ -316,19 +303,23 @@ namespace RobDriver.Modules
                     max = 20,
                     FormatString = "{0:0.00}",
                     restartRequired = restartRequired
-                }));
+                }), "com.rob.Driver", "Driver");
             }
             if (entry is ConfigEntry<int>)
             {
-                ModSettingsManager.AddOption(new IntSliderOption(entry as ConfigEntry<int>, restartRequired));
+                ModSettingsManager.AddOption(new IntSliderOption(entry as ConfigEntry<int>, restartRequired), "com.rob.Driver", "Driver");
             }
             if (entry is ConfigEntry<bool>)
             {
-                ModSettingsManager.AddOption(new CheckBoxOption(entry as ConfigEntry<bool>, restartRequired));
+                ModSettingsManager.AddOption(new CheckBoxOption(entry as ConfigEntry<bool>, restartRequired), "com.rob.Driver", "Driver");
             }
             if (entry is ConfigEntry<KeyboardShortcut>)
             {
-                ModSettingsManager.AddOption(new KeyBindOption(entry as ConfigEntry<KeyboardShortcut>, restartRequired));
+                ModSettingsManager.AddOption(new KeyBindOption(entry as ConfigEntry<KeyboardShortcut>, restartRequired), "com.rob.Driver", "Driver");
+            }
+            if (entry is ConfigEntry<DriverWeaponTier>)
+            {
+                ModSettingsManager.AddOption(new ChoiceOption(entry as ConfigEntry<DriverWeaponTier>, restartRequired), "com.rob.Driver", "Driver");
             }
         }
 
@@ -341,7 +332,7 @@ namespace RobDriver.Modules
                 max = max,
                 formatString = "{0:0.00}",
                 restartRequired = restartRequired
-            }));
+            }), "com.rob.Driver", "Driver");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
@@ -351,20 +342,11 @@ namespace RobDriver.Modules
             {
                 min = min,
                 max = max,
-                formatString = "{0:0.00}",
+                FormatString = "{0:0.00}",
                 restartRequired = restartRequired
-            }));
+            }), "com.rob.Driver", "Driver");
         }
-
-        internal static ConfigEntry<bool> CharacterEnableConfig(string characterName)
-        {
-            return Config.BindAndOptions("01 - General", "Enabled", true, "Set to false to disable this character", true);
-        }
-
-        internal static ConfigEntry<bool> ForceUnlockConfig(string characterName)
-        {
-            return Config.BindAndOptions("01 - General", "Force Unlock", false, "Makes this character unlocked by default", true);
-        }
+        #endregion
 
         public static bool GetKeyPressed(ConfigEntry<KeyboardShortcut> entry)
         {
@@ -376,27 +358,6 @@ namespace RobDriver.Modules
                 }
             }
             return Input.GetKeyDown(entry.Value.MainKey);
-        }
-    }
-
-    public class StageSpawnInfo
-    {
-        private string stageName;
-        private int minStages;
-
-        public StageSpawnInfo(string stageName, int minStages)
-        {
-            this.stageName = stageName;
-            this.minStages = minStages;
-        }
-
-        public string GetStageName()
-        {
-            return stageName;
-        }
-        public int GetMinStages()
-        {
-            return minStages;
         }
     }
 }

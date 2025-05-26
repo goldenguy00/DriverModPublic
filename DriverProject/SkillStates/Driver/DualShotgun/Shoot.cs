@@ -1,6 +1,7 @@
 ﻿using RoR2;
 using UnityEngine;
 using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.DualShotgun
 {
@@ -59,7 +60,7 @@ namespace RobDriver.SkillStates.Driver.DualShotgun
 
             float recoilAmplitude = Shoot.bulletRecoil / this.attackSpeedStat;
 
-            base.AddRecoil2(-0.4f * recoilAmplitude, -0.8f * recoilAmplitude, -0.3f * recoilAmplitude, 0.3f * recoilAmplitude);
+            base.AddRecoil(0.8f * recoilAmplitude,0.3f * recoilAmplitude);
             this.characterBody.AddSpreadBloom(4f);
             EffectManager.SimpleMuzzleFlash(EntityStates.Commando.CommandoWeapon.FireBarrage.effectPrefab, gameObject, muzzleString, false);
 

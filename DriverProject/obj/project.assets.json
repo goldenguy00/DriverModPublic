@@ -71,7 +71,7 @@
           "lib/netstandard1.0/_._": {}
         }
       },
-      "MMHOOK.RoR2/2024.12.10": {
+      "MMHOOK.RoR2/2025.5.23": {
         "type": "package",
         "compile": {
           "lib/MMHOOK_RoR2.dll": {}
@@ -179,13 +179,13 @@
           }
         }
       },
-      "R2API.ContentManagement/1.0.8": {
+      "R2API.ContentManagement/1.0.9": {
         "type": "package",
         "dependencies": {
           "BepInEx.Core": "5.4.19",
-          "MMHOOK.RoR2": "2024.12.10",
+          "MMHOOK.RoR2": "2025.3.4",
           "R2API.Core": "5.1.5",
-          "RiskOfRain2.GameLibs": "1.3.6-r.0",
+          "RiskOfRain2.GameLibs": "1.3.7-r.0",
           "RoR2BepInExPack": "1.7.0",
           "UnityEngine.Modules": "2021.3.33"
         },
@@ -241,13 +241,13 @@
           }
         }
       },
-      "R2API.Dot/1.0.3": {
+      "R2API.Dot/1.0.4": {
         "type": "package",
         "dependencies": {
           "BepInEx.Core": "5.4.19",
-          "MMHOOK.RoR2": "2024.8.28",
-          "R2API.Core": "5.1.1",
-          "RiskOfRain2.GameLibs": "1.3.1.275-r.0",
+          "MMHOOK.RoR2": "2025.3.4",
+          "R2API.Core": "5.1.5",
+          "RiskOfRain2.GameLibs": "1.3.7-r.0",
           "RoR2BepInExPack": "1.7.0",
           "UnityEngine.Modules": "2021.3.33"
         },
@@ -347,6 +347,27 @@
           }
         }
       },
+      "R2API.Skills/1.0.1": {
+        "type": "package",
+        "dependencies": {
+          "BepInEx.Core": "5.4.19",
+          "MMHOOK.RoR2": "2024.12.10",
+          "R2API.Core": "5.1.5",
+          "RiskOfRain2.GameLibs": "1.3.6-r.0",
+          "RoR2BepInExPack": "1.7.0",
+          "UnityEngine.Modules": "2021.3.33"
+        },
+        "compile": {
+          "lib/netstandard2.1/R2API.Skills.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/R2API.Skills.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "R2API.Skins/1.2.0": {
         "type": "package",
         "dependencies": {
@@ -390,7 +411,7 @@
           }
         }
       },
-      "RiskOfRain2.GameLibs/1.3.6-r.0": {
+      "RiskOfRain2.GameLibs/1.3.8-r.0": {
         "type": "package",
         "compile": {
           "lib/netstandard2.0/AK.Wwise.Unity.API.WwiseTypes.dll": {},
@@ -1120,15 +1141,15 @@
         "runtime.json"
       ]
     },
-    "MMHOOK.RoR2/2024.12.10": {
-      "sha512": "GkTQp2U0wP+2ySA+x1Xh+v2Id378vCiZbqoQRAsFFOCHOpgU82O/3mqqryQGaT+j1P7jR38Y48u5bsSs0xqrXg==",
+    "MMHOOK.RoR2/2025.5.23": {
+      "sha512": "Df3gfcu3g+woAT4gvEJNci+lBQvo/eGfqrXvvG4Yd9mnhqCRcClWfnOaGTCWWbycVhw1oxJDLheXkg6h/BMEbw==",
       "type": "package",
-      "path": "mmhook.ror2/2024.12.10",
+      "path": "mmhook.ror2/2025.5.23",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/MMHOOK_RoR2.dll",
-        "mmhook.ror2.2024.12.10.nupkg.sha512",
+        "mmhook.ror2.2025.5.23.nupkg.sha512",
         "mmhook.ror2.nuspec"
       ]
     },
@@ -1217,16 +1238,16 @@
         "monomod.utils.nuspec"
       ]
     },
-    "R2API.ContentManagement/1.0.8": {
-      "sha512": "HgBlBUiwRxsU6pJZRUt6tFejz7P3+bRgOoXbiXREGenz8f7APcoRreuwTi/K28MnFyyveWl512aa9KDogw224Q==",
+    "R2API.ContentManagement/1.0.9": {
+      "sha512": "LyAMq3nL9aS0EhsS71i78E5L967BhBJihjK/PKVTzITWkGEx65SGoonp2bimk9uMRGAnYPZpw19E8VGOHdsZOQ==",
       "type": "package",
-      "path": "r2api.contentmanagement/1.0.8",
+      "path": "r2api.contentmanagement/1.0.9",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.1/R2API.ContentManagement.dll",
         "lib/netstandard2.1/R2API.ContentManagement.xml",
-        "r2api.contentmanagement.1.0.8.nupkg.sha512",
+        "r2api.contentmanagement.1.0.9.nupkg.sha512",
         "r2api.contentmanagement.nuspec"
       ]
     },
@@ -1256,16 +1277,16 @@
         "r2api.damagetype.nuspec"
       ]
     },
-    "R2API.Dot/1.0.3": {
-      "sha512": "Vuu20cmbk7Nfa9rArXo7bAzM9/F+/OPun0eA5gaQxZtYKZ4kjlPoCwJBArkenMui6CpJzIOkIZLQM4iVHiqifQ==",
+    "R2API.Dot/1.0.4": {
+      "sha512": "Otdg4RD5I4ah3g9X9mB5mwYxiEQULOzkFye4gtrrb7GVFaEU5aAg+ozPSQoWVK9uva54H8BCclyf43aUHFWqOA==",
       "type": "package",
-      "path": "r2api.dot/1.0.3",
+      "path": "r2api.dot/1.0.4",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "lib/netstandard2.1/R2API.Dot.dll",
         "lib/netstandard2.1/R2API.Dot.xml",
-        "r2api.dot.1.0.3.nupkg.sha512",
+        "r2api.dot.1.0.4.nupkg.sha512",
         "r2api.dot.nuspec"
       ]
     },
@@ -1321,6 +1342,19 @@
         "r2api.recalculatestats.nuspec"
       ]
     },
+    "R2API.Skills/1.0.1": {
+      "sha512": "945Gn+IiqOyB2z6CW8gcDx9t0nycAVMg8MiEYrfnbl88tajTXbpL4vp0GDVI3atymyyAcsAW5+bbZnpe5i4aFg==",
+      "type": "package",
+      "path": "r2api.skills/1.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.1/R2API.Skills.dll",
+        "lib/netstandard2.1/R2API.Skills.xml",
+        "r2api.skills.1.0.1.nupkg.sha512",
+        "r2api.skills.nuspec"
+      ]
+    },
     "R2API.Skins/1.2.0": {
       "sha512": "QPrInkhUfwm6VR8rHs+1CZ9jq+X2tvhtO9XRE0tmX9kPZ/3LYMo+UCOYQVwbN/m+JiyAryhTjvVd00CuTAvkrw==",
       "type": "package",
@@ -1347,10 +1381,10 @@
         "r2api.sound.nuspec"
       ]
     },
-    "RiskOfRain2.GameLibs/1.3.6-r.0": {
-      "sha512": "qP7zjBxTcBv9zyNxTERTK4Xf6Tnl3tA9Y5pFevEwzOzuVG11/dXsxTP4mwy75AP1Vc2tqHF4vP1lH+ht5fP7FA==",
+    "RiskOfRain2.GameLibs/1.3.8-r.0": {
+      "sha512": "XPz9fHHzoTfo58gn4YDfNqtPPuAeUUBuZNKDtH9xE/p6uNFbRaBIQ/imqIeMh1Ki4occKmCIc+BxG3wkzLRKMQ==",
       "type": "package",
-      "path": "riskofrain2.gamelibs/1.3.6-r.0",
+      "path": "riskofrain2.gamelibs/1.3.8-r.0",
       "files": [
         ".nupkg.metadata",
         "lib/netstandard2.0/AK.Wwise.Unity.API.WwiseTypes.dll",
@@ -1374,7 +1408,7 @@
         "lib/netstandard2.0/Unity.TextMeshPro.dll",
         "lib/netstandard2.0/UnityEngine.UI.dll",
         "lib/netstandard2.0/com.unity.multiplayer-hlapi.Runtime.dll",
-        "riskofrain2.gamelibs.1.3.6-r.0.nupkg.sha512",
+        "riskofrain2.gamelibs.1.3.8-r.0.nupkg.sha512",
         "riskofrain2.gamelibs.nuspec"
       ]
     },
@@ -3291,18 +3325,19 @@
     ".NETStandard,Version=v2.1": [
       "BepInEx.Analyzers >= 1.0.8",
       "BepInEx.Core >= 5.4.21",
-      "MMHOOK.RoR2 >= 2024.12.10",
-      "R2API.ContentManagement >= 1.0.8",
+      "MMHOOK.RoR2 >= 2025.5.23",
+      "R2API.ContentManagement >= 1.0.9",
       "R2API.Core >= 5.1.5",
       "R2API.DamageType >= 1.1.7",
-      "R2API.Dot >= 1.0.3",
+      "R2API.Dot >= 1.0.4",
       "R2API.Language >= 1.0.1",
       "R2API.Networking >= 1.0.3",
       "R2API.Prefab >= 1.0.4",
       "R2API.RecalculateStats >= 1.5.0",
+      "R2API.Skills >= 1.0.1",
       "R2API.Skins >= 1.2.0",
       "R2API.Sound >= 1.0.3",
-      "RiskOfRain2.GameLibs >= 1.3.6-r.0",
+      "RiskOfRain2.GameLibs >= 1.3.8-r.0",
       "Rune580.Mods.RiskOfRain2.RiskOfOptions >= 2.8.2"
     ]
   },
@@ -3371,14 +3406,14 @@
           },
           "MMHOOK.RoR2": {
             "target": "Package",
-            "version": "[2024.12.10, )",
+            "version": "[2025.5.23, )",
             "noWarn": [
               "NU1701"
             ]
           },
           "R2API.ContentManagement": {
             "target": "Package",
-            "version": "[1.0.8, )"
+            "version": "[1.0.9, )"
           },
           "R2API.Core": {
             "target": "Package",
@@ -3390,7 +3425,7 @@
           },
           "R2API.Dot": {
             "target": "Package",
-            "version": "[1.0.3, )"
+            "version": "[1.0.4, )"
           },
           "R2API.Language": {
             "target": "Package",
@@ -3408,6 +3443,10 @@
             "target": "Package",
             "version": "[1.5.0, )"
           },
+          "R2API.Skills": {
+            "target": "Package",
+            "version": "[1.0.1, )"
+          },
           "R2API.Skins": {
             "target": "Package",
             "version": "[1.2.0, )"
@@ -3418,7 +3457,7 @@
           },
           "RiskOfRain2.GameLibs": {
             "target": "Package",
-            "version": "[1.3.6-r.0, )"
+            "version": "[1.3.8-r.0, )"
           },
           "Rune580.Mods.RiskOfRain2.RiskOfOptions": {
             "target": "Package",

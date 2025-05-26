@@ -1,182 +1,113 @@
 ﻿using RoR2;
 using UnityEngine;
-using EntityStates;
+using RobDriver.SkillStates.BaseStates;
+using UnityEngine.Networking;
+using RobDriver.Modules.Components.UI;
 
 namespace RobDriver.SkillStates.Driver.SniperRifle
 {
-    public class Shoot : BaseDriverSkillState
+    public class Shoot : BaseDriverShootState
     {
-        public static float damageCoefficient = 18f;
-        public static float procCoefficient = 1f;
-        public float baseDuration = 1.6f;
-        public static int bulletCount = 1;
-        public static float bulletRecoil = 16f;
-        public static float bulletRange = 2000f;
-        public float selfForce = 0f;
-        public bool aiming;
+        public static float _damageCoefficient = 6f;
 
-        private float earlyExitTime;
-        protected float duration;
-        protected float fireDuration;
-        protected bool hasFired;
-        private bool isCrit;
-        protected string muzzleString;
+        protected override float damageCoefficient => _damageCoefficient;
+        protected override float earlyExitTime => this.earlyExitFraction * this.duration;
+        protected override float animationDuration => this.duration;
+        protected override float maxBulletSpread => 0f;
+        protected override string shootSoundString => "sfx_driver_sniper_shoot";
+        protected override string animationString => "FireSniper";
+        protected override DamageTypeCombo damageType => this.iDrive.DamageType;
+        protected override GameObject tracerPrefab => Modules.Assets.sniperTracer;
+        protected override GameObject muzzleFlashPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab;
+        protected override GameObject hitEffectPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab;
+
+        public bool aiming;
 
         public override void OnEnter()
         {
+            base.procCoefficient = 1f;
+            base.bulletCount = 1;
+            base.dropShells = 0;
+            base.ammoConsumption = 1f;
+            base.useAttackSpeed = true;
+
+            base.bulletFalloff = BulletAttack.FalloffModel.None;
+            base.hitMask = LayerIndex.CommonMasks.bullet;
+            base.stopperMask = LayerIndex.world.collisionMask;
+            base.damageColorIndex = DamageColorIndex.Default;
+
+            base.bulletRange = 2000f;
+            base.bulletThiccness = 0.35f;
+            base.bulletForce = 2500f;
+            base.selfForce = 100f;
+
+            base.baseDuration = 1.2f;
+            base.earlyExitFraction = 0.75f;
+            base.fireDelayFraction = 0f;
+
+            base.visualRecoilAmplitude = 16f;
+            base.spreadBloom = 4f;
+            base.aimTimer = 5f;
+
+            base.playbackRateString = "Shoot.playbackRate";
+            base.muzzleString = "ShotgunMuzzle";
+
             base.OnEnter();
-            this.characterBody.SetAimTimer(5f);
-            this.muzzleString = "ShotgunMuzzle";
-            this.hasFired = false;
-            this.duration = this.baseDuration / this.attackSpeedStat;
-            this.isCrit = base.RollCrit();
-            this.earlyExitTime = 0.75f * this.duration;
 
-            Util.PlaySound("sfx_driver_sniper_shoot", base.gameObject);
+            if (this.aiming && this.iDrive.shurikenComponent)
+                this.iDrive.shurikenComponent.OnSkillActivated(base.skillLocator.primary);
 
-            base.PlayAnimation("Gesture, Override", "FireSniper", "Shoot.playbackRate", this.duration);
-            base.PlayAnimation("AimPitch", "Shoot");
-
-            this.fireDuration = 0;
-
-            if (this.iDrive) this.iDrive.ConsumeAmmo();
+            this.iDrive.machineGunVFX.Play();
         }
 
-        public virtual void FireBullet()
+        protected override void AuthorityModifyBulletAttack(ref BulletAttack bulletAttack)
         {
-            if (!this.hasFired)
+            base.AuthorityModifyBulletAttack(ref bulletAttack);
+
+            bulletAttack.damageType.damageType |= DamageType.BypassArmor | DamageType.Stun1s;
+            bulletAttack.sniper = true;
+
+            if (this.aiming)
             {
-                this.hasFired = true;
-
-                if (this.iDrive) this.iDrive.machineGunVFX.Play();
-
-                float recoilAmplitude = Shoot.bulletRecoil / this.attackSpeedStat;
-
-                base.AddRecoil2(-0.4f * recoilAmplitude, -0.8f * recoilAmplitude, -0.3f * recoilAmplitude, 0.3f * recoilAmplitude);
-                this.characterBody.AddSpreadBloom(4f);
-                EffectManager.SimpleMuzzleFlash(EntityStates.Commando.CommandoWeapon.FireBarrage.effectPrefab, gameObject, muzzleString, false);
-
-                GameObject tracer = Modules.Assets.shotgunTracer;
-                if (this.isCrit) tracer = Modules.Assets.shotgunTracerCrit;
-
-                if (base.isAuthority)
+                bulletAttack.damageType.damageType |= DamageType.BypassBlock;
+                bulletAttack.damageType.damageSource = DamageSource.Secondary;
+                bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
                 {
-                    float damage = Shoot.damageCoefficient * this.damageStat;
-
-                    Ray aimRay = GetAimRay();
-
-                    float force = 2500;
-
-                    float maxSpread = 6f;
-                    float minSpread = 3f;
-
-                    float radius = 1f;
-
-                    LayerMask stopperMask = LayerIndex.CommonMasks.bullet;
-                    DamageType damageType = iDrive.DamageType;
-                    if (this.aiming)
+                    if (hitInfo.isSniperHit)
                     {
-                        maxSpread = 0f;
-                        minSpread = 0f;
-                        stopperMask = LayerIndex.world.mask;
-                        damageType = DamageType.Stun1s | iDrive.DamageType;
-                        tracer = Modules.Assets.sniperTracer;
-                        radius = 0.25f;
-                    }
+                        damageInfo.damage *= 2f;
+                        damageInfo.damageColorIndex = DamageColorIndex.Sniper;
 
-                    BulletAttack bulletAttack = new BulletAttack
-                    {
-                        aimVector = aimRay.direction,
-                        origin = aimRay.origin,
-                        damage = damage,
-                        damageColorIndex = DamageColorIndex.Default,
-                        damageType = damageType,
-                        falloffModel = BulletAttack.FalloffModel.None,
-                        maxDistance = bulletRange,
-                        force = force,
-                        hitMask = LayerIndex.CommonMasks.bullet,
-                        isCrit = this.isCrit,
-                        owner = gameObject,
-                        muzzleName = muzzleString,
-                        smartCollision = true,
-                        procChainMask = default,
-                        procCoefficient = procCoefficient,
-                        radius = radius,
-                        sniper = false,
-                        stopperMask = stopperMask,
-                        weapon = null,
-                        tracerEffectPrefab = tracer,
-                        spreadPitchScale = 1f,
-                        spreadYawScale = 1f,
-                        queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                        hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FireBarrage.hitEffectPrefab,
-                        HitEffectNormal = false,
-                        maxSpread = maxSpread,
-                        minSpread = minSpread,
-                        bulletCount = 1
-                    };
-
-                    if (this.aiming)
-                    {
-                        bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
+                        EffectData effectData = new EffectData
                         {
-                            if (BulletAttack.IsSniperTargetHit(hitInfo))
-                            {
-                                damageInfo.damage *= 2f;
-                                damageInfo.damageColorIndex = DamageColorIndex.Sniper;
-
-                                EffectData effectData = new EffectData
-                                {
-                                    origin = hitInfo.point,
-                                    rotation = Quaternion.LookRotation(-hitInfo.direction)
-                                };
-
-                                effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
-                                //EffectManager.SpawnEffect(BaseSnipeState.headshotEffectPrefab, effectData, true);
-                                //RoR2.Util.PlaySound("Play_SniperClassic_headshot", base.gameObject);
-                            }
+                            origin = hitInfo.point,
+                            rotation = Quaternion.LookRotation(-hitInfo.direction)
                         };
+
+                        effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
+                        EffectManager.SpawnEffect(SteadyAim.weakPoint, effectData, true);
+                        Util.PlaySound("sfx_driver_headshot", base.gameObject);
+                        hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<DriverHeadshotTracker>();
                     }
-                    bulletAttack.Fire();
-
-                    this.characterMotor.ApplyForce(aimRay.direction * -this.selfForce);
-                }
+                };
+            }
+            else
+            {
+                bulletAttack.minSpread = 3f;
+                bulletAttack.maxSpread = 6f;
             }
         }
 
-        public override void FixedUpdate()
+        protected override void FireBullet()
         {
-            base.FixedUpdate();
-
-            if (base.fixedAge >= this.fireDuration)
+            if (this.aiming && NetworkServer.active)
             {
-                this.FireBullet();
+                var itemCount = this.characterBody.inventory ? this.characterBody.inventory.GetItemCount(DLC2Content.Items.IncreasePrimaryDamage) : 0;
+                if (itemCount > 0)
+                    this.characterBody.AddIncreasePrimaryDamageStack();
             }
 
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
-                this.outer.SetNextStateToMain();
-                return;
-            }
-
-            if (base.fixedAge >= this.duration && base.isAuthority)
-            {
-                this.outer.SetNextState(new WaitForReload());
-            }
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
-
-            this.GetModelAnimator().SetTrigger("endAim");
-        }
-
-        public override InterruptPriority GetMinimumInterruptPriority()
-        {
-            if (base.fixedAge >= this.earlyExitTime) return InterruptPriority.Any;
-            return InterruptPriority.Skill;
+            base.FireBullet();
         }
     }
 }

@@ -2,51 +2,112 @@
 using RoR2;
 using UnityEngine.Networking;
 using RoR2.UI;
+using RoR2.Navigation;
 
 namespace RobDriver.Modules.Components
 {
     public class WeaponPickup : MonoBehaviour
     {
-        [Tooltip("The base object to destroy when this pickup is consumed.")]
         public GameObject baseObject;
-
-        [Tooltip("The team filter object which determines who can pick up this pack.")]
-        public TeamFilter teamFilter;
-
-        [Tooltip("Parent of the model object.")]
         public Transform modelParent;
+        public LanguageTextMeshController textComponent;
 
-        [Tooltip("Blinking thing")]
         public BeginRapidlyActivatingAndDeactivating blinker;
-
-        [Tooltip("DestroyTimer thing")]
-        public DestroyOnTimer destroyOnTimer;
-
-        // visuals
-        private GameObject pickupModelInstance;
+        public DestroyWeaponOnTimer destroyOnTimer;
+        public ParticleSystem[] systems;
+        public Light light;
 
         // weapon info
-        private DriverWeaponDef weaponDef = DriverWeaponCatalog.Pistol;
-        private DriverBulletDef bulletDef = DriverBulletCatalog.Default;
-        private bool cutAmmo;
-        private bool isNewAmmoType;
+        public DriverWeaponDef weaponDef;
+        public DriverBulletDef bulletDef;
+        public bool cutAmmo;
+        public bool isNewAmmoType;
 
         private bool alive;
+        private LocalUser localUser;
+        private DriverPassive targetBodyPassive;
+
+        internal static Vector3? FindSafeTeleportDestination(Vector3 characterFootPosition)
+        {
+            Vector3? result = null;
+            SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
+            spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
+            spawnCard.prefab = LegacyResourcesAPI.Load<GameObject>("SpawnCards/HelperPrefab");
+            GameObject gameObject = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, new DirectorPlacementRule
+            {
+                placementMode = DirectorPlacementRule.PlacementMode.NearestNode,
+                position = characterFootPosition
+            }, RoR2Application.rng));
+            if (!gameObject)
+            {
+                gameObject = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.RandomNormalized,
+                    position = characterFootPosition
+                }, RoR2Application.rng));
+            }
+
+            if (gameObject)
+            {
+                result = gameObject.transform.position;
+                UnityEngine.Object.Destroy(gameObject);
+            }
+
+            UnityEngine.Object.Destroy(spawnCard);
+            return result;
+        }
+
+        private void Awake()
+        {
+            weaponDef ??= DriverWeaponCatalog.Pistol;
+            bulletDef ??= DriverBulletCatalog.Default;
+
+            localUser = LocalUserManager.GetFirstLocalUser();
+            if (localUser != null)
+            {
+                localUser.onBodyChanged += LocalUser_onBodyChanged;
+            }
+
+            LocalUser_onBodyChanged();
+        }
+
+        private void LocalUser_onBodyChanged()
+        {
+            // prio local/spectated driver
+            var targetBody = localUser?.cameraRigController ? localUser.cameraRigController.targetBody : null;
+            if (targetBody && targetBody.TryGetComponent<DriverPassive>(out var passive))
+            {
+                this.targetBodyPassive = passive;
+                UpdateVisuals();
+            }
+            else if (!Config.sharedPickupVisuals.Value)
+            {
+                targetBodyPassive = null;
+                UpdateVisuals();
+            }
+        }
 
         private void OnTriggerStay(Collider collider)
         {
-            if (NetworkServer.active && this.alive)
+            if (this.alive)
             {
                 var iDrive = collider.GetComponent<DriverController>();
                 if (iDrive)
                 {
                     this.alive = false;
 
-                    Achievements.DriverPistolPassiveAchievement.weaponPickedUp = true;
-                    Achievements.DriverGodslingPassiveAchievement.weaponPickedUpHard = true;
+                    if (!iDrive.passive.isPistolOnly)
+                    {
+                        Achievements.DriverPistolPassiveAchievement.weaponPickedUp = true;
+                        Achievements.DriverGodslingPassiveAchievement.weaponPickedUpHard = true;
+                    }
 
-                    iDrive.ServerPickUpWeapon(iDrive, this.weaponDef, this.bulletDef, this.cutAmmo, this.isNewAmmoType);
-                    EffectManager.SimpleEffect(Assets.weaponPickupEffect, this.transform.position, Quaternion.identity, true);
+                    if (NetworkServer.active)
+                    {
+                        iDrive.ServerPickUpWeapon(this.weaponDef, this.bulletDef, this.cutAmmo, this.isNewAmmoType);
+                        EffectManager.SimpleEffect(Assets.weaponPickupEffect, this.transform.position, Quaternion.identity, true);
+                    }
+
                     Destroy(this.baseObject);
                 }
             }
@@ -54,10 +115,8 @@ namespace RobDriver.Modules.Components
 
         private void OnDestroy()
         {
-            if (this.alive)
-            {
-                Achievements.SupplyDropAchievement.weaponHasDespawned = true;
-            }
+            if (localUser != null)
+                localUser.onBodyChanged -= LocalUser_onBodyChanged;
         }
 
         public void UpdateWeaponPickup(DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo, bool isNewAmmoType)
@@ -68,82 +127,58 @@ namespace RobDriver.Modules.Components
             this.isNewAmmoType = isNewAmmoType;
 
             // make sure this is called before handling the collider logic
-            alive = true;
+            this.alive = true;
+
+            if (this.weaponDef.tier > DriverWeaponTier.Uncommon || this.bulletDef.tier > DriverWeaponTier.Uncommon)
+            {
+                this.blinker.delayBeforeBeginningBlinking = 285f;
+                this.destroyOnTimer.duration = 300f;
+            }
 
             UpdateVisuals();
         }
 
         private void UpdateVisuals()
         {
-            DriverController iDrive = null;
-            foreach (var localUser in LocalUserManager.readOnlyLocalUsersList)
-            {
-                if (localUser?.cachedBody && localUser.cachedBody.hasEffectiveAuthority)
-                    iDrive ??= localUser.cachedBody.GetComponent<DriverController>();
-            }
+            if (!this.alive || !this.modelParent)
+                return;
 
-            if (!Config.sharedPickupVisuals.Value && !iDrive)
-            {
-                modelParent.gameObject.SetActive(false);
-                Destroy(blinker);
-            }
+            var modelChild = this.modelParent.Find("DriverVisuals");
+            if (modelChild)
+                GameObject.DestroyImmediate(modelChild.gameObject);
 
             // ammo pickup visuals
-            if (iDrive && (iDrive.passive.isPistolOnly || iDrive.passive.isBullets || (iDrive.passive.isRyan && this.isNewAmmoType)))
+            if (this.targetBodyPassive && (this.targetBodyPassive.isPistolOnly || this.targetBodyPassive.isBullets || (this.targetBodyPassive.isRyan && this.isNewAmmoType)))
             {
-                CreateModel(Assets.ammoPickupModel, this.bulletDef.nameToken, this.bulletDef.tier);
+                CreateModel(Assets.ammoPickupModel, this.bulletDef.bulletName, this.bulletDef.trailColor, this.bulletDef.tier);
 
-                var textComponent = pickupModelInstance.GetComponentInChildren<LanguageTextMeshController>();
-                textComponent.textMeshPro.outlineColor = this.bulletDef.trailColor;
-                textComponent.textMeshPro.outlineWidth *= 0.75f;
+                if (this.targetBodyPassive.isPistolOnly)
+                    this.textComponent.gameObject.SetActive(false);
             }
             else
             {
-                // normal visuals
-                var baseAsset = weaponDef.tier switch
-                {
-                    DriverWeaponTier.Legendary => Assets.legendaryPickupModel,
-                    DriverWeaponTier.Unique => Assets.uniquePickupModel,
-                    DriverWeaponTier.Void => Assets.legendaryPickupModel,
-                    DriverWeaponTier.Lunar => Assets.lunarPickupModel,
-                    _ => Assets.commonPickupModel,
-                };
-
-                CreateModel(baseAsset, this.weaponDef.nameToken, this.weaponDef.tier);
+                CreateModel(this.weaponDef.pickupPrefab, this.weaponDef.nameToken, this.weaponDef.color, this.weaponDef.tier);
             }
         }
 
-        private void CreateModel(GameObject baseAsset, string nameToken, DriverWeaponTier tier)
+        private void CreateModel(GameObject baseAsset, string nameToken, Color textColor, DriverWeaponTier tier)
         {
-            pickupModelInstance = GameObject.Instantiate(baseAsset, modelParent);
-            pickupModelInstance.transform.localPosition = Vector3.zero;
-            pickupModelInstance.transform.localRotation = Quaternion.identity;
+            var pickupModelInstance = GameObject.Instantiate(baseAsset, this.modelParent);
+            pickupModelInstance.name = "DriverVisuals";
 
-            // always use weapon tier, fuck it
-            if (weaponDef.tier > DriverWeaponTier.Uncommon)
-            {
-                blinker.delayBeforeBeginningBlinking = 285f;
-                destroyOnTimer.duration = 300f;
-            }
+            this.textComponent = pickupModelInstance.GetComponentInChildren<LanguageTextMeshController>();
+            this.textComponent.token = nameToken;
+            this.textComponent.textMeshPro.color = textColor;
+            this.textComponent.textMeshPro.isOverlay = true;
 
-            Color color = Helpers.badColor;
-            if (!this.cutAmmo)
-            {
-                color = tier switch
-                {
-                    DriverWeaponTier.Common => Helpers.whiteItemColor,
-                    DriverWeaponTier.Uncommon => Helpers.greenItemColor,
-                    DriverWeaponTier.Legendary => Helpers.redItemColor,
-                    DriverWeaponTier.Unique => Helpers.yellowItemColor,
-                    DriverWeaponTier.Lunar => Helpers.lunarItemColor,
-                    DriverWeaponTier.Void => Helpers.voidItemColor,
-                    _ => Helpers.badColor,
-                };
-            }
+            var color = Helpers.GetColorForTier(tier);
 
-            var textComponent = pickupModelInstance.GetComponentInChildren<LanguageTextMeshController>();
-            textComponent.token = nameToken;
-            textComponent.textMeshPro.color = color;
+            this.light.range = 10f + (5f * (int)tier);
+            this.light.color = color;
+#pragma warning disable CS0618 // Type or member is obsolete
+            systems[0].startColor = color;
+            systems[1].startColor = color;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

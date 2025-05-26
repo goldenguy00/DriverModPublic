@@ -1,5 +1,4 @@
 ﻿using R2API;
-using RobDriver;
 using RoR2;
 using UnityEngine;
 
@@ -7,43 +6,33 @@ using UnityEngine;
 public class DriverBulletDef : ScriptableObject
 {
     [Header("General")]
-    public string nameToken = "";
-    public DamageType damageType = DamageType.Generic;
-    public DamageTypeExtended damageTypeExtended = DamageTypeExtended.Generic;
-    public DamageAPI.ModdedDamageType moddedDamageType = DriverDamageTypes.Generic;
-    public DriverWeaponTier tier = DriverWeaponTier.Common;
+    public string bulletName = "";
+    public string bulletNameToken = "";
+    public string description = "";
+    public string descriptionToken = "";
 
     [Header("Visuals")]
+    public DriverWeaponTier tier = DriverWeaponTier.Common;
     public Color trailColor = Color.black;
+    public DamageTypeCombo damageType = DamageTypeCombo.GenericPrimary;
 
     [HideInInspector]
     public ushort index; // assigned at runtime
-
-    public DamageTypeCombo bulletType
-    {
-        get
-        {
-            var damage = new DamageTypeCombo
-            {
-                damageType = this.damageType,
-                damageTypeExtended = this.damageTypeExtended,
-                damageSource = DamageSource.Primary
-            };
-            damage.AddModdedDamageType(moddedDamageType);
-            return damage;
-        }
-    }
+    [HideInInspector]
+    public bool enabled;
 
     public static DriverBulletDef CreateBulletDefFromInfo(DriverBulletDefInfo bulletDefInfo)
     {
-        DriverBulletDef bulletDef = ScriptableObject.CreateInstance<DriverBulletDef>();
-        bulletDef.name = bulletDefInfo.nameToken;
-        bulletDef.nameToken = bulletDefInfo.nameToken;
-        bulletDef.damageType = bulletDefInfo.damageType ?? DamageType.Generic;
-        bulletDef.damageTypeExtended = bulletDefInfo.damageTypeExtended ?? DamageTypeExtended.Generic;
-        bulletDef.moddedDamageType = bulletDefInfo.moddedDamageType ?? DriverDamageTypes.Generic;
+        var bulletDef = ScriptableObject.CreateInstance<DriverBulletDef>();
+        bulletDef.name = bulletDefInfo.bulletName;
+        bulletDef.bulletName = bulletDefInfo.bulletName;
+        bulletDef.bulletNameToken = bulletDefInfo.bulletNameToken;
+        bulletDef.description = bulletDefInfo.description;
+        bulletDef.descriptionToken = bulletDefInfo.descriptionToken;
         bulletDef.tier = bulletDefInfo.tier;
         bulletDef.trailColor = bulletDefInfo.trailColor;
+        bulletDef.damageType.damageType = bulletDefInfo.damageType ?? DamageType.Generic;
+        bulletDef.damageType.damageTypeExtended = bulletDefInfo.damageTypeExtended ?? DamageTypeExtended.Generic;
 
         return bulletDef;
     }
@@ -52,12 +41,15 @@ public class DriverBulletDef : ScriptableObject
 [System.Serializable]
 public struct DriverBulletDefInfo
 {
-    public string nameToken;
+    public string bulletName;
+    public string bulletNameToken;
+    public string description;
+    public string descriptionToken;
+
+    public DriverWeaponTier tier;
+    public Color trailColor;
 
     public DamageType? damageType;
     public DamageTypeExtended? damageTypeExtended;
     public DamageAPI.ModdedDamageType? moddedDamageType;
-
-    public DriverWeaponTier tier;
-    public Color trailColor;
 }

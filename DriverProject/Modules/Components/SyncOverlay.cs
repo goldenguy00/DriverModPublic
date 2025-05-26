@@ -35,16 +35,16 @@ namespace RobDriver.Modules.Components
                 return;
             }
 
-            ModelLocator penis = bodyObject.GetComponent<ModelLocator>();
-            if (penis)
+            ModelLocator modelLoc = bodyObject.GetComponent<ModelLocator>();
+            if (modelLoc)
             {
-                Transform modelTransform = penis.modelTransform;
+                Transform modelTransform = modelLoc.modelTransform;
                 if (modelTransform)
                 {
-                    var temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
+                    TemporaryOverlayInstance temporaryOverlay = TemporaryOverlayManager.AddOverlay(modelTransform.gameObject);
                     temporaryOverlay.duration = 4f;
                     temporaryOverlay.destroyComponentOnEnd = true;
-                    temporaryOverlay.originalMaterial = Modules.Assets.woundOverlayMat;
+                    temporaryOverlay.originalMaterial = Assets.woundOverlayMat;
                     temporaryOverlay.inspectorCharacterModel = modelTransform.GetComponent<CharacterModel>();
                     temporaryOverlay.alphaCurve = AnimationCurve.EaseInOut(0f, 1f, 4f, 0f);
                     temporaryOverlay.animateShaderAlpha = true;

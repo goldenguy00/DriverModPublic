@@ -3,6 +3,7 @@ C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstan
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\DriverMod.pdb
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\AncientScepter.dll
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\ClassicItemsReturns.dll
+C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\HunkMod.dll
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\LostInTransit.dll
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\RiskUI.dll
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\Starstorm2.dll
@@ -16,3 +17,5 @@ C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\obj\Release\netstan
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\obj\Release\netstandard2.1\DriverMod.csproj.Up2Date
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\obj\Release\netstandard2.1\DriverMod.dll
 C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\obj\Release\netstandard2.1\DriverMod.pdb
+C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\HunkHud.dll
+C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\ZioConfigFile.dll

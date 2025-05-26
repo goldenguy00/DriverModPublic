@@ -6,37 +6,38 @@ namespace RobDriver
 {
     public static class DriverWeaponSkinCatalog
     {
-        public static Dictionary<SkinIndex, Dictionary<ushort, DriverWeaponSkinDef>> driverSkinDefs { get; private set; } = new Dictionary<SkinIndex, Dictionary<ushort, DriverWeaponSkinDef>>();
+        internal static Dictionary<SkinIndex, DriverWeaponSkinDef[]> driverSkinDefs = [];
 
-        public static void AddSkin(SkinIndex index, Dictionary<ushort, DriverWeaponSkinDef> skinDef)
+        public static void AddSkin(SkinIndex index, IEnumerable<DriverWeaponSkinDef> skinDefs)
         {
-            driverSkinDefs.Add(index, skinDef);
+            if (skinDefs.Any() && index != SkinIndex.None)
+            {
+                driverSkinDefs.Add(index, [.. skinDefs]);
+            }
         }
 
-        public static Dictionary<ushort, DriverWeaponSkinDef> GetWeaponSkinCatalog(ModelSkinController skinController)
+        public static DriverWeaponDef.ModelSwapInfo[] GetModelSwapInfoForWeapon(ModelSkinController skinController, DriverWeaponDef weaponDef)
         {
-            if (skinController?.skins?.Any() != true)
-                return null;
+            if (skinController?.skins?.Length == 0)
+                return weaponDef.modelSwapInfo;
 
-            var skinDef = skinController.skins.ElementAtOrDefault(skinController.currentSkinIndex);
-            if (skinDef != null && driverSkinDefs.TryGetValue(skinDef.skinIndex, out var weaponSkinCatalog))
-            {
-                return weaponSkinCatalog;
-            }
-            return null;
+            return GetModelSwapInfoForWeapon(skinController.skins, skinController.currentSkinIndex, weaponDef);
         }
 
-        public static bool GetWeaponSkin(ModelSkinController skinController, DriverWeaponDef weaponDef, out DriverWeaponSkinDef weaponSkinDef)
+        public static DriverWeaponDef.ModelSwapInfo[] GetModelSwapInfoForWeapon(SkinDef[] skins, int skinIndex, DriverWeaponDef weaponDef)
         {
-            weaponSkinDef = null;
-            var catalog = GetWeaponSkinCatalog(skinController);
+            var mainSkin = HG.ArrayUtils.GetSafe(skins, skinIndex);
+            if (mainSkin == null || !driverSkinDefs.ContainsKey(mainSkin.skinIndex))
+                return weaponDef.modelSwapInfo;
 
-            if (catalog != null && catalog.ContainsKey(weaponDef.index))
+            var allWeaponSkins = driverSkinDefs[mainSkin.skinIndex];
+            for (int i = 0; i < allWeaponSkins.Length; i++)
             {
-                weaponSkinDef = catalog[weaponDef.index];
+                if (allWeaponSkins[i].weaponDefIndex == weaponDef.index)
+                    return allWeaponSkins[i].modelSwapInfo;
             }
-            
-            return weaponSkinDef != null;
+
+            return weaponDef.modelSwapInfo;
         }
     }
 }

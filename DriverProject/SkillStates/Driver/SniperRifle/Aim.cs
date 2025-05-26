@@ -4,27 +4,29 @@ using EntityStates;
 using static RoR2.CameraTargetParams;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
+using RobDriver.SkillStates.BaseStates;
+using UnityEngine.Networking;
 
 namespace RobDriver.SkillStates.Driver.SniperRifle
 {
     public class Aim : BaseDriverSkillState
     {
         private CameraParamsOverrideHandle camParamsOverrideHandle;
-        private bool cancelling;
-
         private OverlayController overlayController;
 
         public override void OnEnter()
         {
             base.OnEnter();
-            this.camParamsOverrideHandle = Modules.CameraParams.OverrideCameraParams(base.cameraTargetParams, DriverCameraParams.AIM_SNIPER, 0.2f);
 
             base.PlayCrossfade("Gesture, Override", "AimTwohand", 0.2f);
             base.PlayCrossfade("AimPitch", "ShotgunAimPitch", 0.1f);
 
-            this.characterBody.AddBuff(RoR2Content.Buffs.Slow50);
+            if (NetworkServer.active)
+                this.characterBody.AddBuff(RoR2Content.Buffs.Slow50);
 
             this.characterBody.hideCrosshair = true;
+
+            this.camParamsOverrideHandle = Modules.CameraParams.OverrideCameraParams(base.cameraTargetParams, DriverCameraParams.AIM_SNIPER, 0.2f);
 
             this.overlayController = HudOverlayManager.AddOverlay(this.gameObject, new OverlayCreationParams
             {
@@ -36,43 +38,34 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+
             this.characterBody.outOfCombatStopwatch = 0f;
             this.characterBody.isSprinting = false;
             base.characterBody.SetAimTimer(0.2f);
 
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                this.cancelling = true;
-                this.outer.SetNextStateToMain();
+            if (this.cancelling)
                 return;
-            }
 
             if (base.isAuthority)
             {
-                if (this.inputBank.skill1.down)
+                if (!this.inputBank.skill2.down)
                 {
-                    PrimarySkillShurikenBehavior shurikenComponent = this.GetComponent<PrimarySkillShurikenBehavior>();
-                    if (shurikenComponent) shurikenComponent.OnSkillActivated(this.skillLocator.primary);
-
-                    if (this.iDrive.weaponTimer <= 0)
-                    {
-                        cancelling = true;
-                        this.outer.SetNextState(new ReloadPistol());
-                    }
-                    else
-                    {
-                        this.outer.SetNextState(new Shoot
-                        {
-                            aiming = true
-                        });
-                    }
-                    return;
+                    this.outer.SetNextStateToMain();
+                }
+                else if (this.inputBank.skill1.down)
+                {
+                    this.outer.SetNextState(this.iDrive.weaponTimer <= 0 ? new Reload() : new Shoot());
                 }
             }
+        }
 
-            if (!this.inputBank.skill2.down && base.isAuthority)
+        public override void ModifyNextState(EntityState nextState)
+        {
+            base.ModifyNextState(nextState);
+
+            if (nextState is Shoot shootState)
             {
-                this.outer.SetNextStateToMain();
+                shootState.aiming = true;
             }
         }
 
@@ -80,23 +73,24 @@ namespace RobDriver.SkillStates.Driver.SniperRifle
         {
             base.OnExit();
 
-            this.characterBody.RemoveBuff(RoR2Content.Buffs.Slow50);
-            base.PlayAnimation("Gesture, Override", "SteadyAimEnd", "Action.playbackRate", 0.2f);
-            base.PlayAnimation("AimPitch", "AimPitch");
-            this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
-
             this.characterBody.hideCrosshair = false;
 
-            if (this.cancelling)
-            {
-                base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
-            }
+            if (NetworkServer.active)
+                this.characterBody.RemoveBuff(RoR2Content.Buffs.Slow50);
+
+            if (this.camParamsOverrideHandle.isValid)
+                this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
 
             if (this.overlayController != null)
             {
                 HudOverlayManager.RemoveOverlay(this.overlayController);
                 this.overlayController = null;
             }
+
+            if (!this.cancelling)
+                base.PlayAnimation("Gesture, Override", "SteadyAimEnd", "Action.playbackRate", 0.2f);
+
+            base.PlayAnimation("AimPitch", "AimPitch");
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

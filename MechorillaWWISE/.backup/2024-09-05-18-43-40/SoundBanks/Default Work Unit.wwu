@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{BCF18DB8-7B1E-485F-AE96-3E1C6533D26C}" SchemaVersion="97">
+	<SoundBanks>
+		<WorkUnit Name="Default Work Unit" ID="{BCF18DB8-7B1E-485F-AE96-3E1C6533D26C}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="driver_bank" ID="{4BAABAD2-4ED8-4AB4-BA75-A8472E46D712}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Actor-Mixer Hierarchy" ID="{5EA7BBF8-64C0-4A50-8821-A07E8BE21D68}" WorkUnitID="{5EA7BBF8-64C0-4A50-8821-A07E8BE21D68}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+				<SoundBank Name="hunk_footsteps" ID="{C9339D03-074C-47E5-ABBB-F63FE0A31F33}">
+					<ObjectInclusionList>
+						<ObjectRef Name="hunk" ID="{1CD0E6DA-9A93-402C-93C5-1B60CC02A435}" WorkUnitID="{1CD0E6DA-9A93-402C-93C5-1B60CC02A435}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

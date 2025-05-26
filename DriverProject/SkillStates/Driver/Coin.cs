@@ -6,16 +6,19 @@ using EntityStates;
 
 namespace RobDriver.SkillStates.Driver
 {
-    public class Coin : BaseDriverSkillState
+    public class Coin : BaseSkillState
     {
         private float baseDuration = 0.5f;
         private float duration;
 
+        public virtual GameObject projectilePrefab => Projectiles.coinProjectile;
+
         public override void OnEnter()
-        {   
-            RefreshState();
+        {
             base.OnEnter();
-            duration = baseDuration / attackSpeedStat;
+
+            this.duration = baseDuration / attackSpeedStat;
+
             Util.PlaySound("sfx_driver_coin", base.gameObject);
 
             base.PlayAnimation("LeftArm, Override", "FireShard");
@@ -44,15 +47,13 @@ namespace RobDriver.SkillStates.Driver
                 flickDirection *= Mathf.Clamp(base.rigidbody.velocity.magnitude, 1f, 20f);
                 flickDirection.y += Mathf.Max(base.rigidbody.velocity.y, 0);
 
-                ProjectileManager.instance.FireProjectile(Projectiles.coinProjectile,
-                    aimRay.origin,
-                    Util.QuaternionSafeLookRotation(flickDirection),
-                    base.gameObject, 
-                    0f,
-                    0f, 
-                    false,
-                    DamageColorIndex.Default,
-                    null);
+                ProjectileManager.instance.FireProjectile(new FireProjectileInfo
+                { 
+                    projectilePrefab = projectilePrefab,
+                    position = aimRay.origin,
+                    rotation = Util.QuaternionSafeLookRotation(flickDirection),
+                    owner = this.gameObject
+                });
             }
         }
 

@@ -12,7 +12,7 @@ namespace RobDriver.Modules.Components
         {
             this.main = this.GetComponent<ParticleSystem>();
             this.root = this.transform.root.gameObject;
-            this.transform.parent = null;
+            this.transform.SetParent(null);
         }
 
         private void FixedUpdate()

@@ -7,12 +7,11 @@ namespace RobDriver.Modules.Achievements
 {
     //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
     //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
-    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
-    internal class SuitAchievement : BaseAchievement
+    [RegisterAchievement(IDENTIFIER, UNLOCKABLE_IDENTIFIER, DriverUnlockAchievement.IDENTIFIER, 10, null)]
+    internal class DriverSuitAchievement : BaseAchievement
     {
-        public const string identifier = "ROB_DRIVER_SUIT";
-        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_SUIT_NAME";
-        public const string unlockableIdentifier = "ROB_DRIVER_SUIT_UNLOCKABLE";
+        public const string IDENTIFIER = "ROB_DRIVER_BODY_SUIT_UNLOCKABLE_ACHIEVEMENT_ID";
+        public const string UNLOCKABLE_IDENTIFIER = "ROB_DRIVER_BODY_SUIT_UNLOCKABLE_REWARD_ID";
         public static Sprite Sprite => Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSuitSkin");
 
         public override BodyIndex LookUpRequiredBodyIndex() => Survivors.Driver.bodyIndex;

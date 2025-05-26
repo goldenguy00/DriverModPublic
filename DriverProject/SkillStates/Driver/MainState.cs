@@ -58,7 +58,7 @@ namespace RobDriver.SkillStates.Driver
 
 		private void CheckEmote<T>(ConfigEntry<KeyboardShortcut> keybind) where T : EntityState, new()
 		{
-			if (Modules.Config.GetKeyPressed(keybind))
+			if (Config.GetKeyPressed(keybind))
 			{
 				FindLocalUser();
 
@@ -103,6 +103,7 @@ namespace RobDriver.SkillStates.Driver
 					if (base.characterMotor.jumpCount >= base.characterBody.baseJumpCount)
 					{
 						this.iDrive.featherTimer = 0.1f;
+
 						hopooFeather = true;
 						horizontalBonus = 1.5f;
 						verticalBonus = 1.5f;
@@ -188,16 +189,14 @@ namespace RobDriver.SkillStates.Driver
 						if (Mathf.Abs(x) > Mathf.Abs(y))
 						{
 							// side flip
-							if (x > 0f) x = 1f;
-							else x = -1f;
-							y = 0f;
+							x = x > 0f ? 1f : -1f;
+                            y = 0f;
 						}
 						else if (Mathf.Abs(x) < Mathf.Abs(y))
 						{
 							// forward/backflips
-							if (y > 0f) y = 1f;
-							else y = -1f;
-							x = 0f;
+							y = y > 0f ? 1f : -1f;
+                            x = 0f;
 						}
 						// eh this feels less dynamic. ignore the slight anim clipping issues ig and just blend them
 						//  actualyl don't because the clipping issues are nightmarish

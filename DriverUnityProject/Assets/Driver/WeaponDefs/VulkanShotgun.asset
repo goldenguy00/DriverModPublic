@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 66435352, guid: da60ad5a794e80f47b53f786e5dae53c, type: 3}
+  m_Name: VulkanShotgun
+  m_EditorClassIdentifier: 
+  weaponName: Vulkan Shotgun
+  nameToken: ROB_DRIVER_WEAPON_VULKAN_SHOTGUN_NAME
+  description: "He\u2019s been bored in retirement anyways."
+  descriptionToken: ROB_DRIVER_WEAPON_VULKAN_SHOTGUN_DESC
+  icon: {fileID: 0}
+  tier: 4
+  animationSet: 0
+  buffType: 2
+  shotCount: 24
+  primarySkillDef: {fileID: 0}
+  secondarySkillDef: {fileID: 0}
+  arsenalSkillDef: {fileID: 0}
+  unlockableDef: {fileID: 0}
+  modelSwapInfo:
+  - mesh: {fileID: 4300000, guid: e80fb2911ca04d644981d6ebb5a6d07e, type: 2}
+    material: {fileID: 2100000, guid: d9ee03cd76c8c434cb9b8154064e95f6, type: 2}
+    childName: PistolModel
+  crosshairPrefab: {fileID: 0}
+  pickupPrefabOverride: {fileID: 0}
+  disableHolster: 1
+  equipAnimationString: Charge
+  reloadAnimationString: Recharge
+  calloutSoundString: sfx_driver_callout_shotgun
+  dropBodyName: Captain
+  dropChance: 100
+  index: 0
+  enabled: 0

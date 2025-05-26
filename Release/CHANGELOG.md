@@ -1,5 +1,98 @@
 ## Changelog
 
+`STOP`
+
+- UGH
+
+`2.1.7`
+
+- Recompiled for new update: the electric bugaloo
+
+`2.1.6`
+
+- Recompiled for new update
+
+`2.1.5`
+
+- R2API.Skills dependency added
+- Made css hooks less bad
+
+`2.1.4`
+
+- Fixed bug with AE/PA/Sandswept
+
+`2.1.3`
+
+- Fixed teleport for weapon pickups getting stuck in an infinite loop
+
+`2.1.2`
+
+- Fixed incompat with Moffein's Heretic
+- Added Standalone Hunk Hud support
+
+`2.1.1`
+
+- Fixed passive always getting set to default
+
+`2.1.0`
+
+- Moved to new name
+- Some tweaks to 
+
+`2.0.3`
+
+- Chef hat has been hung up, for now.
+- Suit skins have the tie again
+- Timbs moved to cursed config
+- Fixed locked weapon tokens
+- Sniper animations fixed
+
+`2.0.2`
+
+- Added new Captain shotgun
+- Added new False Son pistol upgrade
+- Added new secondary skill for Artificer gauntlet
+
+...
+
+- Character select updates
+- ^Selected weapon updates the model in real time
+- ^Certain other loadout options are shown too
+- ^Primary and secondary skills are updated based on selected weapon
+
+...
+
+- Configs added for bullets
+- Configs added for all weapons
+- Some additional weapon balancing
+- Native Hunk Hud support
+
+...
+
+- Probably like a dozen other things but im so tired
+
+`2.0.1`
+
+- I got up out the dirt, and then I wet the block so my ops gotta get out the mud, which is significantly more difficult. You get the Sunday scaries, but Sundays are scared of me cuz I'm up in church stealing everyone's prayers so I can get God to believe in me. I feel like Wim Hof off a blue chew. Wake up with morning wood, call that a debrief. My line of ops so long I feel like
+
+`2.0.0`
+- Who knows
+
+`1.8.2`
+- Some backend maintenance
+
+`1.8.1`
+- Fixed every bug
+- Survivor Temporarily Disabled
+
+`1.8.0`
+
+Fixed for SOTS thanks to .score!
+- Things may be broken rn
+- Coin skill disabled temporarily
+- Combat Knife and other melee attack hitbox sizes increased
+- Added CN translation
+
 `1.7.4`
 - Fixed some weapons not getting unlocked when picked up
 
@@ -13,6 +106,7 @@
 - Fixed oversight causing a conflict with Daredevil, sorry!
 
 `1.7.0`
+
 This update is entirely .score and tsuyoikenko's work, all the credit goes to them, all I'm doing is releasing it
 - Added passive: Arsenal - any weapon can be selected as your default in the loadout after you obtain it once. Can be disabled in config if you care about balance
 - Added special: Pay it Forward - it's the ultrakill coin and it has no icon yet

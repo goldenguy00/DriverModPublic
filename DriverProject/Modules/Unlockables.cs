@@ -21,46 +21,42 @@ namespace RobDriver.Modules
 
         internal static void Init()
         {
-            characterUnlockableDef = CreateAndAddUnlockableDef(DriverUnlockAchievement.identifier, DriverUnlockAchievement.nameToken, DriverUnlockAchievement.Sprite);
+            characterUnlockableDef = CreateAndAddUnlockableDef(DriverUnlockAchievement.IDENTIFIER, DriverUnlockAchievement.UNLOCKABLE_IDENTIFIER, DriverUnlockAchievement.Sprite);
 
-            masteryUnlockableDef = CreateAndAddUnlockableDef(MasteryAchievement.identifier, MasteryAchievement.nameToken, MasteryAchievement.Sprite);
-            grandMasteryUnlockableDef = CreateAndAddUnlockableDef(GrandMasteryAchievement.identifier, GrandMasteryAchievement.nameToken, GrandMasteryAchievement.Sprite);
-            suitUnlockableDef = CreateAndAddUnlockableDef(SuitAchievement.identifier, SuitAchievement.nameToken, SuitAchievement.Sprite);
+            masteryUnlockableDef = CreateAndAddUnlockableDef(DriverMonsoonAchievement.IDENTIFIER, DriverMonsoonAchievement.UNLOCKABLE_IDENTIFIER, DriverMonsoonAchievement.Sprite);
+            grandMasteryUnlockableDef = CreateAndAddUnlockableDef(DriverTyphoonAchievement.IDENTIFIER, DriverTyphoonAchievement.UNLOCKABLE_IDENTIFIER, DriverTyphoonAchievement.Sprite);
+            suitUnlockableDef = CreateAndAddUnlockableDef(DriverSuitAchievement.IDENTIFIER, DriverSuitAchievement.UNLOCKABLE_IDENTIFIER, DriverSuitAchievement.Sprite);
 
-            supplyDropUnlockableDef = CreateAndAddUnlockableDef(SupplyDropAchievement.identifier, SupplyDropAchievement.nameToken, SupplyDropAchievement.Sprite);
-            pistolPassiveUnlockableDef = CreateAndAddUnlockableDef(DriverPistolPassiveAchievement.identifier, DriverPistolPassiveAchievement.nameToken, DriverPistolPassiveAchievement.Sprite);
-            godslingPassiveUnlockableDef = CreateAndAddUnlockableDef(DriverGodslingPassiveAchievement.identifier, DriverGodslingPassiveAchievement.nameToken, DriverGodslingPassiveAchievement.Sprite);
+            supplyDropUnlockableDef = CreateAndAddUnlockableDef(DriverSupplyDropAchievement.IDENTIFIER, DriverSupplyDropAchievement.UNLOCKABLE_IDENTIFIER, DriverSupplyDropAchievement.Sprite);
+            pistolPassiveUnlockableDef = CreateAndAddUnlockableDef(DriverPistolPassiveAchievement.IDENTIFIER, DriverPistolPassiveAchievement.UNLOCKABLE_ITENTIFIER, DriverPistolPassiveAchievement.Sprite);
+            godslingPassiveUnlockableDef = CreateAndAddUnlockableDef(DriverGodslingPassiveAchievement.IDENTIFIER, DriverGodslingPassiveAchievement.UNLOCKABLE_ITENTIFIER, DriverGodslingPassiveAchievement.Sprite);
         }
 
-        internal static void AddUnlockableDef(UnlockableDef unlockableDef)
-        {
-            unlockableDefs.Add(unlockableDef);
-        }
-
-        internal static UnlockableDef CreateAndAddUnlockableDef(string identifier, string nameToken, Sprite achievementIcon)
+        internal static UnlockableDef CreateAndAddUnlockableDef(string identifier, string unlockableIdentifier, Sprite achievementIcon)
         {
             var unlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
-            unlockableDef.cachedName = identifier;
-            unlockableDef.nameToken = nameToken;
+            unlockableDef.cachedName = unlockableIdentifier.ToUpperInvariant();
+            unlockableDef.nameToken = "ACHIEVEMENT_" + identifier.ToUpperInvariant() + "_NAME";
             unlockableDef.achievementIcon = achievementIcon;
 
-            AddUnlockableDef(unlockableDef);
+            unlockableDefs.Add(unlockableDef);
 
             return unlockableDef;
         }
 
-        public static UnlockableDef CreateAndAddWeaponUnlockableDef(DriverWeaponDef weaponDef)
+        internal static UnlockableDef CreateAndAddWeaponUnlockableDef(string name) => CreateAndAddWeaponUnlockableDef($"ROB_DRIVER_{name.ToUpperInvariant()}_NAME", $"ROB_DRIVER_{name.ToUpperInvariant()}_DESC");
+
+        public static UnlockableDef CreateAndAddWeaponUnlockableDef(string nameToken, string descriptionToken)
         {
             var unlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
-            unlockableDef.cachedName = weaponDef.nameToken;
-            unlockableDef.nameToken = weaponDef.nameToken;
-            unlockableDef.getHowToUnlockString = () => Language.GetString(weaponDef.descriptionToken);
-            unlockableDef.getUnlockedString = () => Language.GetString(weaponDef.descriptionToken);
+            unlockableDef.cachedName = nameToken;
+            unlockableDef.nameToken = nameToken;
+            unlockableDef.getHowToUnlockString = () => Language.GetString(descriptionToken);
+            unlockableDef.getUnlockedString = () => Language.GetString(descriptionToken);
+            unlockableDef.achievementIcon = null;
             unlockableDef.hidden = false;
-            unlockableDef.achievementIcon = Sprite.Create(weaponDef.icon as Texture2D,
-                new Rect(0, 0, weaponDef.icon.width, weaponDef.icon.height), new Vector2(0.5f, 0.5f));
 
-            AddUnlockableDef(unlockableDef);
+            unlockableDefs.Add(unlockableDef);
 
             return unlockableDef;
         }

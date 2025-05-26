@@ -5,8 +5,9 @@ namespace RobDriver.SkillStates.Driver.LunarPistol
 {
     public class Shoot : Driver.Shoot
     {
-        protected override float _damageCoefficient => 3.5f;
+        internal static new float _damageCoefficient = 3.5f;
+        protected override float damageCoefficient => 3.5f;
         protected override GameObject tracerPrefab => Modules.Assets.lunarTracer;
-        public override BulletAttack.FalloffModel falloff => BulletAttack.FalloffModel.None;
+        protected override BulletAttack.FalloffModel falloff => BulletAttack.FalloffModel.None;
     }
 }

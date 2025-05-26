@@ -14,17 +14,40 @@ namespace RobDriver.Modules
         internal const string voidItemHex = "C678B4";
         internal const string colorSuffix = "</color>";
 
-        internal static Color whiteItemColor = new Color(1f, 1f, 1f);
-        internal static Color greenItemColor = new Color(0f, 1f, 102f / 255f);
-        internal static Color redItemColor = new Color(1f, 0f, 51f / 255f);
-        internal static Color yellowItemColor = new Color(1f, 1f, 0f);
-        internal static Color lunarItemColor = new Color(0f, 102f / 255f, 1f);
-        internal static Color voidItemColor = new Color(198f / 255f, 120f / 255f, 180f / 255f);
-        internal static Color badColor = new Color(127f / 255f, 0f, 0f);
+        internal static Color noTierColor = new Color32(0, 0, 0, 255);
+        internal static Color commonItemColor = new Color32(255, 255, 255, 255);
+        internal static Color uncommonItemColor = new Color32(0, 255, 102, 255);
+        internal static Color legendaryItemColor = new Color32(255, 0, 51, 255);
+        internal static Color uniqueItemColor = new Color32(255, 255, 0, 255);
+        internal static Color voidItemColor = new Color32(198, 120, 180, 255);
+        internal static Color lunarItemColor = new Color32(0, 102, 255, 255);
+        internal static Color badColor = new Color32(127, 0, 0, 255);
 
         internal static string ScepterDescription(string desc)
         {
             return "\n<color=#d299ff>SCEPTER: " + desc + "</color>";
         }
+
+        internal static Color GetColorForTier(DriverWeaponTier tier) => tier switch
+        {
+            DriverWeaponTier.Common => Helpers.commonItemColor,
+            DriverWeaponTier.Uncommon => Helpers.uncommonItemColor,
+            DriverWeaponTier.Legendary => Helpers.legendaryItemColor,
+            DriverWeaponTier.Unique => Helpers.uniqueItemColor,
+            DriverWeaponTier.Void => Helpers.voidItemColor,
+            DriverWeaponTier.Lunar => Helpers.lunarItemColor,
+            _ => Helpers.noTierColor
+        };
+
+        internal static GameObject GetPickupPrefabForTier(DriverWeaponTier tier) => tier switch
+        {
+            DriverWeaponTier.Common => Assets.commonPickupModel,
+            DriverWeaponTier.Uncommon => Assets.uncommonPickupModel,
+            DriverWeaponTier.Legendary => Assets.legendaryPickupModel,
+            DriverWeaponTier.Unique => Assets.uniquePickupModel,
+            DriverWeaponTier.Void => Assets.voidPickupModel,
+            DriverWeaponTier.Lunar => Assets.lunarPickupModel,
+            _ => Assets.uniquePickupModel,
+        };
     }
 }

@@ -11,21 +11,17 @@ namespace RobDriver.SkillStates.Emote
     {
         private CameraParamsOverrideHandle camOverrideHandle;
 
-        private Animator animator;
-        private ChildLocator childLocator;
-        private float duration;
+        protected float duration;
         private uint activePlayID;
         public LocalUser localUser;
 
         public override void OnEnter()
         {
             base.OnEnter();
-            this.animator = base.GetModelAnimator();
-            this.childLocator = base.GetModelChildLocator();
             this.FindLocalUser();
 
             this.characterBody.hideCrosshair = true;
-            this.camOverrideHandle = Modules.CameraParams.OverrideCameraParams(base.cameraTargetParams, DriverCameraParams.EMOTE, 0.5f);
+            this.camOverrideHandle = CameraParams.OverrideCameraParams(base.cameraTargetParams, DriverCameraParams.EMOTE, 0.5f);
         }
 
         private void FindLocalUser()
@@ -69,7 +65,7 @@ namespace RobDriver.SkillStates.Emote
             if (!string.IsNullOrEmpty(soundString))
             {
                 activePlayID = Util.PlaySound(soundString, gameObject);
-            };
+            }
         }
 
         public override void Update()
@@ -98,7 +94,7 @@ namespace RobDriver.SkillStates.Emote
 
         private void CheckEmote<T>(ConfigEntry<KeyboardShortcut> keybind) where T : EntityState, new()
         {
-            if (Modules.Config.GetKeyPressed(keybind))
+            if (Config.GetKeyPressed(keybind))
             {
                 FindLocalUser();
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using RoR2;
+using UnityEngine;
 
 namespace RobDriver.Modules.Components
 {
@@ -6,34 +7,31 @@ namespace RobDriver.Modules.Components
     {
         public struct StoredWeapon
         {
-            public DriverWeaponDef weaponDef;
-            public DriverBulletDef bulletDef;
+            public ushort defaultIndex;
+            public ushort weaponIndex;
+            public ushort bulletIndex;
             public float ammo;
         };
 
-        public bool isStoringWeapon;
+        private StoredWeapon storedWeapon;
+        public bool hasWeapon;
 
-        public DriverWeaponDef storedWeaponDef;
-        public DriverBulletDef storedBulletDef;
-        public float storedAmmo;
-
-        public void StoreWeapon(DriverWeaponDef weaponDef, DriverBulletDef bulletDef, float ammo)
+        public void StoreWeapon(DriverWeaponDef defaultDef, DriverWeaponDef weaponDef, DriverBulletDef bulletDef, float ammo)
         {
-            this.isStoringWeapon = true;
-            this.storedWeaponDef = weaponDef;
-            this.storedBulletDef = bulletDef;
-            this.storedAmmo = ammo;
+            hasWeapon = true;
+            storedWeapon = new StoredWeapon
+            {
+                defaultIndex = defaultDef.index,
+                weaponIndex = weaponDef.index,
+                bulletIndex = bulletDef.index,
+                ammo = ammo
+            };
         }
 
         public StoredWeapon RetrieveWeapon()
         {
-            this.isStoringWeapon = false;
-            return new StoredWeapon
-            {
-                weaponDef = this.storedWeaponDef,
-                bulletDef = this.storedBulletDef,
-                ammo = this.storedAmmo
-            };
+            this.hasWeapon = false;
+            return storedWeapon;
         }
     }
 }

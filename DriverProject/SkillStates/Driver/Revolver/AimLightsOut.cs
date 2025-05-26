@@ -5,6 +5,7 @@ using UnityEngine.AddressableAssets;
 using static RoR2.CameraTargetParams;
 using RoR2.UI;
 using RoR2.HudOverlay;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.Revolver
 {
@@ -53,12 +54,8 @@ namespace RobDriver.SkillStates.Driver.Revolver
             base.StartAimMode(0.5f);
             this.animator.SetFloat("aimY", this.inputBank.aimDirection.y);
 
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                base.PlayAnimation("Gesture, Override", "BufferEmpty");
-                this.outer.SetNextStateToMain();
+            if (this.cancelling)
                 return;
-            }
 
             if (base.fixedAge >= (0.9f * this.duration))
             {
@@ -88,13 +85,18 @@ namespace RobDriver.SkillStates.Driver.Revolver
         public override void OnExit()
         {
             base.OnExit();
+
             if (this.effectInstance)
             {
                 if (this.spinPlayID != 0u) AkSoundEngine.StopPlayingID(this.spinPlayID);
                 EntityState.Destroy(this.effectInstance);
             }
-            this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
+
+            if (this.camParamsOverrideHandle.isValid)
+                this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
+
             this.crosshairOverrideRequest?.Dispose();
+
             if (this.overlayController != null)
             {
                 HudOverlayManager.RemoveOverlay(this.overlayController);

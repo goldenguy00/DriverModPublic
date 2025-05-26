@@ -41,10 +41,13 @@ namespace RobDriver.Modules.Components
             if (!bodyObject) return;
 
             DriverController iDrive = bodyObject.GetComponent<DriverController>();
-            DriverWeaponDef weaponDef = DriverWeaponCatalog.GetWeaponFromIndex(this.weaponIndex);
-            DriverBulletDef bulletDef = DriverBulletCatalog.GetBulletDefFromIndex(this.bulletIndex);
+            if (iDrive)
+            {
+                DriverWeaponDef weaponDef = DriverWeaponCatalog.GetWeaponFromIndex(this.weaponIndex);
+                DriverBulletDef bulletDef = DriverBulletCatalog.GetBulletFromIndex(this.bulletIndex);
 
-            if (iDrive) iDrive.PickUpWeaponDrop(weaponDef, bulletDef, -1, this.cutAmmo, this.isNewAmmoType);
+                iDrive.PickUpWeaponDrop(weaponDef, bulletDef, this.cutAmmo, this.isNewAmmoType);
+            }
         }
 
         public void Serialize(NetworkWriter writer)

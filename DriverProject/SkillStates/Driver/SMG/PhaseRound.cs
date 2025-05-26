@@ -3,117 +3,64 @@ using UnityEngine;
 using EntityStates;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
-using static UnityEngine.ParticleSystem.PlaybackState;
-using static UnityEngine.UI.GridLayoutGroup;
-using UnityEngine.UIElements;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.SMG
 {
-    public class PhaseRound : BaseDriverSkillState
+    public class PhaseRound : BaseDriverProjectileAttack
     {
-        public static float damageCoefficient = 6f;
-        public static float procCoefficient = 1f;
-        public float baseDuration = 0.9f; // the base skill duration. i.e. attack speed
-        public static float recoil = 12f;
+        public static float _damageCoefficient = 6f;
 
-        private float earlyExitTime;
-        protected float duration;
-        protected float fireDuration;
-        protected bool hasFired;
-        private bool isCrit;
-        protected string muzzleString;
-        protected virtual float _damageCoefficient => Shoot.damageCoefficient;
+        protected new static readonly GameObject _muzzleFlashPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/MuzzleflashFMJ.prefab").WaitForCompletion();
+        protected static readonly GameObject _projectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion();
+
+        protected override float earlyExitTime => this.earlyExitFraction * this.duration;
+        protected override float animationDuration => this.duration;
+        protected override string animationString => "Shoot";
+        protected override string shootSound => "sfx_driver_fire_preon";
+        protected override DamageTypeCombo? damageType => this.iDrive.DamageType;
+        protected override GameObject projectilePrefab => PhaseRound._projectilePrefab;
+        protected override GameObject muzzleFlashPrefab => PhaseRound._muzzleFlashPrefab;
 
         public override void OnEnter()
         {
+            base.damageCoefficient = _damageCoefficient;
+            base.ammoConsumption = 2f;
+            base.useAttackSpeed = true;
+            base.useICBM = false;
+
+            base.interruptPriority = InterruptPriority.PrioritySkill;
+            base.damageColorIndex = DamageColorIndex.Default;
+            base.target = null;
+            base.maxDistance = -1f;
+            base.fuseOverride = -1f;
+            base.speedOverride = 120f;
+            base.force = 1200f;
+            base.selfForce = 25f;
+
+            base.baseDuration = 0.9f;
+            base.earlyExitFraction = 0.4f;
+            base.fireDelayFraction = 0f;
+
+            base.visualRecoilAmplitude = 1.5f;
+            base.arcPitch = 0f;
+            base.spreadBloom = 12f;
+            base.aimTimer = 5f;
+
+            base.playbackRateString = "Shoot.playbackRate";
+            base.muzzleString = "PistolMuzzle";
+
             base.OnEnter();
-            this.characterBody.SetAimTimer(5f);
-            this.muzzleString = "PistolMuzzle";
-            this.hasFired = false;
-            this.duration = this.baseDuration / this.attackSpeedStat;
-            this.isCrit = base.RollCrit();
-            this.earlyExitTime = 0.4f * this.duration;
-
-            if (this.isCrit) Util.PlaySound("sfx_driver_fire_preon", base.gameObject);
-            else Util.PlaySound("sfx_driver_fire_preon", base.gameObject);
-
-            base.PlayAnimation("Gesture, Override", "Shoot", "Shoot.playbackRate", this.duration);
-
-            this.fireDuration = 0;
-
-            if (this.iDrive) this.iDrive.ConsumeAmmo();
         }
 
-        public virtual void Fire()
+        protected override void AuthorityModifyProjectileInfo(ref FireProjectileInfo fireProjectileInfo)
         {
-            if (!this.hasFired)
-            {
-                this.hasFired = true;
+            base.AuthorityModifyProjectileInfo(ref fireProjectileInfo);
 
-                float recoilAmplitude = Shoot.recoil / this.attackSpeedStat;
+            var damageType = fireProjectileInfo.damageTypeOverride.Value;
+            damageType.damageSource = DamageSource.Secondary;
 
-                base.AddRecoil2(-0.4f * recoilAmplitude, -0.8f * recoilAmplitude, -0.3f * recoilAmplitude, 0.3f * recoilAmplitude);
-                this.characterBody.AddSpreadBloom(12f);
-                EffectManager.SimpleMuzzleFlash(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/MuzzleflashFMJ.prefab").WaitForCompletion(), this.gameObject, this.muzzleString, false);
-
-                if (base.isAuthority)
-                {
-                    Ray aimRay = this.GetAimRay();
-
-                    var fireProjectileInfo = new FireProjectileInfo
-                    {
-                        projectilePrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Commando/FMJRamping.prefab").WaitForCompletion(),
-                        position = aimRay.origin,
-                        rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
-                        owner = this.gameObject,
-                        damage = this.damageStat * this._damageCoefficient,
-                        force = 1200f,
-                        crit = this.isCrit,
-                        damageColorIndex = DamageColorIndex.Default,
-                        target = null,
-                        speedOverride = 120f,
-                        fuseOverride = -1f
-                    };
-                    var damageType = fireProjectileInfo.projectilePrefab.GetComponent<ProjectileDamage>().damageType;
-                    damageType.damageSource = DamageSource.Secondary;
-                    fireProjectileInfo.damageTypeOverride = damageType;
-
-                    ProjectileManager.instance.FireProjectile(fireProjectileInfo);
-                }
-            }
-        }
-
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-
-            if (base.fixedAge >= this.fireDuration)
-            {
-                this.Fire();
-            }
-
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
-                this.outer.SetNextStateToMain();
-                return;
-            }
-
-            if (base.fixedAge >= this.duration && base.isAuthority)
-            {
-                this.outer.SetNextStateToMain();
-            }
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
-        }
-
-        public override InterruptPriority GetMinimumInterruptPriority()
-        {
-            if (base.fixedAge >= this.earlyExitTime) return InterruptPriority.Any;
-            return InterruptPriority.Skill;
+            fireProjectileInfo.damageTypeOverride = damageType;
         }
     }
 }

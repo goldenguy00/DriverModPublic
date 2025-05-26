@@ -1,8 +1,9 @@
 ﻿namespace RobDriver.SkillStates.Driver.Revolver
 {
-    public class Shoot : SkillStates.Driver.Shoot
+    public class Shoot : Driver.Shoot
     {
-        protected override float _damageCoefficient => 3.2f;
-        public override string shootSoundString => "Play_bandit2_R_fire";
+        public static new float _damageCoefficient = 3.2f;
+        protected override float damageCoefficient => _damageCoefficient;
+        protected override string shootSoundString => "Play_bandit2_R_fire";
     }
 }

@@ -1,11 +1,11 @@
-﻿using RoR2;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 
 namespace RobDriver.Modules.Components
 {
     public class SyncPickup : NetworkBehaviour
     {
-        public WeaponPickup weaponPickupComponent;
+        private Rigidbody rigidBody;
 
         [SyncVar]
         public bool cutAmmo;
@@ -16,26 +16,26 @@ namespace RobDriver.Modules.Components
         [SyncVar]
         public ushort weaponIndex;
 
-        public DriverWeaponDef weaponDef
+        public DriverWeaponDef WeaponDef
         {
             get => DriverWeaponCatalog.GetWeaponFromIndex(weaponIndex);
             set => weaponIndex = value?.index ?? DriverWeaponCatalog.Pistol.index;
         }
 
-        public DriverBulletDef bulletDef
+        public DriverBulletDef BulletDef
         {
-            get => DriverBulletCatalog.GetBulletDefFromIndex(bulletIndex);
+            get => DriverBulletCatalog.GetBulletFromIndex(bulletIndex);
             set => bulletIndex = value?.index ?? DriverBulletCatalog.Default.index;
         }
 
-        public void SpawnWeapon(TeamIndex teamIndex, DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo = false, bool isNewAmmoType = false)
+        public WeaponPickup weaponPickup;
+
+        public void SpawnWeapon(DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo, bool isNewAmmoType)
         {
             if (NetworkServer.active)
             {
-                Log.Warning("Spawn weapon called");
-                this.weaponPickupComponent.teamFilter.teamIndex = teamIndex;
-                this.weaponDef = weaponDef;
-                this.bulletDef = bulletDef;
+                this.WeaponDef = weaponDef;
+                this.BulletDef = bulletDef;
                 this.cutAmmo = cutAmmo;
                 this.isNewAmmoType = isNewAmmoType;
 
@@ -43,10 +43,15 @@ namespace RobDriver.Modules.Components
             }
         }
 
+        private void Awake()
+        {
+            this.rigidBody = GetComponent<Rigidbody>();
+        }
+
         private void Start()
         {
-            Log.Warning("Start called " + this.weaponIndex + " | " + this.bulletIndex + " | " + this.cutAmmo + " | " + this.isNewAmmoType);
-            this.weaponPickupComponent.UpdateWeaponPickup(this.weaponDef, this.bulletDef, this.cutAmmo, this.isNewAmmoType);
+            this.weaponPickup.UpdateWeaponPickup(this.WeaponDef, this.BulletDef, this.cutAmmo, this.isNewAmmoType);
+            this.rigidBody.AddForce(Vector3.up * 8f, ForceMode.Impulse);
         }
     }
 }

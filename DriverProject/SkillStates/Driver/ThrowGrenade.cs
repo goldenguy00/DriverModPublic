@@ -1,103 +1,57 @@
 ﻿using UnityEngine;
 using RoR2;
 using EntityStates;
-using RoR2.Projectile;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver
 {
-    public class ThrowGrenade : GenericProjectileBaseState
+    public class ThrowGrenade : BaseDriverProjectileAttack
     {
-        public static new float baseDuration = 0.55f;
-        public static float baseDelayDuration = 0.1f * baseDuration;
+        public static float _damageCoefficient = 5f;
 
-        public static new float damageCoefficient = 5f;
+        protected override float earlyExitTime => this.earlyExitFraction * this.duration;
+        protected override float animationDuration => this.duration;
+        protected override string animationString => "ThrowGrenade";
+        protected override string shootSound => "sfx_driver_gun_throw";
+        protected override DamageTypeCombo? damageType => null;
+        protected override GameObject projectilePrefab => Modules.Projectiles.stunGrenadeProjectilePrefab;
+        protected override GameObject muzzleFlashPrefab => BaseDriverProjectileAttack._muzzleFlashPrefab;
 
         public override void OnEnter()
         {
-            base.attackSoundString = "sfx_driver_gun_throw";
+            base.damageCoefficient = _damageCoefficient;
+            base.ammoConsumption = 0f;
+            base.useAttackSpeed = false;
+            base.useICBM = true;
 
-            base.baseDuration = baseDuration;
-            base.baseDelayBeforeFiringProjectile = baseDelayDuration;
-
-            base.damageCoefficient = damageCoefficient;
+            base.damageColorIndex = DamageColorIndex.Default;
+            base.target = null;
+            base.maxDistance = -1f;
+            base.fuseOverride = -1f;
+            base.speedOverride = -1f;
             base.force = 120f;
+            base.selfForce = 0f;
 
-            base.projectilePitchBonus = -7.5f;
+            base.baseDuration = 0.55f;
+            base.earlyExitFraction = 1f;
+            base.fireDelayFraction = 0.1f;
 
-            base.recoilAmplitude = 0.1f;
-            base.bloom = 10;
+            base.visualRecoilAmplitude = 1f;
+            base.visualRecoilVertical = 0.3f;
+            base.visualRecoilHorizontal = 0.1f;
+            base.arcPitch = -7.5f;
+            base.spreadBloom = 4f;
+            base.aimTimer = 2f;
+
+            base.playbackRateString = "Grenade.playbackRate";
+            base.muzzleString = "ShotgunMuzzle";
 
             base.OnEnter();
-        }
-
-        public override void FireProjectile()
-        {
-            // if i just rewrite it surely it can't break right?
-            if (base.isAuthority)
-            {
-                Ray aimRay = base.GetAimRay();
-                aimRay = this.ModifyProjectileAimRay(aimRay);
-                aimRay.direction = Util.ApplySpread(aimRay.direction, this.minSpread, this.maxSpread, 1f, 1f, 0f, this.projectilePitchBonus);
-
-                // copied from moff's rocket
-                // the fact that this item literally has to be hardcoded into character skillstates makes me so fucking angry you have no idea
-                if (this.characterBody.inventory && this.characterBody.inventory.GetItemCount(DLC1Content.Items.MoreMissile) > 0)
-                {
-                    float damageMult = DriverPlugin.GetICBMDamageMult(this.characterBody);
-
-                    Vector3 rhs = Vector3.Cross(Vector3.up, aimRay.direction);
-                    Vector3 axis = Vector3.Cross(aimRay.direction, rhs);
-
-                    Vector3 direction = Quaternion.AngleAxis(-1.5f, axis) * aimRay.direction;
-                    Quaternion rotation = Quaternion.AngleAxis(1.5f, axis);
-                    Ray aimRay2 = new Ray(aimRay.origin, direction);
-                    for (int i = 0; i < 3; i++)
-                    {
-                        ProjectileManager.instance.FireProjectile(Modules.Projectiles.stunGrenadeProjectilePrefab, 
-                            aimRay2.origin, 
-                            Util.QuaternionSafeLookRotation(aimRay2.direction),
-                            this.gameObject, 
-                            damageMult * this.damageStat * ThrowGrenade.damageCoefficient,
-                            this.force,
-                            this.RollCrit(), 
-                            DamageColorIndex.Default, 
-                            null, 
-                            -1f);
-                        aimRay2.direction = rotation * aimRay2.direction;
-                    }
-                }
-                else
-                {
-                    ProjectileManager.instance.FireProjectile(Modules.Projectiles.stunGrenadeProjectilePrefab,
-                        aimRay.origin,
-                        Util.QuaternionSafeLookRotation(aimRay.direction),
-                        this.gameObject,
-                        this.damageStat * ThrowGrenade.damageCoefficient, 
-                        this.force, 
-                        this.RollCrit(), 
-                        DamageColorIndex.Default, 
-                        null, 
-                        -1f);
-                }
-            }
-        }
-
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.Pain;
-        }
-
-        public override void PlayAnimation(float duration)
-        {
-            if (base.GetModelAnimator())
-            {
-                base.PlayAnimation("Gesture, Override", "ThrowGrenade", "Grenade.playbackRate", this.duration);
-            }
         }
     }
 }

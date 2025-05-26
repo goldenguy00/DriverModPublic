@@ -4,25 +4,23 @@ namespace RobDriver.Modules.Components
 {
     public class BackWeaponComponent : MonoBehaviour
     {
-        public SkinnedMeshRenderer targetRenderer { get; set; }
+        public SkinnedMeshRenderer targetRenderer;
+
+        public DriverWeaponDef weaponDef;
+        public Mesh mesh;
+        public Material material;
 
         private void Awake()
         {
-            if (!this.targetRenderer) this.targetRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
+            this.targetRenderer = this.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+            this.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            this.transform.localScale = Vector3.one;
         }
 
-        public void Init(DriverWeaponDef weaponDef)
+        private void Start()
         {
-            if (this.targetRenderer)
-            {
-                if (weaponDef.equipAnimationString != "BufferEmpty")
-                    this.transform.localPosition = new Vector3(-0.35f, 0f, 1.5f);
-                else
-                    this.transform.localPosition = Vector3.zero;
-
-                this.targetRenderer.sharedMesh = weaponDef.mesh;
-                this.targetRenderer.material = weaponDef.material;
-            }
+            this.targetRenderer.sharedMesh = this.mesh;
+            this.targetRenderer.sharedMaterial = this.material;
         }
     }
 }

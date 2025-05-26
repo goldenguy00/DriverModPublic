@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 66435352, guid: da60ad5a794e80f47b53f786e5dae53c, type: 3}
+  m_Name: Railgun
+  m_EditorClassIdentifier: 
+  weaponName: M99 Sniper
+  nameToken: ROB_DRIVER_WEAPON_RAILGUN_NAME
+  description: You know, rails are a kind of bird too.
+  descriptionToken: ROB_DRIVER_WEAPON_RAILGUN_DESC
+  icon: {fileID: 0}
+  tier: 5
+  animationSet: 1
+  buffType: 1
+  shotCount: 12
+  primarySkillDef: {fileID: 0}
+  secondarySkillDef: {fileID: 0}
+  arsenalSkillDef: {fileID: 0}
+  unlockableDef: {fileID: 0}
+  modelSwapInfo:
+  - mesh: {fileID: 4300000, guid: e525aa1b83b63bf4292c7c4abbe149d5, type: 2}
+    material: {fileID: 2100000, guid: 0d1d97ab89c7ebc4da385eb9e45aa096, type: 2}
+    childName: PistolModel
+  - mesh: {fileID: 4300000, guid: 7213e343e14ae9c46aae6f8e475d4b79, type: 2}
+    material: {fileID: 2100000, guid: 0d1d97ab89c7ebc4da385eb9e45aa096, type: 2}
+    childName: BackpackModel
+  crosshairPrefab: {fileID: 0}
+  pickupPrefabOverride: {fileID: 0}
+  disableHolster: 0
+  equipAnimationString: BufferEmpty
+  reloadAnimationString: ReloadPistol
+  calloutSoundString: sfx_driver_callout_sniper
+  dropBodyName: Railgunner
+  dropChance: 100
+  index: 0
+  enabled: 0

@@ -6,13 +6,12 @@ namespace RobDriver.Modules.Achievements
 {
     //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
     //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
-    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
+    [RegisterAchievement(IDENTIFIER, UNLOCKABLE_ITENTIFIER, DriverUnlockAchievement.IDENTIFIER, 10, null)]
     internal class DriverPistolPassiveAchievement : BaseAchievement
     {
-        public const string identifier = "ROB_DRIVER_PISTOL_PASSIVE";
-        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_PISTOL_PASSIVE_NAME";
-        public const string unlockableIdentifier = "ROB_DRIVER_PISTOL_PASSIVE_UNLOCKABLE";
-        public static Sprite Sprite => Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon");
+        public const string IDENTIFIER = "ROB_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_ACHIEVEMENT_ID";
+        public const string UNLOCKABLE_ITENTIFIER = "ROB_DRIVER_BODY_PISTOLPASSIVE_UNLOCKABLE_REWARD_ID";
+        public static Sprite Sprite => Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon");
 
         public static bool weaponPickedUp;
 
@@ -24,6 +23,8 @@ namespace RobDriver.Modules.Achievements
 
             TeleporterInteraction.onTeleporterBeginChargingGlobal += TeleporterInteraction_onTeleporterBeginChargingGlobal;
             TeleporterInteraction.onTeleporterFinishGlobal += TeleporterInteraction_onTeleporterFinishGlobal;
+
+            weaponPickedUp = false;
         }
 
         public override void OnBodyRequirementBroken()
@@ -32,6 +33,8 @@ namespace RobDriver.Modules.Achievements
 
             TeleporterInteraction.onTeleporterBeginChargingGlobal -= TeleporterInteraction_onTeleporterBeginChargingGlobal;
             TeleporterInteraction.onTeleporterFinishGlobal -= TeleporterInteraction_onTeleporterFinishGlobal;
+
+            weaponPickedUp = false;
         }
 
         private void TeleporterInteraction_onTeleporterFinishGlobal(TeleporterInteraction obj)

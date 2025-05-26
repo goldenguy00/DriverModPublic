@@ -3,12 +3,13 @@ using UnityEngine;
 using EntityStates;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.RocketLauncher
 {
     public class Barrage : BaseDriverSkillState
     {
-        public static float damageCoefficient = 3f;
+        public static float _damageCoefficient = 3f;
         public static float procCoefficient = 1f;
         public float baseShotDuration = 0.05f;
         public static float recoil = 11f;
@@ -17,7 +18,7 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
         protected virtual float maxSpread => 0f;
         protected virtual GameObject projectilePrefab => Modules.Projectiles.missileProjectilePrefab;
         protected virtual float ammoMod => 1.5f;
-        protected virtual float _damageCoefficient => Barrage.damageCoefficient;
+        protected virtual float damageCoefficient => Barrage._damageCoefficient;
 
         private int remainingShots;
         private float shotTimer;
@@ -42,13 +43,13 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
             if (this.iDrive) this.iDrive.ConsumeAmmo(this.ammoMod * (2f / this.baseRocketCount));
 
             base.PlayAnimation("Gesture, Override", "FireBazooka", "Shoot.playbackRate", 1.4f);
-            base.PlayAnimation("AimPitch", "Shoot");
+            base.PlayAnimation("AimPitch", "ShotgunAimPitch");
 
             Util.PlaySound("sfx_driver_rocket_launcher_shoot", base.gameObject);
 
             float recoilAmplitude = Barrage.recoil / this.attackSpeedStat;
 
-            base.AddRecoil2(-0.4f * recoilAmplitude, -0.8f * recoilAmplitude, -0.3f * recoilAmplitude, 0.3f * recoilAmplitude);
+            base.AddRecoil(0.8f * recoilAmplitude,0.3f * recoilAmplitude);
             this.characterBody.AddSpreadBloom(2f);
             EffectManager.SimpleMuzzleFlash(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/VFX/MuzzleflashSmokeRing.prefab").WaitForCompletion(), this.gameObject, this.muzzleString, false);
 
@@ -82,7 +83,7 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
                             position = aimRay2.origin,
                             rotation = Util.QuaternionSafeLookRotation(aimRay2.direction),
                             owner = this.gameObject,
-                            damage = damageMult * this.damageStat * this._damageCoefficient,
+                            damage = damageMult * this.damageStat * this.damageCoefficient,
                             force = 1200f,
                             crit = isCrit,
                             damageColorIndex = DamageColorIndex.Default,
@@ -103,7 +104,7 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
                         position = aimRay.origin,
                         rotation = Util.QuaternionSafeLookRotation(aimRay.direction),
                         owner = this.gameObject,
-                        damage = this.damageStat * this._damageCoefficient,
+                        damage = this.damageStat * this.damageCoefficient,
                         force = 1200f,
                         crit = isCrit,
                         damageColorIndex = DamageColorIndex.Default,
@@ -119,6 +120,10 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+
+            if (cancelling)
+                return;
+
             this.shotTimer -= Time.fixedDeltaTime;
 
             if (this.shotTimer <= 0f)
@@ -136,13 +141,6 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
                         this.outer.SetNextStateToMain();
                     }
                 }
-            }
-
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                base.PlayAnimation("Gesture, Override", this.iDrive.weaponDef.equipAnimationString);
-                this.outer.SetNextStateToMain();
-                return;
             }
         }
 

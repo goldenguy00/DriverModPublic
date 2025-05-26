@@ -6,25 +6,28 @@ namespace RobDriver.Modules.Components
 {
     public class DiscardedWeaponComponent : MonoBehaviour
     {
-        public SkinnedMeshRenderer targetRenderer { get; set; }
-        public Rigidbody rb { get; set; }
+        private const float upForce = 9f;
+        private const float backForce = 2.4f;
+        private const float lifetime = 60f;
+        private const float rotateSpeedX = 0f;
+        private const float rotateSpeedZ = -1200f;
 
+        private SkinnedMeshRenderer targetRenderer;
+        private Rigidbody rb;
         private Transform targetTransform;
-        private float lifetime = 60f;
-        public float rotateSpeedX = 0f;
-        public float rotateSpeedZ = -1200f;
-        private bool spinning = false;
         private GameObject effectInstance;
         private DriverWeaponDef weaponDef;
+
         private float stopwatch;
+        private bool spinning;
 
         private void Awake()
         {
-            if (!this.targetRenderer) this.targetRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
-            if (!this.rb) this.rb = this.GetComponent<Rigidbody>();
-            if (!this.targetTransform) this.targetTransform = this.transform.GetChild(1);
+            this.targetRenderer = this.GetComponentInChildren<SkinnedMeshRenderer>();
+            this.rb = this.GetComponent<Rigidbody>();
+            this.targetTransform = this.transform.GetChild(1);
 
-            Destroy(this.gameObject, this.lifetime);
+            Destroy(this.gameObject, lifetime);
         }
 
         private void FixedUpdate()
@@ -33,8 +36,8 @@ namespace RobDriver.Modules.Components
             {
                 this.stopwatch += Time.fixedDeltaTime;
 
-                this.targetTransform.RotateAround(this.transform.position, this.transform.forward, this.rotateSpeedX * Time.fixedDeltaTime);
-                this.targetTransform.RotateAround(this.transform.position, this.transform.right, this.rotateSpeedZ * Time.fixedDeltaTime);
+                this.targetTransform.RotateAround(this.transform.position, this.transform.forward, rotateSpeedX * Time.fixedDeltaTime);
+                this.targetTransform.RotateAround(this.transform.position, this.transform.right, rotateSpeedZ * Time.fixedDeltaTime);
                 //this.targetTransform.Rotate(new Vector3(Time.fixedDeltaTime * this.rotateSpeed), this.targetTransform.localRotation.eulerAngles.y + (Time.fixedDeltaTime * this.rotateSpeedY), this.targetTransform.localRotation.eulerAngles.z + (Time.fixedDeltaTime * this.rotateSpeedZ)));
                 //this.targetTransform.localRotation = Quaternion.Euler(;
             }
@@ -45,9 +48,12 @@ namespace RobDriver.Modules.Components
             if (this.spinning && this.stopwatch >= 0.25f)
             {
                 this.spinning = false;
-                if (this.effectInstance) Destroy(this.effectInstance);
 
-                if (this.rb) this.rb.collisionDetectionMode = CollisionDetectionMode.Discrete; // optimization
+                if (this.effectInstance)
+                    Destroy(this.effectInstance);
+
+                if (this.rb)
+                    this.rb.collisionDetectionMode = CollisionDetectionMode.Discrete; // optimization
 
                 Util.PlaySound("sfx_driver_gun_drop", this.gameObject);
             }
@@ -73,7 +79,7 @@ namespace RobDriver.Modules.Components
             Util.PlaySound("sfx_driver_gun_throw", this.gameObject);
         }
 
-        public void Init(DriverWeaponDef weaponDef, Vector3 force)
+        public void Init(DriverWeaponDef weaponDef, Vector3 forward, Vector3 velocity)
         {
             if (this.targetRenderer)
             {
@@ -81,7 +87,8 @@ namespace RobDriver.Modules.Components
                 this.targetRenderer.material = weaponDef.material;
             }
 
-            if (this.rb) this.rb.velocity = force;
+            if (this.rb) 
+                this.rb.velocity = (forward * -backForce) + (Vector3.up * upForce) + velocity;
 
             this.weaponDef = weaponDef;
             this.StartSpin();

@@ -1,34 +1,41 @@
 ﻿using UnityEngine;
 using RoR2;
 using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.Skateboard
 {
     public class Idle : BaseDriverSkillState
     {
-        protected override bool hideGun => true;
-        protected override string prop => "SkateboardModel";
+        protected override bool cancelOnPickup => false;
+        protected override bool holsterGun => true;
+        protected override string showProp => "SkateboardModel";
 
+        private Vector3 IdealVelocity => base.characterDirection.forward * base.characterBody.moveSpeed * this.skateSpeedMultiplier;
+
+        private string originalFootstepString;
+        private FootstepHandler footstepHandler;
         private float skateSpeedMultiplier = 0.8f;
         private Vector3 idealDirection;
-        private uint skatePlayID = 0u;
+        private uint skatePlayID;
         private bool isSprinting;
         private bool wasSprinting;
-        private FootstepHandler footstep;
 
         public override void OnEnter()
         {
             base.OnEnter();
-            this.footstep = this.modelLocator.modelTransform.GetComponent<FootstepHandler>();
-            this.footstep.enabled = false;
+
+            this.footstepHandler = this.modelLocator.modelTransform.GetComponent<FootstepHandler>();
+            
+            this.originalFootstepString = this.footstepHandler.baseFootstepString;
+            this.footstepHandler.baseFootstepString = "";
+            
             this.modelLocator.normalizeToFloor = true;
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-
-            if (this.footstep) this.footstep.enabled = false;
 
             if (base.isAuthority)
             {
@@ -42,24 +49,28 @@ namespace RobDriver.SkillStates.Driver.Skateboard
 
                 this.isSprinting = this.inputBank.moveVector != Vector3.zero;
 
-                this.UpdateSkateDirection();
+                Vector2 vector = Util.Vector3XZToVector2XY(base.inputBank.moveVector);
+                if (vector != Vector2.zero)
+                {
+                    vector.Normalize();
+                    this.idealDirection = new Vector3(vector.x, 0f, vector.y).normalized;
+                }
 
                 if (base.characterDirection)
                 {
                     base.characterDirection.moveVector = this.idealDirection;
                     if (base.characterMotor && !(base.characterMotor.disableAirControlUntilCollision))
                     {
-                        base.characterMotor.rootMotion += this.GetIdealVelocity() * Time.fixedDeltaTime;
+                        base.characterMotor.rootMotion += this.IdealVelocity * Time.fixedDeltaTime;
                     }
                 }
             }
 
-            if (this.iDrive.weaponDef != this.cachedWeaponDef && this.iDrive.weaponEffectInstance)
-                this.iDrive.weaponEffectInstance.GetComponent<Modules.Components.BackWeaponComponent>().Init(this.iDrive.weaponDef);
-
             this.characterBody.isSprinting = this.isSprinting;
 
-            if (!this.wasSprinting && this.isSprinting && this.isGrounded) base.PlayCrossfade("FullBody, Override", "SkateAccelerate", 0.1f);
+            if (!this.wasSprinting && this.isSprinting && this.isGrounded)
+                base.PlayCrossfade("FullBody, Override", "SkateAccelerate", 0.1f);
+            
             this.wasSprinting = this.isSprinting;
 
             //sound
@@ -78,7 +89,10 @@ namespace RobDriver.SkillStates.Driver.Skateboard
                 if (this.skatePlayID != 0u)
                 {
                     base.PlayCrossfade("FullBody, Override", "SkateJump", 0.05f);
-                    if (base.characterMotor.velocity.y >= 0.1f) Util.PlaySound("sfx_driver_skateboard_ollie", this.gameObject);
+                    
+                    if (base.characterMotor.velocity.y >= 0.1f)
+                        Util.PlaySound("sfx_driver_skateboard_ollie", this.gameObject);
+
                     AkSoundEngine.StopPlayingID(this.skatePlayID);
                     this.skatePlayID = 0u;
                 }
@@ -87,38 +101,17 @@ namespace RobDriver.SkillStates.Driver.Skateboard
 
         public override void OnExit()
         {
+            AkSoundEngine.StopPlayingID(this.skatePlayID);
+
             base.OnExit();
 
-            this.footstep.enabled = true;
+            this.footstepHandler.baseFootstepString = originalFootstepString;
             this.modelLocator.normalizeToFloor = false;
-            if (this.skatePlayID != 0u)
-            {
-                AkSoundEngine.StopPlayingID(this.skatePlayID);
-                this.skatePlayID = 0u;
-            }
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
             return InterruptPriority.Death;
-        }
-
-        private void UpdateSkateDirection()
-        {
-            if (base.inputBank)
-            {
-                Vector2 vector = Util.Vector3XZToVector2XY(base.inputBank.moveVector);
-                if (vector != Vector2.zero)
-                {
-                    vector.Normalize();
-                    this.idealDirection = new Vector3(vector.x, 0f, vector.y).normalized;
-                }
-            }
-        }
-
-        private Vector3 GetIdealVelocity()
-        {
-            return base.characterDirection.forward * base.characterBody.moveSpeed * this.skateSpeedMultiplier;
         }
     }
 }

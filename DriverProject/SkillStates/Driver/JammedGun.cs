@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using UnityEngine;
 
@@ -28,17 +29,8 @@ namespace RobDriver.SkillStates.Driver
         {
             base.FixedUpdate();
 
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
-            {
-                base.PlayAnimation("Gesture, Override", "BufferEmpty");
-                this.outer.SetNextStateToMain();
-                return;
-            }
-
             if (base.fixedAge >= this.duration)
-            {
-                this.outer.SetNextState(new WaitForReload());
-            }
+                this.outer.SetNextStateToMain();
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

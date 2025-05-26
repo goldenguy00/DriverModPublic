@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using UnityEngine;
 
@@ -15,9 +16,12 @@ namespace RobDriver.SkillStates.Driver.Bazooka
         private uint chargePlayID;
         private GameObject chargeEffectInstance;
 
+        protected override bool cancelOnPickup => false;
+
         public override void OnEnter()
         {
             base.OnEnter();
+
             this.duration = Charge.baseChargeDuration / this.attackSpeedStat;
 
             this.chargePlayID = Util.PlayAttackSpeedSound("HenryBazookaCharge", this.gameObject, this.attackSpeedStat);
@@ -38,37 +42,46 @@ namespace RobDriver.SkillStates.Driver.Bazooka
             base.PlayCrossfade("Gesture, Override", "AimTwohand", 0.6f);
         }
 
-        private float CalcCharge()
-        {
-            return Mathf.Clamp01(base.fixedAge / this.duration);
-        }
-
         public override void FixedUpdate()
         {
             base.FixedUpdate();
+
             this.characterBody.outOfCombatStopwatch = 0f;
             this.characterBody.isSprinting = false;
             base.characterBody.SetAimTimer(0.2f);
 
-            float charge = this.CalcCharge();
+            this.iDrive.chargeValue = Mathf.Clamp01(base.fixedAge / this.duration);
 
-            if (this.iDrive) this.iDrive.chargeValue = charge;
-
-            bool shit = false;
-
-            if (base.isAuthority && ((!base.IsKeyDownAuthority() && base.fixedAge >= Charge.minChargeDuration) || base.fixedAge >= this.duration))shit = true;
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef) shit = true;
-
-            if (shit)
-            {
-                shit = true;
-                Fire nextState = new Fire()
-                {
-                    charge = charge
-                };
-                this.outer.SetNextState(nextState);
+            if (this.cancelling)
                 return;
+
+            if (base.isAuthority)
+            {
+                if (base.fixedAge >= this.duration)
+                    this.cancelling = true;
+
+                if (base.fixedAge >= Charge.minChargeDuration && !base.IsKeyDownAuthority())
+                    this.cancelling = true;
+
+                if (this.cancelling)
+                {
+                    this.outer.SetNextState(new Fire()
+                    {
+                        charge = this.iDrive.chargeValue
+                    });
+                }
             }
+        }
+
+        protected override void OnWeaponChanged(DriverWeaponDef weaponDef)
+        {
+            base.OnWeaponChanged(weaponDef);
+
+            this.cancelling = true;
+            this.outer.SetNextState(new Fire()
+            {
+                charge = this.iDrive.chargeValue
+            });
         }
 
         public override void OnExit()
@@ -77,8 +90,11 @@ namespace RobDriver.SkillStates.Driver.Bazooka
 
             AkSoundEngine.StopPlayingID(this.chargePlayID);
 
-            if (this.chargeEffectInstance) EntityState.Destroy(this.chargeEffectInstance);
-            if (this.iDrive) this.iDrive.chargeValue = 0f;
+            if (this.chargeEffectInstance) 
+                EntityState.Destroy(this.chargeEffectInstance);
+            
+            if (this.iDrive)
+                this.iDrive.chargeValue = 0f;
 
             if (this.outer.destroying)
             {

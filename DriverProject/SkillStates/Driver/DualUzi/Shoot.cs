@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using UnityEngine;
 
@@ -58,7 +59,7 @@ namespace RobDriver.SkillStates.Driver.DualUzi
             if (base.isAuthority)
             {
                 Ray aimRay = base.GetAimRay();
-                base.AddRecoil2(-1f * Shoot.recoil, -2f * Shoot.recoil, -0.5f * Shoot.recoil, 0.5f * Shoot.recoil);
+                base.AddRecoil(2f * Shoot.recoil, 0.5f * Shoot.recoil);
 
                 BulletAttack bulletAttack = new BulletAttack
                 {

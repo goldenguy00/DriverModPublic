@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using RoR2;
 using UnityEngine.Networking;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver
 {
@@ -10,11 +11,10 @@ namespace RobDriver.SkillStates.Driver
         public float healPercentPerTick = 0.01f;
         public float tickStopwatch = 0.25f;
 
-        protected override string prop => "MedkitModel";
-        protected override bool hideGun => true;
+        protected override string showProp => "MedkitModel";
+        protected override bool holsterGun => true;
 
         private float stopwatch;
-        private bool cancelling;
 
         public override void OnEnter()
         {
@@ -40,7 +40,8 @@ namespace RobDriver.SkillStates.Driver
 
             if (base.isAuthority)
             {
-                if (!this.isGrounded) this.cancelling = true;
+                if (!this.isGrounded)
+                    this.cancelling = true;
 
                 if (this.healthComponent.health >= this.healthComponent.fullHealth || (this.inputBank.skill4.justPressed && base.fixedAge >= 0.1f))
                 {

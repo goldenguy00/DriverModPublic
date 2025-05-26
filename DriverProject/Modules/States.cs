@@ -5,150 +5,164 @@ namespace RobDriver.Modules
 {
     public static class States
     {
-        internal static List<Type> entityStates = new List<Type>();
-
-        internal static void AddSkill(Type t)
-        {
-            entityStates.Add(t);
-        }
+        internal static List<Type> entityStates = [];
 
         public static void RegisterStates()
         {
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.MainState));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.JammedGun));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.BaseDriverSkillState));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.WaitForReload));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.ReloadPistol));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Slide));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SteadyAim));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.ThrowGrenade));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.ThrowMolotov));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SwingKnife));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.UseSyringe));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.UseSyringeLegacy));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SwingKnifeScepter));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.UseSyringeScepter));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Coin));
+            // main
+            entityStates.Add(typeof(SkillStates.Driver.MainState));
+            entityStates.Add(typeof(SkillStates.Driver.WeaponMainState));
+            entityStates.Add(typeof(SkillStates.Driver.DiscardWeapon));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.ArmCannon.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.Bash));
+            entityStates.Add(typeof(SkillStates.Driver.Coin));
+            entityStates.Add(typeof(SkillStates.Driver.Dash));
+            entityStates.Add(typeof(SkillStates.Driver.Heal));
+            entityStates.Add(typeof(SkillStates.Driver.JammedGun));
+            entityStates.Add(typeof(SkillStates.Driver.Reload));
+            entityStates.Add(typeof(SkillStates.Driver.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.Slide));
+            entityStates.Add(typeof(SkillStates.Driver.SteadyAim));
+            entityStates.Add(typeof(SkillStates.Driver.SwingKnife));
+            entityStates.Add(typeof(SkillStates.Driver.ThrowGrenade));
+            entityStates.Add(typeof(SkillStates.Driver.UseSyringe));
+            entityStates.Add(typeof(SkillStates.Driver.UseSyringeLegacy));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.BeetleShield.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.BeetleShield.SteadyAim));
+            // compat
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.SwingKnifeScepter));
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.UseSyringeScepter));
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.ThrowMolotov));
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.CoinScepter));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.GrenadeLauncher.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.SupplyDrop.AimVoidDrop));
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.SupplyDrop.FireVoidDrop));
+            entityStates.Add(typeof(SkillStates.Driver.Scepter.SupplyDrop.CancelVoidDrop));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Bazooka.Charge));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Bazooka.Fire));
+            entityStates.Add(typeof(SkillStates.Driver.NemmandoSword.SwingSword));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.GoldenGun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.GoldenGun.AimLightsOut));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.GoldenGun.LightsOut));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.SlashCombo));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.ChargeSlash));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.ThrowSlash));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Shotgun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Shotgun.Bash));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Shotgun.Reload));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.DashPunch));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.PunchRecoil));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.RiotShotgun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.ChargeJump));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.WallJump));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.WallJumpBig));
+            entityStates.Add(typeof(SkillStates.Driver.RavSword.WallJumpSmall));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SlugShotgun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.ArmCannon.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.BadassShotgun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.NemmandoGun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.NemmandoGun.Submission));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.HeavyMachineGun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.HeavyMachineGun.ShootGrenade));
+            entityStates.Add(typeof(SkillStates.Driver.NemmercGun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.NemmercGun.Shoot2));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.LunarPistol.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.LunarPistol.SteadyAim));
+            entityStates.Add(typeof(SkillStates.Driver.CaptainGun.AttemptAirstrike));
+            entityStates.Add(typeof(SkillStates.Driver.CaptainGun.CallAirstrike));
+            entityStates.Add(typeof(SkillStates.Driver.CaptainGun.ChargeShotgun));
+            entityStates.Add(typeof(SkillStates.Driver.CaptainGun.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.MachineGun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.MachineGun.Zap));
+            // weapons
+            entityStates.Add(typeof(SkillStates.Driver.BeetleShield.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.BeetleShield.SteadyAim));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.PlasmaCannon.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.PlasmaCannon.Barrage));
+            entityStates.Add(typeof(SkillStates.Driver.GrenadeLauncher.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.RocketLauncher.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.RocketLauncher.Barrage));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.RocketLauncher.NerfedShoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.RocketLauncher.NerfedBarrage));
+            entityStates.Add(typeof(SkillStates.Driver.Bazooka.Charge));
+            entityStates.Add(typeof(SkillStates.Driver.Bazooka.Fire));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.PyriteGun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.PyriteGun.SteadyAim));
+            entityStates.Add(typeof(SkillStates.Driver.GoldenGun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.GoldenGun.AimLightsOut));
+            entityStates.Add(typeof(SkillStates.Driver.GoldenGun.LightsOut));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SniperRifle.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SniperRifle.SteadyAim));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SniperRifle.Aim));
+            entityStates.Add(typeof(SkillStates.Driver.Shotgun.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.VoidPistol.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.VoidPistol.SteadyAim));
+            entityStates.Add(typeof(SkillStates.Driver.RiotShotgun.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.VoidRifle.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.SlugShotgun.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.BadassShotgun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.BadassShotgun.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.LunarRifle.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.HeavyMachineGun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.HeavyMachineGun.ShootGrenade));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.LunarGrenade.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.LunarPistol.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.LunarPistol.SteadyAim));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.LunarHammer.SwingCombo));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.LunarHammer.FireShard));
+            entityStates.Add(typeof(SkillStates.Driver.MachineGun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.MachineGun.Zap));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.NemmandoGun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.NemmandoGun.Submission));
+            entityStates.Add(typeof(SkillStates.Driver.PlasmaCannon.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.PlasmaCannon.Barrage));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.NemmercGun.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.NemmercGun.Shoot2));
+            entityStates.Add(typeof(SkillStates.Driver.RocketLauncher.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.RocketLauncher.Barrage));
+            entityStates.Add(typeof(SkillStates.Driver.RocketLauncher.NerfedShoot));
+            entityStates.Add(typeof(SkillStates.Driver.RocketLauncher.NerfedBarrage));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.GolemGun.ChargeLaser));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.GolemGun.FireLaser));
+            entityStates.Add(typeof(SkillStates.Driver.PyriteGun.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.PyriteGun.SteadyAim));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.ArmBFG.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.SniperRifle.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.SniperRifle.Aim));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.ArtiGauntlet.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.VoidPistol.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.VoidPistol.SteadyAim));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SMG.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SMG.PhaseRound));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SMG.SuppressiveFire));
+            entityStates.Add(typeof(SkillStates.Driver.FalsePistol.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.FalsePistol.SteadyAim));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.NemmandoSword.SwingSword));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.ChargeSlash));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.DashPunch));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.PunchRecoil));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.SlashCombo));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.ThrowSlash));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.WallJumpBig));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.WallJumpSmall));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.ChargeJump));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Compat.WallJump));
+            entityStates.Add(typeof(SkillStates.Driver.VoidRifle.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Revolver.Shoot));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Revolver.AimLightsOut));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Revolver.AimLightsOutReset));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Revolver.LightsOut));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Revolver.LightsOutReset));
+            entityStates.Add(typeof(SkillStates.Driver.BadassShotgun.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.AimSupplyDrop));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.FireSupplyDrop));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.CancelSupplyDrop));
+            entityStates.Add(typeof(SkillStates.Driver.LunarRifle.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.Nerfed.AimCrapDrop));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.Nerfed.FireCrapDrop));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.Nerfed.CancelCrapDrop));
+            entityStates.Add(typeof(SkillStates.Driver.LunarGrenade.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.Scepter.AimVoidDrop));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.Scepter.FireVoidDrop));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.SupplyDrop.Scepter.CancelVoidDrop));
+            entityStates.Add(typeof(SkillStates.Driver.LunarHammer.SwingCombo));
+            entityStates.Add(typeof(SkillStates.Driver.LunarHammer.FireShard));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Skateboard.Idle));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Skateboard.Start));
-            entityStates.Add(typeof(RobDriver.SkillStates.Driver.Skateboard.Stop));
+            entityStates.Add(typeof(SkillStates.Driver.GolemGun.ChargeLaser));
+            entityStates.Add(typeof(SkillStates.Driver.GolemGun.FireLaser));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.Emote.BaseEmote));
-            entityStates.Add(typeof(RobDriver.SkillStates.Emote.Rest));
-            entityStates.Add(typeof(RobDriver.SkillStates.Emote.Taunt));
-            entityStates.Add(typeof(RobDriver.SkillStates.Emote.Dance));
+            entityStates.Add(typeof(SkillStates.Driver.ArmBFG.Shoot));
 
-            entityStates.Add(typeof(RobDriver.SkillStates.FuckMyAss));
+            entityStates.Add(typeof(SkillStates.Driver.ArtiGauntlet.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.ArtiGauntlet.ChargeBomb));
+            entityStates.Add(typeof(SkillStates.Driver.ArtiGauntlet.ThrowBomb));
+
+            entityStates.Add(typeof(SkillStates.Driver.SMG.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.SMG.PhaseRound));
+            entityStates.Add(typeof(SkillStates.Driver.SMG.SuppressiveFire));
+
+            entityStates.Add(typeof(SkillStates.Driver.Revolver.Shoot));
+            entityStates.Add(typeof(SkillStates.Driver.Revolver.AimLightsOut));
+            entityStates.Add(typeof(SkillStates.Driver.Revolver.AimLightsOutReset));
+            entityStates.Add(typeof(SkillStates.Driver.Revolver.LightsOut));
+            entityStates.Add(typeof(SkillStates.Driver.Revolver.LightsOutReset));
+
+            entityStates.Add(typeof(SkillStates.Driver.SupplyDrop.AimSupplyDrop));
+            entityStates.Add(typeof(SkillStates.Driver.SupplyDrop.FireSupplyDrop));
+            entityStates.Add(typeof(SkillStates.Driver.SupplyDrop.CancelSupplyDrop));
+
+            entityStates.Add(typeof(SkillStates.Driver.SupplyDrop.Nerfed.AimCrapDrop));
+            entityStates.Add(typeof(SkillStates.Driver.SupplyDrop.Nerfed.FireCrapDrop));
+            entityStates.Add(typeof(SkillStates.Driver.SupplyDrop.Nerfed.CancelCrapDrop));
+
+            entityStates.Add(typeof(SkillStates.Driver.Skateboard.Start));
+            entityStates.Add(typeof(SkillStates.Driver.Skateboard.Idle));
+            entityStates.Add(typeof(SkillStates.Driver.Skateboard.Stop));
+
+            entityStates.Add(typeof(SkillStates.Emote.BaseEmote));
+            entityStates.Add(typeof(SkillStates.Emote.Rest));
+            entityStates.Add(typeof(SkillStates.Emote.Taunt));
+            entityStates.Add(typeof(SkillStates.Emote.Dance));
+
+            entityStates.Add(typeof(SkillStates.FuckMyAss));
         }
     }
 }

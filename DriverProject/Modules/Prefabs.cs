@@ -2,6 +2,7 @@
 using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RobDriver.Modules
 {
@@ -13,10 +14,10 @@ namespace RobDriver.Modules
         // cache this just to give our ragdolls the same physic material as vanilla stuff
         private static PhysicMaterial ragdollMaterial;
 
-        internal static List<SurvivorDef> survivorDefinitions = new List<SurvivorDef>();
-        internal static List<GameObject> bodyPrefabs = new List<GameObject>();
-        internal static List<GameObject> masterPrefabs = new List<GameObject>();
-        internal static List<GameObject> projectilePrefabs = new List<GameObject>();
+        internal static List<SurvivorDef> survivorDefinitions = [];
+        internal static List<GameObject> bodyPrefabs = [];
+        internal static List<GameObject> masterPrefabs = [];
+        internal static List<GameObject> projectilePrefabs = [];
 
         internal static void RegisterNewSurvivor(GameObject bodyPrefab, GameObject displayPrefab, string namePrefix, UnlockableDef unlockableDef)
         {
@@ -39,19 +40,108 @@ namespace RobDriver.Modules
             survivorDefinitions.Add(survivorDef);
         }
 
-        internal static void RegisterNewSurvivor(GameObject bodyPrefab, GameObject displayPrefab, string namePrefix) { RegisterNewSurvivor(bodyPrefab, displayPrefab, namePrefix, null); }
-
-        internal static GameObject CreateDisplayPrefab(string modelName, GameObject prefab)
+        internal static GameObject CreateDisplayPrefab(string modelName, GameObject bodyPrefab)
         {
             GameObject newPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody"), modelName + "Prefab");
 
             GameObject model = CreateModel(newPrefab, modelName);
-            Transform modelBaseTransform = SetupModel(newPrefab, model.transform);
+            SetupModel(newPrefab, model.transform);
+            CustomRendererInfo[] customRendererInfo =
+            [
+                new CustomRendererInfo
+                {
+                    childName = "Model",
+                    material = Assets.mainMat,
+                    ignoreOverlays = false
+                },
+                new CustomRendererInfo
+                {
+                    childName = "KnifeModel",
+                    material = Config.enableRevengence.Value ? Assets.nemKatanaMat : Assets.knifeMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "ButtonModel",
+                    material = Assets.buttonMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "SyringeModel",
+                    material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Syringe/matSyringe.mat").WaitForCompletion()
+                },
+                new CustomRendererInfo
+                {
+                    childName = "MedkitModel",
+                    material = Assets.nemKatanaMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "SluggerClothModelL",
+                    material = Assets.clothMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "SluggerClothModelR",
+                    material = Assets.clothMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "TieModel",
+                    material = Assets.tieMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "SkateboardModel",
+                    material = Assets.skateboardMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "SkateboardBackModel",
+                    material = Assets.skateboardMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "PistolModel",
+                    material = Assets.pistolMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "TimbsModelL",
+                    material = Assets.timbsMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "TimbsModelR",
+                    material = Assets.timbsMat
+                }
+            ];
 
-            model.AddComponent<CharacterModel>().baseRendererInfos = prefab.GetComponentInChildren<CharacterModel>().baseRendererInfos;
-            model.AddComponent<Modules.Components.DriverCSS>();
+            CharacterModel characterModel = model.AddComponent<CharacterModel>();
+            SetupCharacterModel(newPrefab, characterModel, customRendererInfo);
 
-            return model.gameObject;
+            var childLocator = characterModel.GetComponent<ChildLocator>();
+            childLocator.FindChildGameObject("PistolModel").SetActive(true);
+            childLocator.FindChildGameObject("KnifeModel").SetActive(false);
+            childLocator.FindChildGameObject("ButtonModel").SetActive(false);
+            childLocator.FindChildGameObject("SyringeModel").SetActive(false);
+            childLocator.FindChildGameObject("AltWeaponModel").SetActive(false);
+
+            childLocator.FindChildGameObject("SluggerCloth").SetActive(false);
+            childLocator.FindChildGameObject("SluggerClothModelL").SetActive(true);
+            childLocator.FindChildGameObject("SluggerClothModelR").SetActive(true);
+
+            childLocator.FindChildGameObject("Tie").SetActive(false);
+            childLocator.FindChildGameObject("TieModel").SetActive(true);
+
+            childLocator.FindChildGameObject("SkateboardModel").SetActive(false);
+            childLocator.FindChildGameObject("SkateboardBackModel").SetActive(false);
+
+            childLocator.FindChildGameObject("TimbsModelL").SetActive(Config.cursed.Value);
+            childLocator.FindChildGameObject("TimbsModelR").SetActive(Config.cursed.Value);
+
+            model.AddComponent<Components.DriverCSS>().bodyPrefab = bodyPrefab;
+
+            return model;
         }
 
         internal static GameObject CreatePrefab(string bodyName, string modelName, BodyInfo bodyInfo)
@@ -184,32 +274,31 @@ namespace RobDriver.Modules
             return GameObject.Instantiate(Modules.Assets.mainAssetBundle.LoadAsset<GameObject>(modelName));
         }
 
-        internal static void SetupCharacterModel(GameObject prefab, CustomRendererInfo[] rendererInfo, int mainRendererIndex)
+        internal static void SetupCharacterModel(GameObject prefab, CharacterModel characterModel, CustomRendererInfo[] rendererInfo)
         {
-            CharacterModel characterModel = prefab.GetComponent<ModelLocator>().modelTransform.gameObject.AddComponent<CharacterModel>();
             ChildLocator childLocator = characterModel.GetComponent<ChildLocator>();
             characterModel.body = prefab.GetComponent<CharacterBody>();
 
-            List<CharacterModel.RendererInfo> rendererInfos = new List<CharacterModel.RendererInfo>();
+            List<CharacterModel.RendererInfo> rendererInfos = [];
 
             for (int i = 0; i < rendererInfo.Length; i++)
             {
                 rendererInfos.Add(new CharacterModel.RendererInfo
                 {
-                    renderer = childLocator.FindChild(rendererInfo[i].childName).GetComponent<Renderer>(),
+                    renderer = childLocator.FindChildComponent<Renderer>(rendererInfo[i].childName),
                     defaultMaterial = rendererInfo[i].material,
                     ignoreOverlays = rendererInfo[i].ignoreOverlays,
                     defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On
                 });
             }
 
-            characterModel.baseRendererInfos = rendererInfos.ToArray();
+            characterModel.baseRendererInfos = [.. rendererInfos];
 
             characterModel.autoPopulateLightInfos = true;
             characterModel.invisibilityCount = 0;
             characterModel.temporaryOverlays = [];
 
-            characterModel.mainSkinnedMeshRenderer = characterModel.baseRendererInfos[mainRendererIndex].renderer.GetComponent<SkinnedMeshRenderer>();
+            characterModel.mainSkinnedMeshRenderer = characterModel.baseRendererInfos[0].renderer.GetComponent<SkinnedMeshRenderer>();
         }
         #endregion
 
@@ -274,10 +363,10 @@ namespace RobDriver.Modules
             mainHurtbox.indexInGroup = 0;
             mainHurtbox.isSniperTarget = true;
 
-            hurtBoxGroup.hurtBoxes = new HurtBox[]
-            {
+            hurtBoxGroup.hurtBoxes =
+            [
                 mainHurtbox
-            };
+            ];
 
             hurtBoxGroup.mainHurtBox = mainHurtbox;
             hurtBoxGroup.bullseyeCount = 1;
@@ -329,11 +418,11 @@ namespace RobDriver.Modules
             aimAnimator.inputBank = prefab.GetComponent<InputBankTest>();
         }
 
-        internal static void SetupHitbox(GameObject prefab, Transform[] hitboxTransforms, string hitboxName)
+        internal static void SetupHitbox(GameObject prefab, string hitboxGroupName, params Transform[] hitboxTransforms)
         {
             HitBoxGroup hitBoxGroup = prefab.AddComponent<HitBoxGroup>();
 
-            List<HitBox> hitboxes = new List<HitBox>();
+            List<HitBox> hitboxes = [];
 
             foreach (Transform i in hitboxTransforms)
             {
@@ -342,9 +431,9 @@ namespace RobDriver.Modules
                 hitboxes.Add(hitBox);
             }
 
-            hitBoxGroup.hitBoxes = hitboxes.ToArray();
+            hitBoxGroup.hitBoxes = [.. hitboxes];
 
-            hitBoxGroup.groupName = hitboxName;
+            hitBoxGroup.groupName = hitboxGroupName;
         }
         #endregion
     }

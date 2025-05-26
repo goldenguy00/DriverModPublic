@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{FE3FA7C5-9E89-40FE-8C7C-97CE0994E519}" SchemaVersion="97">
+<WwiseDocument Type="WorkUnit" ID="{FE3FA7C5-9E89-40FE-8C7C-97CE0994E519}" SchemaVersion="119">
 	<AudioObjects>
 		<WorkUnit Name="Default Work Unit" ID="{FE3FA7C5-9E89-40FE-8C7C-97CE0994E519}" PersistMode="Standalone">
+			<PropertyList>
+				<Property Name="Inclusion" Type="bool">
+					<ValueList>
+						<Value>False</Value>
+					</ValueList>
+				</Property>
+			</PropertyList>
 			<ChildrenList>
 				<ActorMixer Name="SFX" ID="{8FFB0018-B86F-441D-8E4C-DE0ABDB44B34}" ShortID="682859335">
 					<PropertyList>
@@ -17,32 +24,6 @@
 							<ValueList>
 								<Value>1</Value>
 							</ValueList>
-							<RTPCList>
-								<RTPC Name="" ID="{2CCF60F9-1C14-450B-A829-781B191F45B3}" ShortID="940786589">
-									<ReferenceList>
-										<Reference Name="ControlInput">
-											<ObjectRef Name="Volume_SFX" ID="{4FF50BF4-04DE-43F4-BCE1-1243931798A7}" WorkUnitID="{86A48E9A-08D2-42C8-A690-503176424BE7}"/>
-										</Reference>
-									</ReferenceList>
-									<Curve Name="" ID="{612E1B93-527F-4793-AEDF-3189E4B84C69}">
-										<PropertyList>
-											<Property Name="Flags" Type="int32" Value="3"/>
-										</PropertyList>
-										<PointList>
-											<Point>
-												<XPos>0</XPos>
-												<YPos>-200</YPos>
-												<Flags>5</Flags>
-											</Point>
-											<Point>
-												<XPos>100</XPos>
-												<YPos>0</YPos>
-												<Flags>37</Flags>
-											</Point>
-										</PointList>
-									</Curve>
-								</RTPC>
-							</RTPCList>
 						</Property>
 					</PropertyList>
 					<ReferenceList>
@@ -5383,32 +5364,6 @@
 									<ValueList>
 										<Value>-8</Value>
 									</ValueList>
-									<RTPCList>
-										<RTPC Name="" ID="{10CF1F15-5656-4B06-A9AD-5BD11D28FD2C}" ShortID="496598392">
-											<ReferenceList>
-												<Reference Name="ControlInput">
-													<ObjectRef Name="Driver_SkateSpeed" ID="{DF1ADB74-2BB5-4085-9CCA-1C807F71C2BB}" WorkUnitID="{86A48E9A-08D2-42C8-A690-503176424BE7}"/>
-												</Reference>
-											</ReferenceList>
-											<Curve Name="" ID="{CF66377E-32BD-42BE-9C25-8A4A68586136}">
-												<PropertyList>
-													<Property Name="Flags" Type="int32" Value="3"/>
-												</PropertyList>
-												<PointList>
-													<Point>
-														<XPos>0</XPos>
-														<YPos>-10.75638</YPos>
-														<Flags>5</Flags>
-													</Point>
-													<Point>
-														<XPos>100</XPos>
-														<YPos>0</YPos>
-														<Flags>37</Flags>
-													</Point>
-												</PointList>
-											</Curve>
-										</RTPC>
-									</RTPCList>
 								</Property>
 							</PropertyList>
 							<ReferenceList>
@@ -5428,6 +5383,45 @@
 									</MediaIDList>
 								</AudioFileSource>
 							</ChildrenList>
+							<ObjectLists>
+								<ObjectList Name="RTPC">
+									<Reference>
+										<Local>
+											<RTPC Name="" ID="{10CF1F15-5656-4B06-A9AD-5BD11D28FD2C}" ShortID="496598392">
+												<PropertyList>
+													<Property Name="PropertyName" Type="string" Value="Volume"/>
+												</PropertyList>
+												<ReferenceList>
+													<Reference Name="ControlInput">
+														<ObjectRef Name="Driver_SkateSpeed" ID="{DF1ADB74-2BB5-4085-9CCA-1C807F71C2BB}" WorkUnitID="{86A48E9A-08D2-42C8-A690-503176424BE7}"/>
+													</Reference>
+													<Reference Name="Curve">
+														<Custom>
+															<Curve Name="" ID="{CF66377E-32BD-42BE-9C25-8A4A68586136}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="3"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>-10.75638</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>0</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</Custom>
+													</Reference>
+												</ReferenceList>
+											</RTPC>
+										</Local>
+									</Reference>
+								</ObjectList>
+							</ObjectLists>
 							<ActiveSourceList>
 								<ActiveSource Name="sfx_driver_skateboard_roll" ID="{5FA070BF-62F0-431D-B15E-942DB9483A61}" Platform="Linked"/>
 							</ActiveSourceList>
@@ -5455,6 +5449,45 @@
 							</ActiveSourceList>
 						</Sound>
 					</ChildrenList>
+					<ObjectLists>
+						<ObjectList Name="RTPC">
+							<Reference>
+								<Local>
+									<RTPC Name="" ID="{2CCF60F9-1C14-450B-A829-781B191F45B3}" ShortID="940786589">
+										<PropertyList>
+											<Property Name="PropertyName" Type="string" Value="Volume"/>
+										</PropertyList>
+										<ReferenceList>
+											<Reference Name="ControlInput">
+												<ObjectRef Name="Volume_SFX" ID="{4FF50BF4-04DE-43F4-BCE1-1243931798A7}" WorkUnitID="{86A48E9A-08D2-42C8-A690-503176424BE7}"/>
+											</Reference>
+											<Reference Name="Curve">
+												<Custom>
+													<Curve Name="" ID="{612E1B93-527F-4793-AEDF-3189E4B84C69}">
+														<PropertyList>
+															<Property Name="Flags" Type="int32" Value="3"/>
+														</PropertyList>
+														<PointList>
+															<Point>
+																<XPos>0</XPos>
+																<YPos>-200</YPos>
+																<Flags>5</Flags>
+															</Point>
+															<Point>
+																<XPos>100</XPos>
+																<YPos>0</YPos>
+																<Flags>37</Flags>
+															</Point>
+														</PointList>
+													</Curve>
+												</Custom>
+											</Reference>
+										</ReferenceList>
+									</RTPC>
+								</Local>
+							</Reference>
+						</ObjectList>
+					</ObjectLists>
 				</ActorMixer>
 			</ChildrenList>
 		</WorkUnit>

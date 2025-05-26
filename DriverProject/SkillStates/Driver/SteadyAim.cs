@@ -6,465 +6,357 @@ using static RoR2.CameraTargetParams;
 using UnityEngine.Networking;
 using RoR2.HudOverlay;
 using UnityEngine.AddressableAssets;
+using RobDriver.SkillStates.BaseStates;
+using RobDriver.Modules.Components.UI;
+using RoR2.UI;
 
 namespace RobDriver.SkillStates.Driver
 {
-    public class SteadyAim : BaseDriverSkillState
+    public class SteadyAim : BaseDriverShootState
     {
-        public float baseShotDuration = 0.3f;
-        public float baseChargeDuration = 0.15f;
+        public static float _damageCoefficient = 5f;
 
-        public static float damageCoefficient = 5f;
-        public static float recoil = 0.5f;
+        private static float baseShotDuration = 0.3f;
+        private static float baseChargeDuration = 0.2f;
 
-        protected bool lastCharge;
+        private static GameObject gunLight = Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("GunLight");
+        internal static GameObject weakPoint = Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion();
 
-        public bool skipAnim = false;
+        protected override string showProp => "PistolSight";
+        protected override float damageCoefficient => this.wasCharged ? SteadyAim._damageCoefficient : Shoot._damageCoefficient;
+        protected override float animationDuration => 1.5f * (SteadyAim.baseShotDuration / this.attackSpeedStat);
+        protected override float maxBulletSpread => this.wasCharged ? 1.5f : 0.35f;
+        protected override string shootSoundString
+        {
+            get
+            {
+                string soundString = this.baseShootSound;
 
+                if (this.isCrit)
+                    soundString += "_critical";
+                else if (this.wasCharged)
+                    soundString += "_charged";
+
+                return soundString;
+            }
+        }
+
+        protected override string animationString
+        {
+            get
+            {
+                string animString = this.baseShootAnimation;
+
+                if (this.wasCharged)
+                    animString += "Charged";
+                if (this.isCrit)
+                    animString += "Critical";
+
+                return animString;
+            }
+        }
+
+        protected override DamageTypeCombo damageType => this.iDrive.DamageType;
+        protected override GameObject tracerPrefab => this.isCrit ? Shoot.critTracerEffectPrefab : Shoot.tracerEffectPrefab;
+        protected override GameObject muzzleFlashPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab;
+        protected override GameObject hitEffectPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab;
         protected virtual bool isPiercing => false;
-        protected virtual float _damageCoefficient => SteadyAim.damageCoefficient;
-        protected virtual GameObject tracerPrefab => this.isCrit ? Shoot.critTracerEffectPrefab : Shoot.tracerEffectPrefab;
 
+        public bool skipAnim;
         public CameraParamsOverrideHandle camParamsOverrideHandle;
-        private OverlayController overlayController;
-        private float shotCooldown;
+
+        protected bool wasCharged;
+        protected string baseShootSound = "sfx_driver_pistol_shoot";
+        protected string baseShootAnimation = "SteadyAimFire";
+        protected string enterAnimation = "SteadyAim";
+        protected string exitAnimation = "SteadyAimEnd";
+
+        private bool isCharged;
         private float chargeTimer;
         private float chargeDuration;
-        private bool isCharged;
-        private bool isCrit;
-        private int cachedShots;
         private float cachedShotTimer;
-        private bool _autoFocus;
+        private uint cachedShots;
+        private float shotCooldown;
         private bool autoFocus;
-        private bool cancelling;
-        private bool adaptiveFocus;
-        private bool reloading;
-        private GameObject lightEffectInstance;
-        private Animator animator;
-
         private bool jamFlag; // fired shortly after entering state
+
+        private OverlayController overlayController;
+        private GameObject lightEffectInstance;
+        private CrosshairUtils.OverrideRequest crosshairOverrideRequest;
 
         public override void OnEnter()
         {
+            base.procCoefficient = 1f;
+            base.bulletCount = 1;
+            base.dropShells = 0;
+            base.ammoConsumption = 1f;
+            base.useAttackSpeed = false;
+
+            base.hitMask = LayerIndex.CommonMasks.bullet;
+            base.bulletFalloff = BulletAttack.FalloffModel.DefaultBullet;
+            base.stopperMask = this.isPiercing ? LayerIndex.world.mask : LayerIndex.CommonMasks.bullet;
+            base.damageColorIndex = DamageColorIndex.Default;
+
+            base.bulletRange = 2000f;
+            base.bulletThiccness = 1f;
+            base.bulletForce = 100f;
+            base.selfForce = 0f;
+
+            // hacky shit but w/e
+            base.baseDuration = float.PositiveInfinity;
+            base.earlyExitFraction = 1f;
+            base.fireDelayFraction = 0.05f;
+
+            base.visualRecoilAmplitude = 1f;
+            base.visualRecoilVertical = 2f;
+            base.visualRecoilHorizontal = 0.5f;
+            base.spreadBloom = 1.25f;
+            base.aimTimer = 2f;
+
+            base.aimPitchString = "SteadyAimPitch";
+            base.playbackRateString = "Action.playbackRate";
+            base.muzzleString = "PistolMuzzle";
+
             base.OnEnter();
-            this.animator = this.GetModelAnimator();
-            if (!this.camParamsOverrideHandle.isValid) this.camParamsOverrideHandle = Modules.CameraParams.OverrideCameraParams(base.cameraTargetParams, DriverCameraParams.AIM_PISTOL, 0.5f);
 
-            base.PlayAnimation("AimPitch", "SteadyAimPitch");
+            if (NetworkServer.active) 
+                this.characterBody.AddBuff(RoR2Content.Buffs.Slow50);
 
-            if (NetworkServer.active) this.characterBody.AddBuff(RoR2Content.Buffs.Slow50);
+            this.autoFocus = Config.autoFocus.Value;
+            this.chargeDuration = SteadyAim.baseChargeDuration / this.attackSpeedStat;
+            if (Config.adaptiveFocus.Value && this.chargeDuration <= 0.1f)
+                this.autoFocus = true;
 
-            this.characterBody._defaultCrosshairPrefab = Modules.Assets.pistolAimCrosshairPrefab;
-            this._autoFocus = Modules.Config.autoFocus.Value;
-            this.adaptiveFocus = Modules.Config.adaptiveFocus.Value;
-
-            this.chargeDuration = this.baseChargeDuration / this.attackSpeedStat;
-            this.autoFocus = false;
-            if (this.adaptiveFocus && this.chargeDuration <= 0.1f) this.autoFocus = true;
-            if (this._autoFocus) this.autoFocus = true;
-
-            if (!this.skipAnim)
-            {
-                this.PlayAnim();
-                Util.PlaySound("sfx_driver_aim_foley", this.gameObject);
-            }
-
-            this.FindModelChild("PistolSight").gameObject.SetActive(true);
-
+            this.crosshairOverrideRequest = CrosshairUtils.RequestOverrideForBody(base.characterBody, Modules.Assets.pistolAimCrosshairPrefab, CrosshairUtils.OverridePriority.PrioritySkill);
             this.overlayController = HudOverlayManager.AddOverlay(this.gameObject, new OverlayCreationParams
             {
                 prefab = Modules.Assets.headshotOverlay,
                 childLocatorEntry = "ScopeContainer"
             });
 
-            if(!Config.defaultPistolAnims.Value) this.animator.SetLayerWeight(this.animator.GetLayerIndex("AltPistol, Override"), 1f);
-            else this.animator.SetLayerWeight(this.animator.GetLayerIndex("AltPistol, Override"), 0f);
-
-            this.lightEffectInstance = GameObject.Instantiate(Modules.Assets.mainAssetBundle.LoadAsset<GameObject>("GunLight"));
+            this.lightEffectInstance = GameObject.Instantiate(gunLight);
         }
 
-        protected virtual void PlayAnim()
+        protected override void PlayEntryAnimation()
         {
-            base.PlayAnimation("Gesture, Override", "SteadyAim", "Action.playbackRate", 0.25f);
-        }
+            var animator = this.GetModelAnimator();
+            var layerIndex = animator.GetLayerIndex("AltPistol, Override");
+            animator.SetLayerWeight(layerIndex, Config.defaultPistolAnims.Value ? 0f : 1f);
 
-        protected virtual void PlayExitAnim()
-        {
-            base.PlayAnimation("Gesture, Override", "SteadyAimEnd", "Action.playbackRate", 0.2f);
-        }
-
-        private void UpdateLightEffect()
-        {
-            Ray ray = this.GetAimRay();
-            RaycastHit raycastHit;
-            if (Physics.Raycast(ray.origin, ray.direction, out raycastHit, Shoot.range, LayerIndex.CommonMasks.bullet))
+            base.PlayAnimation("AimPitch", "SteadyAimPitch");
+            if (!this.skipAnim)
             {
-                this.lightEffectInstance.SetActive(true);
-                this.lightEffectInstance.transform.position = raycastHit.point + (ray.direction * -0.3f);
+                this.camParamsOverrideHandle = CameraParams.OverrideCameraParams(base.cameraTargetParams, DriverCameraParams.AIM_PISTOL, 0.5f);
+                base.PlayAnimation("Gesture, Override", this.enterAnimation, this.playbackRateString, 0.25f);
+                Util.PlaySound("sfx_driver_aim_foley", this.gameObject);
             }
-            else this.lightEffectInstance.SetActive(false);
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            this.chargeDuration = this.baseChargeDuration / this.attackSpeedStat;
-            this.autoFocus = false;
-            if (this.adaptiveFocus && this.chargeDuration <= 0.1f) this.autoFocus = true;
-            if (this._autoFocus) this.autoFocus = true;
+
+            if (this.cancelling)
+                return;
+
+            this.UpdateStats();
+            this.UpdateLightEffects();
+            this.UpdateCharge();
+
+
+            if (!this.inputBank.skill2.down)
+            {
+                if (base.isAuthority)
+                {
+                    this.outer.SetNextStateToMain();
+
+                    // add jam buildup
+                    if (this.jamFlag && this.shotCooldown > 0f)
+                    {
+                        if (this.iDrive.AddJamBuildup())
+                            this.outer.SetNextState(new JammedGun());
+                    }
+                }
+            }
+            else if (this.inputBank.skill1.down && this.shotCooldown <= 0f)
+            {
+                if (this.iDrive.weaponTimer <= 0f && this.iDrive.maxWeaponTimer > 0f)
+                {
+                    if (base.isAuthority)
+                        this.outer.SetNextState(new Reload());
+                }
+                else if (!this.autoFocus || this.skillLocator.secondary.stock == 0 || this.isCharged)
+                {
+                    this.FireBullet();
+                }
+            }
+
+            if (this.cachedShots > 0 && base.fixedAge >= this.cachedShotTimer)
+                this.FireCachedBullet();
+
+        }
+
+        private void UpdateStats()
+        {
+            this.characterBody.SetAimTimer(0.2f);
+            this.chargeDuration = SteadyAim.baseChargeDuration / this.attackSpeedStat;
+            this.autoFocus = Config.autoFocus.Value;
+
+            if (Config.adaptiveFocus.Value && this.chargeDuration <= 0.1f)
+                this.autoFocus = true;
+
             this.shotCooldown -= Time.fixedDeltaTime;
-            this.cachedShotTimer -= Time.fixedDeltaTime;
             this.characterBody.outOfCombatStopwatch = 0f;
             this.characterBody.isSprinting = false;
-            base.characterBody.SetAimTimer(0.2f);
             this.attackSpeedStat = this.characterBody.attackSpeed;
             this.damageStat = this.characterBody.damage;
             this.critStat = this.characterBody.crit;
+        }
 
-            this.UpdateLightEffect();
-
-            if (this.iDrive && this.iDrive.weaponDef != this.cachedWeaponDef)
+        private void UpdateLightEffects()
+        {
+            Ray ray = this.GetAimRay();
+            if (Physics.Raycast(ray.origin, ray.direction, out var raycastHit, this.bulletRange, LayerIndex.CommonMasks.bullet))
             {
-                this.cancelling = true;
-                this.outer.SetNextStateToMain();
-                return;
+                this.lightEffectInstance.SetActive(true);
+                this.lightEffectInstance.transform.position = raycastHit.point + (ray.direction * -0.3f);
             }
-
-            if (this.reloading && this.shotCooldown <= 0f)
+            else
             {
-                this.reloading = false;
-                this.iDrive.FinishReload();
+                this.lightEffectInstance.SetActive(false);
             }
+        }
 
+        private void UpdateCharge()
+        {
             if (this.skillLocator.secondary.stock < 1)
             {
                 this.isCharged = false;
                 this.chargeTimer = 0f;
             }
-            else
+            else if (this.shotCooldown <= 0f)
             {
-                if (this.shotCooldown <= 0f) this.chargeTimer += Time.fixedDeltaTime;
+                this.chargeTimer += Time.fixedDeltaTime;
             }
 
-            if (!this.isCharged)
+            if (!this.isCharged && this.chargeTimer >= this.chargeDuration)
             {
-                if (this.chargeTimer >= this.chargeDuration)
-                {
-                    this.isCharged = true;
-                    Util.PlaySound("sfx_driver_pistol_ready", this.gameObject);
-                }
-            }
-                
-            if (this.iDrive.weaponTimer <= 0f && this.iDrive.maxWeaponTimer > 0)
-            {
-                if (this.shotCooldown <= 0f && this.inputBank.skill1.down && base.isAuthority)
-                {
-                    this.outer.SetNextState(new ReloadPistol
-                    {
-                        animString = "SteadyAimReload",
-                        camParamsOverrideHandle = this.camParamsOverrideHandle,
-                        aiming = true
-                    });
-                    this.reloading = true;
-                    /*this.shotCooldown = 2.4f / this.attackSpeedStat;
-                    this.reloading = true;
-                    base.PlayCrossfade("Gesture, Override", "SteadyAimReload", "Action.playbackRate", this.shotCooldown, 0.1f);
-                    Util.PlaySound("sfx_driver_reload_01", this.gameObject);*/
-                }
-            }
-            else if (shotCooldown <= 0f)
-            {
-                if (this.autoFocus)
-                {
-                    if (this.inputBank.skill1.down)
-                    {
-                        if (this.skillLocator.secondary.stock > 0)
-                        {
-                            if (this.isCharged)
-                            {
-                                this.isCrit = this.RollCrit();
-                                this.Fire();
-                            }
-                        }
-                        else
-                        {
-                            this.isCrit = this.RollCrit();
-                            this.Fire();
-                        }
-                    }
-                }
-                else
-                {
-                    if (this.inputBank.skill1.down)
-                    {
-                        this.isCrit = this.RollCrit();
-                        this.Fire();
-                    }
-                }
+                this.isCharged = true;
+                Util.PlaySound("sfx_driver_pistol_ready", this.gameObject);
             }
 
-            if (this.cachedShots > 0 && base.isAuthority)
-            {
-                if (this.cachedShotTimer <= 0f)
-                {
-                    this.Fire2(this.cachedShots);
-                    this.cachedShots = 0;
-                }
-            }
-
-            if (!this.inputBank.skill2.down && base.isAuthority && !this.reloading)
-            {
-                if (this.jamFlag && this.shotCooldown > 0f)
-                {
-                    // add jam buildup
-                    if (this.iDrive)
-                    {
-                        if (iDrive.AddJamBuildup())
-                        {
-                            this.outer.SetNextState(new JammedGun());
-                            return;
-                        }
-                    }
-                }
-
-                this.outer.SetNextState(new WaitForReload());
-            }
-
-            if (this.iDrive)
-            {
-                if (this.skillLocator.secondary.stock < 1)
-                {
-                    this.iDrive.chargeValue = 0f;
-                    return;
-                }
-
-                float value = Util.Remap(this.chargeTimer, 0f, this.chargeDuration, 0f, 1f);
-                this.iDrive.chargeValue = value;
-            }
+            this.iDrive.chargeValue = Util.Remap(this.chargeTimer, 0f, this.chargeDuration, 0f, 1f);
         }
 
-        protected virtual void PlayShootAnim(bool wasCharged, bool wasCrit, float speed)
+        protected override void FireBullet()
         {
-            string animString = "SteadyAimFire";
+            base.PlayAnimation("Gesture, Override", this.animationString, this.playbackRateString, this.animationDuration);
 
-            if (wasCharged)
-            {
-                if (wasCrit) animString = "SteadyAimFireChargedCritical";
-                else animString = "SteadyAimFireCharged";
-            }
-            else
-            {
-                if (wasCrit) animString = "SteadyAimFireCritical";
-            }
-
-            base.PlayAnimation("Gesture, Override", animString, "Action.playbackRate", speed);
-        }
-
-        protected virtual string GetSoundString(bool crit, bool charged)
-        {
-            string soundString = "sfx_driver_pistol_shoot";
-            if (crit) soundString = "sfx_driver_pistol_shoot_critical";
-            if (charged) soundString = "sfx_driver_pistol_shoot_charged";
-            return soundString;
-        }
-
-        public virtual void Fire()
-        {
-            if (this.iDrive.maxWeaponTimer > 0) this.iDrive.ConsumeAmmo(1f, false);
-
-            if (this.iDrive.shurikenComponent) this.iDrive.shurikenComponent.OnSkillActivated(base.skillLocator.primary);
-
-            if (base.fixedAge <= 0.25f) this.jamFlag = true;
-
-            bool wasCharged = this.isCharged;
-
-            this.shotCooldown = this.baseShotDuration / this.attackSpeedStat;
-            this.chargeTimer = 0f;
+            this.shotCooldown = SteadyAim.baseShotDuration / this.attackSpeedStat;
+            this.wasCharged = this.isCharged;
             this.isCharged = false;
+            this.chargeTimer = 0f;
 
-            EffectManager.SimpleMuzzleFlash(EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab, base.gameObject, "PistolMuzzle", false);
+            if (this.wasCharged && NetworkServer.active)
+            {
+                var itemCount = this.characterBody.inventory ? this.characterBody.inventory.GetItemCount(DLC2Content.Items.IncreasePrimaryDamage) : 0;
+                if (itemCount > 0)
+                    this.characterBody.AddIncreasePrimaryDamageStack();
+            }
 
-            
+            this.isCrit = this.RollCrit();
             if (this.isCrit)
             {
+                this.cachedShotTimer = base.fixedAge + base.fireDelayFraction;
                 this.cachedShots++;
-                this.cachedShotTimer = 0.05f;
             }
 
-            if (wasCharged)
-            {
-                base.characterBody.AddSpreadBloom(1.5f);
-            }
-            else
-            {
-                base.characterBody.AddSpreadBloom(0.35f);
-            }
+            if (base.fixedAge <= 0.25f)
+                this.jamFlag = true;
 
-            Util.PlaySound(this.GetSoundString(this.isCrit, wasCharged), this.gameObject);
-
-            this.PlayShootAnim(wasCharged, this.isCrit, this.shotCooldown * 1.5f);
-
-            if (base.isAuthority)
-            {
-                Ray aimRay = base.GetAimRay();
-                base.AddRecoil2(-1f * SteadyAim.recoil, -2f * SteadyAim.recoil, -0.5f * SteadyAim.recoil, 0.5f * SteadyAim.recoil);
-
-                float dmg = Shoot.damageCoefficient;
-
-                if (wasCharged)
-                {
-                    dmg = this._damageCoefficient;
-
-                    this.skillLocator.secondary.DeductStock(1);
-                }
-
-                this.lastCharge = wasCharged;
-
-                var falloffModel = this.lastCharge ? BulletAttack.FalloffModel.None : BulletAttack.FalloffModel.DefaultBullet;
-                var stopperMask = this.isPiercing ? LayerIndex.world.mask : LayerIndex.CommonMasks.bullet;
-
-                var bulletAttack = new BulletAttack
-                {
-                    bulletCount = 1,
-                    aimVector = aimRay.direction,
-                    origin = aimRay.origin,
-                    damage = dmg * this.damageStat,
-                    damageColorIndex = DamageColorIndex.Default,
-                    damageType = iDrive.DamageType,
-                    falloffModel = falloffModel,
-                    maxDistance = Shoot.range,
-                    force = Shoot.force,
-                    hitMask = LayerIndex.CommonMasks.bullet,
-                    minSpread = 0f,
-                    maxSpread = 0f,
-                    isCrit = isCrit,
-                    owner = base.gameObject,
-                    muzzleName = "PistolMuzzle",
-                    smartCollision = true,
-                    procChainMask = default,
-                    procCoefficient = Shoot.procCoefficient,
-                    radius = 1f,
-                    sniper = false,
-                    stopperMask = stopperMask,
-                    weapon = null,
-                    tracerEffectPrefab = this.tracerPrefab,
-                    spreadPitchScale = 0f,
-                    spreadYawScale = 0f,
-                    queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                    hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
-                };
-                bulletAttack.damageType.damageSource = DamageSource.Secondary;
-                bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
-                {
-                    if (BulletAttack.IsSniperTargetHit(hitInfo))
-                    {
-                        if (this.iDrive.passive.isPistolOnly) damageInfo.damage *= 2f;
-                        else if (this.iDrive.passive.isBullets) damageInfo.damage *= 1.5f;
-                        else damageInfo.damage *= 1.25f;
-                        damageInfo.damageColorIndex = DamageColorIndex.Sniper;
-
-                        if (wasCharged)
-                        {
-                            EffectData effectData = new EffectData
-                            {
-                                origin = hitInfo.point,
-                                rotation = Quaternion.LookRotation(-hitInfo.direction)
-                            };
-
-                            effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
-                            EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
-                            Util.PlaySound("sfx_driver_headshot", base.gameObject);
-                            hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
-                        }
-                    }
-                };
-
-                bulletAttack.Fire();
-            }
+            base.FireBullet();
         }
 
-        public void Fire2(int bulletCount)
+        protected void FireCachedBullet()
         {
-            // this is literally the worst POSSIBLE way to do this.
-            // FUCK!!
+            this.shotCooldown = SteadyAim.baseShotDuration / this.attackSpeedStat;
 
-            base.characterBody.AddSpreadBloom(1.15f);
-            EffectManager.SimpleMuzzleFlash(EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab, base.gameObject, "PistolMuzzle", false);
-
+            this.DropShells();
+            this.iDrive.ConsumeAmmo(this.ammoConsumption, this.useAttackSpeed);
             Util.PlaySound("sfx_driver_pistol_shoot_charged", base.gameObject);
+            EffectManager.SimpleMuzzleFlash(this.muzzleFlashPrefab, this.gameObject, this.muzzleString, false);
 
+            base.isCrit = RollCrit();
+            base.bulletCount = this.cachedShots;
+
+            // don't call the override here, sneaky hack
             if (base.isAuthority)
+                base.FireBulletAuthority();
+
+            base.bulletCount = 1;
+            this.cachedShots = 0;
+        }
+
+        protected override void FireBulletAuthority()
+        {
+            base.FireBulletAuthority();
+
+            if (this.iDrive.shurikenComponent)
+                this.iDrive.shurikenComponent.OnSkillActivated(base.skillLocator.primary);
+
+            if (this.wasCharged)
+                this.skillLocator.secondary.DeductStock(1);
+        }
+
+        protected override void AuthorityModifyBulletAttack(ref BulletAttack bulletAttack) 
+        {
+            base.AuthorityModifyBulletAttack(ref bulletAttack);
+
+            if (this.wasCharged)
             {
-                Ray aimRay = base.GetAimRay();
-                base.AddRecoil2(-1f * Shoot.recoil, -2f * Shoot.recoil, -0.5f * Shoot.recoil, 0.5f * Shoot.recoil);
-
-                float dmg = Shoot.damageCoefficient;
-
-                BulletAttack.FalloffModel falloffModel = BulletAttack.FalloffModel.DefaultBullet;
-
-                if (this.lastCharge)
-                {
-                    dmg = SteadyAim.damageCoefficient;
-                    falloffModel = BulletAttack.FalloffModel.None;
-                }
-
-                GameObject tracerPrefab = Shoot.critTracerEffectPrefab;
-
-                BulletAttack bulletAttack = new BulletAttack
-                {
-                    bulletCount = (uint)bulletCount,
-                    aimVector = aimRay.direction,
-                    origin = aimRay.origin,
-                    damage = dmg * this.damageStat,
-                    damageColorIndex = DamageColorIndex.Default,
-                    damageType = iDrive.DamageType,
-                    falloffModel = falloffModel,
-                    maxDistance = Shoot.range,
-                    force = Shoot.force,
-                    hitMask = LayerIndex.CommonMasks.bullet,
-                    minSpread = 0f,
-                    maxSpread = 0f,
-                    isCrit = isCrit,
-                    owner = base.gameObject,
-                    muzzleName = "PistolMuzzle",
-                    smartCollision = true,
-                    procChainMask = default(ProcChainMask),
-                    procCoefficient = Shoot.procCoefficient,
-                    radius = 1f,
-                    sniper = false,
-                    stopperMask = LayerIndex.CommonMasks.bullet,
-                    weapon = null,
-                    tracerEffectPrefab = tracerPrefab,
-                    spreadPitchScale = 0f,
-                    spreadYawScale = 0f,
-                    queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                    hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
-                };
+                bulletAttack.force = 600f;
+                bulletAttack.falloffModel = BulletAttack.FalloffModel.None;
                 bulletAttack.damageType.damageSource = DamageSource.Secondary;
-                bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
+            }
+
+            bulletAttack.modifyOutgoingDamageCallback = delegate (BulletAttack _bulletAttack, ref BulletAttack.BulletHit hitInfo, DamageInfo damageInfo)
+            {
+                if (BulletAttack.IsSniperTargetHit(hitInfo))
                 {
-                    if (BulletAttack.IsSniperTargetHit(hitInfo))
+                    damageInfo.damage *= this.iDrive.passive.isPistolOnly ? 2f : 1.5f;
+                    damageInfo.damageColorIndex = DamageColorIndex.Sniper;
+
+                    if (this.wasCharged)
                     {
-                        if (this.iDrive.passive.isPistolOnly) damageInfo.damage *= 2f;
-                        else damageInfo.damage *= 1.25f;
-                        damageInfo.damageColorIndex = DamageColorIndex.Sniper;
-
-                        if (this.lastCharge)
+                        EffectData effectData = new EffectData
                         {
-                            EffectData effectData = new EffectData
-                            {
-                                origin = hitInfo.point,
-                                rotation = Quaternion.LookRotation(-hitInfo.direction)
-                            };
+                            origin = hitInfo.point,
+                            rotation = Quaternion.LookRotation(-hitInfo.direction)
+                        };
 
-                            effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
-                            EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
-                            Util.PlaySound("sfx_driver_headshot", base.gameObject);
-                            hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
-                        }
+                        effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
+                        EffectManager.SpawnEffect(weakPoint, effectData, true);
+                        Util.PlaySound("sfx_driver_headshot", base.gameObject);
+                        hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<DriverHeadshotTracker>();
                     }
-                };
-                bulletAttack.Fire();
+                }
+            };
+        }
+
+        public override void ModifyNextState(EntityState nextState)
+        {
+            base.ModifyNextState(nextState);
+
+            if (nextState is Reload reloadState)
+            {
+                reloadState.camParamsOverrideHandle = this.camParamsOverrideHandle;
+                reloadState.steadyAimType = this.GetType();
+                reloadState.animString = "SteadyAimReload";
+                reloadState.aiming = true;
+            }
+            else if (this.camParamsOverrideHandle.isValid)
+            {
+                this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
             }
         }
 
@@ -472,15 +364,11 @@ namespace RobDriver.SkillStates.Driver
         {
             base.OnExit();
 
-            if (this.lightEffectInstance) Destroy(this.lightEffectInstance);
+            if (this.lightEffectInstance)
+                Destroy(this.lightEffectInstance);
 
-            if (this.iDrive) this.iDrive.chargeValue = 0f;
-
-            if (NetworkServer.active) this.characterBody.RemoveBuff(RoR2Content.Buffs.Slow50);
-
-            this.PlayExitAnim();
-            base.PlayAnimation("AimPitch", "AimPitch");
-            if (!this.reloading) this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
+            if (NetworkServer.active)
+                this.characterBody.RemoveBuff(RoR2Content.Buffs.Slow50);
 
             if (this.overlayController != null)
             {
@@ -488,9 +376,16 @@ namespace RobDriver.SkillStates.Driver
                 this.overlayController = null;
             }
 
-            if (!this.cancelling) this.characterBody._defaultCrosshairPrefab = this.iDrive.crosshairPrefab;
+            if (this.outer.destroying && this.camParamsOverrideHandle.isValid)
+                this.cameraTargetParams.RemoveParamsOverride(this.camParamsOverrideHandle);
 
-            this.FindModelChild("PistolSight").gameObject.SetActive(false);
+            if (!this.cancelling)
+                base.PlayAnimation("Gesture, Override", this.exitAnimation, this.playbackRateString, 0.2f);
+
+            base.PlayAnimation("AimPitch", "AimPitch");
+
+            this.crosshairOverrideRequest?.Dispose();
+            this.iDrive.chargeValue = 0f;
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

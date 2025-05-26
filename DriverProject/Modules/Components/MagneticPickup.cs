@@ -1,42 +1,20 @@
-﻿using RobDriver.Modules.Survivors;
-using RoR2;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RobDriver.Modules.Components
 {
     public class MagneticPickup : MonoBehaviour
     {
-        private const float ACCELERATION = 50f;
+        private const float ACCELERATION = 30f;
         private const float MAX_SPEED = 100f;
 
-        [Tooltip("The rigidbody to set the velocity of.")]
         public Rigidbody rigidbody;
+        public WeaponPickup weaponPickup;
 
-        [Tooltip("The TeamFilter which controls which team can activate this trigger.")]
-        public TeamFilter teamFilter;
+        private DriverController gravitateTarget;
 
-        public Transform gravitateTarget;
-
-        private void OnTriggerEnter(Collider other)
+        private void Awake()
         {
-            if (gravitateTarget || teamFilter.teamIndex == TeamIndex.None)
-                return;
-
-            var teamComponent = other.GetComponent<TeamComponent>();
-            if (teamComponent && teamComponent.teamIndex == teamFilter.teamIndex && teamComponent.body && teamComponent.body.bodyIndex == Driver.bodyIndex)
-            {
-                var iDrive = teamComponent.body.GetComponent<DriverController>();
-                if (iDrive && (!Config.enableMagenticConditionalPickups.Value || (!iDrive.HasSpecialBullets && iDrive.weaponDef == iDrive.defaultWeaponDef)))
-                {
-                    gravitateTarget = other.transform;
-                }
-            }
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.transform == gravitateTarget)
-                gravitateTarget = null;
+            this.GetComponent<SphereCollider>().radius = Mathf.Max(1f, Config.pickupRadius.Value);
         }
 
         private void FixedUpdate()
@@ -44,10 +22,54 @@ namespace RobDriver.Modules.Components
             if (!Config.enableMagneticPickups.Value || Config.pickupRadius.Value <= 0f)
                 return;
 
-            if (gravitateTarget)
+            if (CanPickUpWeapon(this.gravitateTarget))
             {
-                rigidbody.velocity = Vector3.MoveTowards(rigidbody.velocity, (gravitateTarget.transform.position - base.transform.position).normalized * MAX_SPEED, ACCELERATION);
+                var speed = (this.gravitateTarget.transform.position - base.transform.position).normalized * MAX_SPEED;
+                this.rigidbody.velocity = Vector3.MoveTowards(this.rigidbody.velocity, speed, ACCELERATION);
             }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!this.gravitateTarget)
+            {
+                var iDrive = other.GetComponent<DriverController>();
+                if (iDrive)
+                {
+                    this.gravitateTarget = iDrive;
+                }
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (this.gravitateTarget && this.gravitateTarget.gameObject == other.gameObject)
+            {
+                this.gravitateTarget = null;
+            }
+        }
+
+        private bool CanPickUpWeapon(DriverController iDrive)
+        {
+            if (!iDrive)
+                return false;
+
+            if (!Config.enableMagenticConditionalPickups.Value || iDrive.passive.isPistolOnly)
+                return true;
+
+            if (iDrive.passive.isBullets || (iDrive.passive.isRyan && this.weaponPickup.isNewAmmoType))
+            {
+                if (iDrive.currentBulletDef == this.weaponPickup.bulletDef)
+                    return true;
+
+                return !iDrive.HasSpecialBullets || iDrive.AmmoPercent < 0.1f;
+            }
+
+            if (iDrive.weaponDef == this.weaponPickup.weaponDef)
+                return true;
+
+            // weapon
+            return !iDrive.IsHoldingWeapon;
         }
     }
 }

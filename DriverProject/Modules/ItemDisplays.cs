@@ -27,8 +27,7 @@ namespace RobDriver.Modules
             model.transform.localRotation = Quaternion.identity;
             model.transform.localScale = Vector3.one * 3f;
 
-            Assets.stunGrenadeModelPrefab = fuckYou;
-            Modules.Projectiles.stunGrenadeProjectilePrefab.GetComponent<RoR2.Projectile.ProjectileController>().ghostPrefab = Assets.stunGrenadeModelPrefab;
+            Projectiles.stunGrenadeProjectilePrefab.GetComponent<RoR2.Projectile.ProjectileController>().ghostPrefab = fuckYou;
         }
 
         private static void PopulateFromBody(string bodyName)

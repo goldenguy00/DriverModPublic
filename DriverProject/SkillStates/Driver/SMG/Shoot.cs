@@ -1,141 +1,61 @@
-﻿using EntityStates;
+﻿using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using UnityEngine;
 
 namespace RobDriver.SkillStates.Driver.SMG
 {
-    public class Shoot : BaseDriverSkillState
+    public class Shoot : BaseDriverShootState
     {
-        public static float damageCoefficient = 2.4f;
-        public static float procCoefficient = 1f;
-        public static float baseDuration = 0.21f;
-        public static float force = 20f;
-        public static float recoil = 1.5f;
-        public static float range = 256f;
-        public static GameObject tracerEffectPrefab = RoR2.LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerCommandoDefault");
+        public static float _damageCoefficient = 1.5f;
 
-        private float duration;
-        private float fireTime;
-        private bool hasFired;
-        private string muzzleString;
-        private bool isCrit;
+        private static GameObject _tracer = LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/Tracers/TracerCommandoDefault");
+
+        protected override float damageCoefficient => _damageCoefficient;
+        protected override float earlyExitTime => this.earlyExitFraction * this.duration;
+        protected override float animationDuration => 0.9f;
+        protected override float maxBulletSpread => this.characterBody.spreadBloomAngle * 4f;
+        protected override string shootSoundString => this.isCrit ? "sfx_driver_machinegun_shoot_critical" : "sfx_driver_machinegun_shoot";
+        protected override string animationString => "Shoot";
+        protected override DamageTypeCombo damageType => this.iDrive.DamageType;
+        protected override GameObject tracerPrefab => _tracer;
+        protected override GameObject muzzleFlashPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab;
+        protected override GameObject hitEffectPrefab => EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab;
 
         public override void OnEnter()
         {
+            base.bulletCount = 1;
+            base.dropShells = 0;
+            base.ammoConsumption = 1f;
+            base.useAttackSpeed = true;
+
+            base.bulletFalloff = BulletAttack.FalloffModel.DefaultBullet;
+            base.hitMask = LayerIndex.CommonMasks.bullet;
+            base.stopperMask = LayerIndex.CommonMasks.bullet;
+            base.damageColorIndex = DamageColorIndex.Default;
+
+            base.procCoefficient = 1f;
+            base.bulletRange = 250f;
+            base.bulletThiccness = 1.5f;
+            base.bulletForce = 20f;
+            base.selfForce = 0f;
+
+            base.baseDuration = 0.21f;
+            base.earlyExitFraction = 0.5f;
+            base.fireDelayFraction = 0f;
+
+            base.visualRecoilAmplitude = 1.5f;
+            base.visualRecoilVertical = 2f;
+            base.visualRecoilHorizontal = 0.5f;
+            base.spreadBloom = 0.7f;
+            base.aimTimer = 2f;
+
+            base.playbackRateString = "Shoot.playbackRate";
+            base.muzzleString = "PistolMuzzle";
+
             base.OnEnter();
-            this.duration = Shoot.baseDuration / this.attackSpeedStat;
+
             this.characterBody.isSprinting = false;
-
-            this.fireTime = 0.1f * this.duration;
-            base.characterBody.SetAimTimer(2f);
-            this.muzzleString = "PistolMuzzle";
-
-            this.isCrit = base.RollCrit();
-
-            if (base.isAuthority)
-            {
-                this.hasFired = true;
-                this.Fire();
-            }
-
-            this.PlayAnimation("Gesture, Override", "Shoot", "Shoot.playbackRate", 0.9f);
-
-            if (this.iDrive)
-            {
-                this.iDrive.ConsumeAmmo();
-                this.iDrive.machineGunVFX.Play();
-            }
-        }
-
-        private void Fire()
-        {
-            EffectManager.SimpleMuzzleFlash(EntityStates.Commando.CommandoWeapon.FirePistol2.muzzleEffectPrefab, base.gameObject, this.muzzleString, false);
-
-            if (this.isCrit) Util.PlaySound("sfx_driver_machinegun_shoot_critical", base.gameObject);
-            else Util.PlaySound("sfx_driver_machinegun_shoot", base.gameObject);
-
-            if (base.isAuthority)
-            {
-                Ray aimRay = base.GetAimRay();
-
-                float recoilAmplitude = Shoot.recoil / this.attackSpeedStat;
-
-                base.AddRecoil2(-1f * recoilAmplitude, -2f * recoilAmplitude, -0.5f * recoilAmplitude, 0.5f * recoilAmplitude);
-
-                BulletAttack bulletAttack = new BulletAttack
-                {
-                    bulletCount = 1,
-                    aimVector = aimRay.direction,
-                    origin = aimRay.origin,
-                    damage = Shoot.damageCoefficient * this.damageStat,
-                    damageColorIndex = DamageColorIndex.Default,
-                    damageType = iDrive.DamageType,
-                    falloffModel = BulletAttack.FalloffModel.DefaultBullet,
-                    maxDistance = Shoot.range,
-                    force = Shoot.force,
-                    hitMask = LayerIndex.CommonMasks.bullet,
-                    minSpread = 0f,
-                    maxSpread = this.characterBody.spreadBloomAngle * 4f,
-                    isCrit = this.isCrit,
-                    owner = this.gameObject,
-                    muzzleName = muzzleString,
-                    smartCollision = true,
-                    procChainMask = default(ProcChainMask),
-                    procCoefficient = procCoefficient,
-                    radius = 0.5f,
-                    sniper = false,
-                    stopperMask = LayerIndex.CommonMasks.bullet,
-                    weapon = null,
-                    tracerEffectPrefab = this.tracerPrefab,
-                    spreadPitchScale = 1f,
-                    spreadYawScale = 1f,
-                    queryTriggerInteraction = QueryTriggerInteraction.UseGlobal,
-                    hitEffectPrefab = EntityStates.Commando.CommandoWeapon.FirePistol2.hitEffectPrefab,
-                };
-                bulletAttack.Fire();
-            }
-
-            base.characterBody.AddSpreadBloom(0.7f);
-        }
-
-        private GameObject tracerPrefab
-        {
-            get
-            {
-                if (this.isCrit) return Shoot.tracerEffectPrefab;
-                else return Shoot.tracerEffectPrefab;
-            }
-        }
-
-        public override void FixedUpdate()
-        {
-            base.FixedUpdate();
-
-            if (base.fixedAge >= this.fireTime && base.isAuthority)
-            {
-                if (!this.hasFired)
-                {
-                    this.hasFired = true;
-                    this.Fire();
-                }
-            }
-
-            if (base.fixedAge >= this.duration && base.isAuthority)
-            {
-                this.outer.SetNextState(new WaitForReload());
-            }
-        }
-
-        public override InterruptPriority GetMinimumInterruptPriority()
-        {
-            float kek = 0.5f;
-
-            if (base.fixedAge >= kek * this.duration)
-            {
-                return InterruptPriority.Any;
-            }
-
-            return InterruptPriority.Skill;
+            this.iDrive.machineGunVFX.Play();
         }
     }
 }

@@ -6,32 +6,25 @@ namespace RobDriver.Modules.Weapons
 {
     public class Revolver : BaseWeapon<Revolver>
     {
-        public override string weaponNameToken => "REVOLVER";
         public override string weaponName => "Revolver";
+        public override string weaponNameToken => "ROB_DRIVER_WEAPON_REVOLVER_NAME";
         public override string weaponDesc => "High damage shots with a lethal finisher.";
-        public override string iconName => "texRevolverWeaponIcon";
-        public override GameObject crosshairPrefab => Modules.Assets.revolverCrosshairPrefab;
-        public override DriverWeaponTier tier => DriverWeaponTier.Uncommon;
+        public override string weaponDescToken => "ROB_DRIVER_WEAPON_REVOLVER_DESC";
+
+        public override Sprite icon => Assets.mainAssetBundle.LoadAsset<Sprite>("texRevolverWeaponIcon");
+        public override DriverWeaponTier dropTier => DriverWeaponTier.Common;
+        public override DriverWeaponDef.AnimationSet animationSet => DriverWeaponDef.AnimationSet.Default;
+        public override DriverWeaponDef.BuffType buffType => DriverWeaponDef.BuffType.Damage;
         public override int shotCount => 6;
+
         public override Mesh mesh => Modules.Assets.LoadMesh("meshRevolver");
         public override Material material => Addressables.LoadAssetAsync<Material>("RoR2/Base/Bandit2/matBandit2Revolver.mat").WaitForCompletion();
-        public override DriverWeaponDef.AnimationSet animationSet => DriverWeaponDef.AnimationSet.Default;
-        public override DriverWeaponDef.BuffType buffType => DriverWeaponDef.BuffType.Crit;
-        public override string calloutSoundString => "sfx_driver_callout_generic";
-        public override string configIdentifier => "Revolver";
-        public override float dropChance => 0f;
-        public override bool addToPool => true;
-        public override string uniqueDropBodyName => "";
+        public override GameObject crosshairPrefab => Modules.Assets.revolverCrosshairPrefab;
+        public override string equipAnimationString => "EquipPistol";
 
-        public override SkillDef primarySkillDef => Modules.Skills.CreatePrimarySkillDef(
-            new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Revolver.Shoot)),
-            "Weapon",
-            "ROB_DRIVER_BODY_PRIMARY_BFG_NAME",
-            "ROB_DRIVER_BODY_PRIMARY_BFG_DESCRIPTION",
-            Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
-            false);
+        public override SkillDef primarySkillDef => Modules.Skills.revolverPrimarySkillDef;
 
-        public override SkillDef secondarySkillDef => Modules.Skills.CreateSkillDef(new SkillDefInfo
+        public override SkillDef secondarySkillDef => Modules.Skills.CreateAndAddSkillDef(new SkillDefInfo
         {
             skillName = "ROB_DRIVER_BODY_SECONDARY_GOLDENGUN_NAME",
             skillNameToken = "ROB_DRIVER_BODY_SECONDARY_GOLDENGUN_NAME",
@@ -48,17 +41,11 @@ namespace RobDriver.Modules.Weapons
             interruptPriority = EntityStates.InterruptPriority.Skill,
             resetCooldownTimerOnUse = true,
             isCombatSkill = true,
-            mustKeyPress = false,
+            mustKeyPress = true,
             cancelSprintingOnActivation = true,
             rechargeStock = 1,
             requiredStock = 1,
             stockToConsume = 1,
         });
-
-        public override void Init()
-        {
-            CreateLang();
-            CreateWeapon();
-        }
     }
 }

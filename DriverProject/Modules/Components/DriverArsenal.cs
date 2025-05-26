@@ -7,19 +7,18 @@ namespace RobDriver.Modules.Components
 {
     public class DriverArsenal : MonoBehaviour
     {
-        public static Dictionary<SkillDef, ushort> passiveSkillsToWeaponIndex = [];
+        public static List<SkillDef> passiveSkills = [];
 
         public GenericSkill weaponSkillSlot;
 
-        public DriverWeaponDef DefaultWeapon
+        public DriverWeaponDef LoadoutWeapon
         {
             get
             {
-                var skillDef = this.weaponSkillSlot ? this.weaponSkillSlot.skillDef : null;
-                if (!skillDef || !passiveSkillsToWeaponIndex.ContainsKey(skillDef))
+                if (!this.weaponSkillSlot?.skillDef)
                     return DriverWeaponCatalog.Pistol;
 
-                return DriverWeaponCatalog.GetWeaponFromIndex(passiveSkillsToWeaponIndex[skillDef]);
+                return DriverWeaponCatalog.GetWeaponFromIndex(passiveSkills.IndexOf(this.weaponSkillSlot.skillDef));
             }
         }
     }

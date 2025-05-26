@@ -3,7 +3,7 @@
    ROBOCOPY     ::     Robust File Copy for Windows                              
 -------------------------------------------------------------------------------
 
-  Started : Thursday, January 30, 2025 8:58:07 PM
+  Started : Friday, May 23, 2025 3:06:59 PM
    Source : C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\Weaver\
      Dest : C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\
 
@@ -15,28 +15,28 @@
 ------------------------------------------------------------------------------
 
 	                   2	C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\Weaver\
-	    Newer     		  27.9 m	DriverMod.dll.prepatch  3.5%  7.1% 10.7% 14.2% 17.8% 21.4% 25.0% 28.5% 32.1% 35.7% 39.3% 42.8% 46.4% 50.0% 53.5% 57.1% 60.7% 64.3% 67.8% 71.4% 75.0% 78.6% 82.1% 85.7% 89.3% 92.8% 96.4%100%  
-	    Newer     		  127992	DriverMod.pdb.prepatch100%  
+	    Newer     		  405504	DriverMod.dll.prepatch100%  
+	    Newer     		  133532	DriverMod.pdb.prepatch100%  
 
 ------------------------------------------------------------------------------
 
                Total    Copied   Skipped  Mismatch    FAILED    Extras
     Dirs :         1         0         1         0         0         0
    Files :         2         2         0         0         0         0
-   Bytes :   28.10 m   28.10 m         0         0         0         0
+   Bytes :   526.4 k   526.4 k         0         0         0         0
    Times :   0:00:00   0:00:00                       0:00:00   0:00:00
 
 
-   Speed :           1,281,535,652 Bytes/sec.
-   Speed :              73,330.055 MegaBytes/min.
-   Ended : Thursday, January 30, 2025 8:58:07 PM
+   Speed :           269,518,000 Bytes/sec.
+   Speed :            15,421.943 MegaBytes/min.
+   Ended : Friday, May 23, 2025 3:06:59 PM
 
 
 -------------------------------------------------------------------------------
    ROBOCOPY     ::     Robust File Copy for Windows                              
 -------------------------------------------------------------------------------
 
-  Started : Thursday, January 30, 2025 8:58:07 PM
+  Started : Friday, May 23, 2025 3:06:59 PM
    Source : C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\
      Dest : C:\Users\golde\Documents\GitHub\_COLLAB\Driver\Release\
 
@@ -48,19 +48,19 @@
 ------------------------------------------------------------------------------
 
 	                   2	C:\Users\golde\Documents\GitHub\_COLLAB\Driver\DriverProject\bin\Release\netstandard2.1\
-	    Newer     		  27.9 m	DriverMod.dll  3.5%  7.1% 10.7% 14.2% 17.8% 21.4% 25.0% 28.5% 32.1% 35.7% 39.3% 42.8% 46.4% 50.0% 53.5% 57.1% 60.7% 64.3% 67.8% 71.4% 75.0% 78.6% 82.1% 85.7% 89.3% 92.8% 96.4%100%  
-	    Newer     		  127992	DriverMod.pdb100%  
+	    Newer     		  401920	DriverMod.dll100%  
+	    Newer     		  133532	DriverMod.pdb100%  
 
 ------------------------------------------------------------------------------
 
                Total    Copied   Skipped  Mismatch    FAILED    Extras
     Dirs :         1         0         1         0         0         0
    Files :         2         2         0         0         0         0
-   Bytes :   28.10 m   28.10 m         0         0         0         0
+   Bytes :   522.9 k   522.9 k         0         0         0         0
    Times :   0:00:00   0:00:00                       0:00:00   0:00:00
 
 
-   Speed :           1,403,586,666 Bytes/sec.
-   Speed :              80,313.875 MegaBytes/min.
-   Ended : Thursday, January 30, 2025 8:58:07 PM
+   Speed :           267,726,000 Bytes/sec.
+   Speed :            15,319.404 MegaBytes/min.
+   Ended : Friday, May 23, 2025 3:06:59 PM
 

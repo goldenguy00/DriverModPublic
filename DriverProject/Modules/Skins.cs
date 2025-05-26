@@ -3,33 +3,35 @@ using UnityEngine;
 
 namespace RobDriver.Modules
 {
-    public static class Skins
+    internal static class Skins
     {
-        public static SkinDef CreateSkinDef(string skinName, Sprite skinIcon, CharacterModel.RendererInfo[] rendererInfos, SkinnedMeshRenderer mainRenderer, GameObject root)
+        public static SkinDef CreateSkinDef(string skinName, Sprite skinIcon, GameObject root, UnlockableDef unlockableDef,
+            CharacterModel.RendererInfo[] rendererInfos, SkinDef.MeshReplacement[] meshReplacements, SkinDef.GameObjectActivation[] gameObjectActivations)
         {
-            return CreateSkinDef(skinName, skinIcon, rendererInfos, mainRenderer, root, null);
-        }
-
-        public static SkinDef CreateSkinDef(string skinName, Sprite skinIcon, CharacterModel.RendererInfo[] rendererInfos, SkinnedMeshRenderer mainRenderer, GameObject root, UnlockableDef unlockableDef)
-        {
-            R2API.SkinDefInfo skinDefInfo = new R2API.SkinDefInfo
+            return R2API.Skins.CreateNewSkinDef(new R2API.SkinDefInfo
             {
-                BaseSkins = [],
-                GameObjectActivations = [],
-                Icon = skinIcon,
-                MeshReplacements = [],
-                MinionSkinReplacements = [],
                 Name = skinName,
                 NameToken = skinName,
-                ProjectileGhostReplacements = [],
-                RendererInfos = rendererInfos,
+                Icon = skinIcon,
                 RootObject = root,
-                UnlockableDef = unlockableDef
-            };
+                UnlockableDef = unlockableDef,
+                RendererInfos = rendererInfos,
+                MeshReplacements = meshReplacements,
+                GameObjectActivations = gameObjectActivations,
+                BaseSkins = [],
+                MinionSkinReplacements = [],
+                ProjectileGhostReplacements = []
+            });
+        }
+        public static CharacterModel.RendererInfo[] SkinRendererInfos(CharacterModel.RendererInfo[] defaultRenderers, Material[] materials)
+        {
+            CharacterModel.RendererInfo[] newRendererInfos = new CharacterModel.RendererInfo[defaultRenderers.Length];
+            defaultRenderers.CopyTo(newRendererInfos, 0);
 
-            SkinDef skin = R2API.Skins.CreateNewSkinDef(skinDefInfo);
+            for (int i = 0; i < materials.Length; i++)
+                newRendererInfos[i].defaultMaterial = materials[i];
 
-            return skin;
+            return newRendererInfos;
         }
     }
 }

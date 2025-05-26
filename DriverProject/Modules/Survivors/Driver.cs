@@ -1,13 +1,17 @@
 ﻿using BepInEx.Configuration;
 using R2API;
 using RoR2;
-using RoR2.Skills;
 using System.Collections.Generic;
 using UnityEngine;
 using RoR2.CharacterAI;
 using UnityEngine.AddressableAssets;
 using System.Linq;
 using RobDriver.Modules.Components;
+using HG;
+using RoR2.ContentManagement;
+using RobDriver.Modules.Misc;
+using System.Runtime.CompilerServices;
+using RobDriver.SkillStates.Driver;
 
 namespace RobDriver.Modules.Survivors
 {
@@ -27,151 +31,49 @@ namespace RobDriver.Modules.Survivors
         public static Color characterColor = new Color(145f / 255f, 0f, 1f);
 
         public const string bodyName = "RobDriverBody";
+        public const string baseNameToken = "ROB_DRIVER_BODY_NAME";
 
-        internal static BodyIndex bodyIndex = BodyIndex.None;
-
-        public static int bodyRendererIndex; // use this to store the rendererinfo index containing our character's body
-                                             // keep it last in the rendererinfos because teleporter particles for some reason require this. hopoo pls
+        internal static BodyIndex bodyIndex => BodyCatalog.FindBodyIndex(bodyName);
 
         // item display stuffs
         internal static ItemDisplayRuleSet itemDisplayRuleSet;
         internal static List<ItemDisplayRuleSet.KeyAssetRuleGroup> itemDisplayRules;
 
-        #region Skill Overrides
-        internal static SkillDef lunarPistolPrimarySkillDef;
-        internal static SkillDef lunarPistolSecondarySkillDef;
-
-        internal static SkillDef voidPistolPrimarySkillDef;
-        internal static SkillDef voidPistolSecondarySkillDef;
-
-        internal static SkillDef goldenGunPrimarySkillDef;
-        internal static SkillDef goldenGunSecondarySkillDef;
-
-        internal static SkillDef pyriteGunPrimarySkillDef;
-        internal static SkillDef pyriteGunSecondarySkillDef;
-
-        internal static SkillDef shotgunPrimarySkillDef;
-        internal static SkillDef shotgunSecondarySkillDef;
-
-        internal static SkillDef riotShotgunPrimarySkillDef;
-        internal static SkillDef riotShotgunSecondarySkillDef;
-
-        internal static SkillDef slugShotgunPrimarySkillDef;
-        internal static SkillDef slugShotgunSecondarySkillDef;
-
-        internal static SkillDef machineGunPrimarySkillDef;
-        internal static SkillDef machineGunSecondarySkillDef;
-
-        internal static SkillDef heavyMachineGunPrimarySkillDef;
-        internal static SkillDef heavyMachineGunSecondarySkillDef;
-
-        internal static SkillDef bazookaPrimarySkillDef;
-        internal static SkillDef bazookaSecondarySkillDef;
-
-        internal static SkillDef rocketLauncherPrimarySkillDef;
-        internal static SkillDef rocketLauncherSecondarySkillDef;
-
-        internal static SkillDef rocketLauncherAltPrimarySkillDef;
-        internal static SkillDef rocketLauncherAltSecondarySkillDef;
-
-        internal static SkillDef armCannonPrimarySkillDef;
-        internal static SkillDef armCannonSecondarySkillDef;
-
-        internal static SkillDef plasmaCannonPrimarySkillDef;
-        internal static SkillDef plasmaCannonSecondarySkillDef;
-
-        internal static SkillDef sniperPrimarySkillDef;
-        internal static SkillDef sniperSecondarySkillDef;
-
-        internal static SkillDef beetleShieldPrimarySkillDef;
-        internal static SkillDef beetleShieldSecondarySkillDef;
-
-        internal static SkillDef behemothPrimarySkillDef;
-        internal static SkillDef behemothSecondarySkillDef;
-
-        internal static SkillDef grenadeLauncherPrimarySkillDef;
-        internal static SkillDef grenadeLauncherSecondarySkillDef;
-
-        internal static SkillDef badassShotgunPrimarySkillDef;
-        internal static SkillDef badassShotgunSecondarySkillDef;
-
-        internal static SkillDef lunarRiflePrimarySkillDef;
-        internal static SkillDef lunarRifleSecondarySkillDef;
-
-        internal static SkillDef lunarHammerPrimarySkillDef;
-        internal static SkillDef lunarHammerSecondarySkillDef;
-
-        internal static SkillDef nemmandoGunPrimarySkillDef;
-        internal static SkillDef nemmandoGunSecondarySkillDef;
-
-        internal static SkillDef nemmercGunPrimarySkillDef;
-        internal static SkillDef nemmercGunSecondarySkillDef;
-
-        internal static SkillDef golemGunPrimarySkillDef;
-        internal static SkillDef golemGunSecondarySkillDef;
-
-        internal static SkillDef pistolReloadSkillDef;
-
-        internal static SkillDef confirmSkillDef;
-        internal static SkillDef cancelSkillDef;
-
-        internal static SkillDef skateboardSkillDef;
-        internal static SkillDef skateCancelSkillDef;
-
-        internal static SkillDef scepterGrenadeSkillDef;
-        internal static SkillDef scepterSupplyDropSkillDef;
-        internal static SkillDef scepterSupplyDropLegacySkillDef;
-        internal static SkillDef scepterSyringeSkillDef;
-        internal static SkillDef scepterSyringeLegacySkillDef;
-        internal static SkillDef scepterKnifeSkillDef;
-        internal static SkillDef knifeSkillDef;
-        #endregion
-
-        internal static string bodyNameToken;
-
         internal void CreateCharacter()
         {
             instance = this;
 
-            characterEnabled = Modules.Config.CharacterEnableConfig("Driver");
+            characterEnabled = Config.CharacterEnableConfig("Driver");
 
             if (characterEnabled.Value)
             {
-                forceUnlock = Modules.Config.ForceUnlockConfig("Driver");
+                forceUnlock = Config.ForceUnlockConfig("Driver");
 
-                characterPrefab = CreateBodyPrefab(true);
-                displayPrefab = Modules.Prefabs.CreateDisplayPrefab("DriverDisplay", characterPrefab);
+                characterPrefab = CreateBodyPrefab();
+                displayPrefab = Prefabs.CreateDisplayPrefab("DriverDisplay", characterPrefab);
                 umbraMaster = CreateMaster(characterPrefab, "RobDriverMonsterMaster");
-
                 Prefabs.RegisterNewSurvivor(characterPrefab, displayPrefab, "DRIVER", forceUnlock.Value ? null : Unlockables.characterUnlockableDef);
 
+                DriverWeaponCatalog.InitWeaponDefs();
+                DriverBulletCatalog.InitBulletDefs();
                 DriverHooks.Init();
 
-                RoR2.ContentManagement.ContentManager.onContentPacksAssigned += LateSetup;
-                BodyCatalog.availability.CallWhenAvailable(() => bodyIndex = BodyCatalog.FindBodyIndex(Driver.characterPrefab));
+                ContentManager.onContentPacksAssigned += SetItemDisplays;
             }
         }
 
-        private void LateSetup(HG.ReadOnlyArray<RoR2.ContentManagement.ReadOnlyContentPack> obj)
+        private static GameObject CreateBodyPrefab()
         {
-            SetItemDisplays();
-            LateSkinSetup();
-        }
-
-        private static GameObject CreateBodyPrefab(bool isPlayer)
-        {
-            bodyNameToken = DriverPlugin.developerPrefix + "_DRIVER_BODY_NAME";
-
             #region Body
-            GameObject newPrefab = Modules.Prefabs.CreatePrefab("RobDriverBody", "mdlDriver", new BodyInfo
+            GameObject newPrefab = Prefabs.CreatePrefab(bodyName, "mdlDriver", new BodyInfo
             {
                 armor = Config.baseArmor.Value,
                 armorGrowth = Config.armorGrowth.Value,
-                bodyName = "RobDriverBody",
-                bodyNameToken = bodyNameToken,
+                bodyName = bodyName,
+                bodyNameToken = baseNameToken,
                 bodyColor = characterColor,
-                characterPortrait = Modules.Assets.LoadCharacterIcon("Driver"),
-                crosshair = Modules.Assets.LoadCrosshair("Standard"),
+                characterPortrait = Assets.LoadCharacterIcon("Driver"),
+                crosshair = Assets.LoadCrosshair("Standard"),
                 damage = Config.baseDamage.Value,
                 healthGrowth = Config.healthGrowth.Value,
                 healthRegen = Config.baseRegen.Value,
@@ -187,8 +89,7 @@ namespace RobDriver.Modules.Survivors
             });
 
             ChildLocator childLocator = newPrefab.GetComponentInChildren<ChildLocator>();
-
-            childLocator.gameObject.AddComponent<Modules.Components.DriverAnimationEvents>();
+            childLocator.gameObject.AddComponent<DriverAnimationEvents>();
 
             //CharacterBody body = newPrefab.GetComponent<CharacterBody>();
             //body.preferredInitialStateType = new EntityStates.SerializableEntityStateType(typeof(SpawnState));
@@ -196,7 +97,7 @@ namespace RobDriver.Modules.Survivors
             //body.bodyFlags |= CharacterBody.BodyFlags.SprintAnyDirection;
             //body.sprintingSpeedMultiplier = 1.75f;
 
-            //newPrefab.AddComponent<NinjaMod.Modules.Components.NinjaController>();
+            //newPrefab.AddComponent<NinjaMod.Components.NinjaController>();
 
             //SfxLocator sfx = newPrefab.GetComponent<SfxLocator>();
             //sfx.barkSound = "";
@@ -219,23 +120,27 @@ namespace RobDriver.Modules.Survivors
             //Interactor interactor = newPrefab.GetComponent<Interactor>();
             //interactor.maxInteractionDistance = 8f;
 
-            newPrefab.GetComponent<CameraTargetParams>().cameraParams = Modules.CameraParams.CreateCameraParamsWithData(DriverCameraParams.DEFAULT);
-
             //newPrefab.GetComponent<CharacterDirection>().turnSpeed = 720f;
+             
+
+            newPrefab.GetComponent<CameraTargetParams>().cameraParams = CameraParams.CreateCameraParamsWithData(DriverCameraParams.DEFAULT);
 
             foreach (EntityStateMachine i in newPrefab.GetComponents<EntityStateMachine>())
             {
-                if (i.customName == "Body") i.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.MainState));
+                if (i.customName == "Body")
+                    i.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.MainState));
+
+                if (i.customName == "Weapon")
+                    i.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.WeaponMainState));
             }
 
             EntityStateMachine passiveController = newPrefab.AddComponent<EntityStateMachine>();
-            passiveController.initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.WallJump));
-            passiveController.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.WallJump));
-            passiveController.customName = "Passive";
+            passiveController.customName = "RavPassive";
+            passiveController.initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RavSword.WallJump));
+            passiveController.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RavSword.WallJump));
 
-            // this is for the lunar shard skill..
             EntityStateMachine stateMachine = newPrefab.AddComponent<EntityStateMachine>();
-            stateMachine.customName = "Shard";
+            stateMachine.customName = "AltWeapon";
             stateMachine.initialStateType = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle));
             stateMachine.mainStateType = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle));
 
@@ -249,17 +154,12 @@ namespace RobDriver.Modules.Survivors
             #endregion
 
             #region Model
-            Material mainMat = Modules.Assets.CreateMaterial("matDriver", 1f, Color.white);
-
-            Material clothMat = Modules.Assets.CreateMaterial("matSlugger", 1f, Color.white);
-            Material tieMat = Modules.Assets.CreateMaterial("matSuit", 1f, Color.white);
-
-            bodyRendererIndex = 0;
-            var customRendererInfo = new CustomRendererInfo[] {
+            var customRendererInfo = new CustomRendererInfo[]
+            {
                 new CustomRendererInfo
                 {
                     childName = "Model",
-                    material = mainMat
+                    material = Assets.mainMat
                 },
                 new CustomRendererInfo
                 {
@@ -269,7 +169,7 @@ namespace RobDriver.Modules.Survivors
                 new CustomRendererInfo
                 {
                     childName = "ButtonModel",
-                    material = Modules.Assets.CreateMaterial("matButton")
+                    material = Assets.buttonMat
                 },
                 new CustomRendererInfo
                 {
@@ -278,23 +178,23 @@ namespace RobDriver.Modules.Survivors
                 },
                 new CustomRendererInfo
                 {
-                    childName = "MedkitModel",
-                    material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Medkit/matMedkit.mat").WaitForCompletion()
+                    childName = "AltWeaponModel",
+                    material = Assets.nemKatanaMat
                 },
                 new CustomRendererInfo
                 {
                     childName = "SluggerClothModelL",
-                    material = clothMat
+                    material = Assets.clothMat
                 },
                 new CustomRendererInfo
                 {
                     childName = "SluggerClothModelR",
-                    material = clothMat
+                    material = Assets.clothMat
                 },
                 new CustomRendererInfo
                 {
                     childName = "TieModel",
-                    material = tieMat
+                    material = Assets.tieMat
                 },
                 new CustomRendererInfo
                 {
@@ -309,26 +209,42 @@ namespace RobDriver.Modules.Survivors
                 new CustomRendererInfo
                 {
                     childName = "PistolModel",
-                    material = Modules.Assets.pistolMat
+                    material = Assets.pistolMat
                 },
                 new CustomRendererInfo
                 {
-                    childName = "BackWeaponModel",
-                    material = Modules.Assets.nemKatanaMat
-                } };
+                    childName = "TimbsModelL",
+                    material = Assets.timbsMat
+                },
+                new CustomRendererInfo
+                {
+                    childName = "TimbsModelR",
+                    material = Assets.timbsMat
+                }
+            };
 
-            Modules.Prefabs.SetupCharacterModel(newPrefab, customRendererInfo, bodyRendererIndex);
+            CharacterModel characterModel = newPrefab.GetComponent<ModelLocator>().modelTransform.gameObject.AddComponent<CharacterModel>();
+            Prefabs.SetupCharacterModel(newPrefab, characterModel, customRendererInfo);
 
             // hide the extra stuff
-            childLocator.FindChild("KnifeModel").gameObject.SetActive(false);
-            childLocator.FindChild("ButtonModel").gameObject.SetActive(false);
-            childLocator.FindChild("SyringeModel").gameObject.SetActive(false);
-            childLocator.FindChild("MedkitModel").gameObject.SetActive(false);
-            childLocator.FindChild("SluggerCloth").gameObject.SetActive(false);
-            childLocator.FindChild("Tie").gameObject.SetActive(false);
-            childLocator.FindChild("SkateboardModel").gameObject.SetActive(false);
-            childLocator.FindChild("SkateboardBackModel").gameObject.SetActive(false);
-            childLocator.FindChild("BackWeaponModel").gameObject.SetActive(false);
+            childLocator.FindChildGameObject("PistolModel").SetActive(true);
+            childLocator.FindChildGameObject("KnifeModel").SetActive(false);
+            childLocator.FindChildGameObject("ButtonModel").SetActive(false);
+            childLocator.FindChildGameObject("SyringeModel").SetActive(false);
+            childLocator.FindChildGameObject("AltWeaponModel").SetActive(false);
+
+            childLocator.FindChildGameObject("SluggerCloth").SetActive(false);
+            childLocator.FindChildGameObject("SluggerClothModelL").SetActive(true);
+            childLocator.FindChildGameObject("SluggerClothModelR").SetActive(true);
+
+            childLocator.FindChildGameObject("Tie").SetActive(false);
+            childLocator.FindChildGameObject("TieModel").SetActive(true);
+
+            childLocator.FindChildGameObject("SkateboardModel").SetActive(false);
+            childLocator.FindChildGameObject("SkateboardBackModel").SetActive(false);
+
+            childLocator.FindChildGameObject("TimbsModelL").SetActive(Config.cursed.Value);
+            childLocator.FindChildGameObject("TimbsModelR").SetActive(Config.cursed.Value);
             #endregion
 
             CreateHitboxes(newPrefab);
@@ -343,9 +259,7 @@ namespace RobDriver.Modules.Survivors
         private static void SetupHurtboxes(GameObject bodyPrefab)
         {
             HurtBoxGroup hurtboxGroup = bodyPrefab.GetComponentInChildren<HurtBoxGroup>();
-            List<HurtBox> hurtboxes = new List<HurtBox>();
-
-            hurtboxes.Add(bodyPrefab.GetComponentInChildren<ChildLocator>().FindChild("MainHurtbox").GetComponent<HurtBox>());
+            List<HurtBox> hurtboxes = [bodyPrefab.GetComponentInChildren<ChildLocator>().FindChild("MainHurtbox").GetComponent<HurtBox>()];
 
             HealthComponent healthComponent = bodyPrefab.GetComponent<HealthComponent>();
 
@@ -380,87 +294,88 @@ namespace RobDriver.Modules.Survivors
 
             newMaster.GetComponent<BaseAI>().fullVision = true;
 
-            AISkillDriver revengeDriver = newMaster.AddComponent<AISkillDriver>();
-            revengeDriver.customName = "Revenge";
-            revengeDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            revengeDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            revengeDriver.activationRequiresAimConfirmation = true;
-            revengeDriver.activationRequiresTargetLoS = false;
-            revengeDriver.selectionRequiresTargetLoS = true;
-            revengeDriver.maxDistance = 24f;
-            revengeDriver.minDistance = 0f;
-            revengeDriver.requireSkillReady = true;
-            revengeDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
-            revengeDriver.ignoreNodeGraph = true;
-            revengeDriver.moveInputScale = 1f;
-            revengeDriver.driverUpdateTimerOverride = 2.5f;
-            revengeDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            revengeDriver.minTargetHealthFraction = Mathf.NegativeInfinity;
-            revengeDriver.maxTargetHealthFraction = Mathf.Infinity;
-            revengeDriver.minUserHealthFraction = Mathf.NegativeInfinity;
-            revengeDriver.maxUserHealthFraction = 0.5f;
-            revengeDriver.skillSlot = SkillSlot.Utility;
+            AISkillDriver shootClose = newMaster.AddComponent<AISkillDriver>();
+            shootClose.customName = "ShootClose";
+            shootClose.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
+            shootClose.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            shootClose.activationRequiresAimConfirmation = true;
+            shootClose.activationRequiresTargetLoS = false;
+            shootClose.selectionRequiresTargetLoS = true;
+            shootClose.maxDistance = 24f;
+            shootClose.minDistance = 0f;
+            shootClose.requireSkillReady = true;
+            shootClose.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            shootClose.ignoreNodeGraph = true;
+            shootClose.moveInputScale = 1f;
+            shootClose.driverUpdateTimerOverride = 1f;
+            shootClose.buttonPressType = AISkillDriver.ButtonPressType.TapContinuous;
+            shootClose.minTargetHealthFraction = Mathf.NegativeInfinity;
+            shootClose.maxTargetHealthFraction = Mathf.Infinity;
+            shootClose.minUserHealthFraction = 0.5f;
+            shootClose.maxUserHealthFraction = 1f;
+            shootClose.skillSlot = SkillSlot.Primary;
 
-            AISkillDriver grabDriver = newMaster.AddComponent<AISkillDriver>();
-            grabDriver.customName = "Grab";
-            grabDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            grabDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            grabDriver.activationRequiresAimConfirmation = true;
-            grabDriver.activationRequiresTargetLoS = false;
-            grabDriver.selectionRequiresTargetLoS = true;
-            grabDriver.maxDistance = 8f;
-            grabDriver.minDistance = 0f;
-            grabDriver.requireSkillReady = true;
-            grabDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
-            grabDriver.ignoreNodeGraph = true;
-            grabDriver.moveInputScale = 1f;
-            grabDriver.driverUpdateTimerOverride = 0.5f;
-            grabDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            grabDriver.minTargetHealthFraction = Mathf.NegativeInfinity;
-            grabDriver.maxTargetHealthFraction = Mathf.Infinity;
-            grabDriver.minUserHealthFraction = Mathf.NegativeInfinity;
-            grabDriver.maxUserHealthFraction = Mathf.Infinity;
-            grabDriver.skillSlot = SkillSlot.Primary;
+            AISkillDriver makeDistance = newMaster.AddComponent<AISkillDriver>();
+            makeDistance.customName = "MakeDistance";
+            makeDistance.movementType = AISkillDriver.MovementType.FleeMoveTarget;
+            makeDistance.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            makeDistance.activationRequiresAimConfirmation = false;
+            makeDistance.activationRequiresTargetLoS = false;
+            makeDistance.selectionRequiresTargetLoS = false;
+            makeDistance.maxDistance = 8f;
+            makeDistance.minDistance = 0f;
+            makeDistance.requireSkillReady = false;
+            makeDistance.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            makeDistance.ignoreNodeGraph = true;
+            makeDistance.moveInputScale = 1f;
+            makeDistance.driverUpdateTimerOverride = -1f;
+            makeDistance.buttonPressType = AISkillDriver.ButtonPressType.TapContinuous;
+            makeDistance.minTargetHealthFraction = Mathf.NegativeInfinity;
+            makeDistance.maxTargetHealthFraction = Mathf.Infinity;
+            makeDistance.minUserHealthFraction = Mathf.NegativeInfinity;
+            makeDistance.maxUserHealthFraction = 0.5f;
+            makeDistance.skillSlot = SkillSlot.Primary;
 
-            AISkillDriver stompDriver = newMaster.AddComponent<AISkillDriver>();
-            stompDriver.customName = "Stomp";
-            stompDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            stompDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            stompDriver.activationRequiresAimConfirmation = true;
-            stompDriver.activationRequiresTargetLoS = false;
-            stompDriver.selectionRequiresTargetLoS = true;
-            stompDriver.maxDistance = 32f;
-            stompDriver.minDistance = 0f;
-            stompDriver.requireSkillReady = true;
-            stompDriver.aimType = AISkillDriver.AimType.AtCurrentEnemy;
-            stompDriver.ignoreNodeGraph = true;
-            stompDriver.moveInputScale = 0.4f;
-            stompDriver.driverUpdateTimerOverride = 0.5f;
-            stompDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            stompDriver.minTargetHealthFraction = Mathf.NegativeInfinity;
-            stompDriver.maxTargetHealthFraction = Mathf.Infinity;
-            stompDriver.minUserHealthFraction = Mathf.NegativeInfinity;
-            stompDriver.maxUserHealthFraction = Mathf.Infinity;
-            stompDriver.skillSlot = SkillSlot.Secondary;
+            AISkillDriver steadyAim = newMaster.AddComponent<AISkillDriver>();
+            steadyAim.customName = "SteadyAim";
+            steadyAim.movementType = AISkillDriver.MovementType.StrafeMovetarget;
+            steadyAim.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            steadyAim.activationRequiresAimConfirmation = true;
+            steadyAim.activationRequiresTargetLoS = false;
+            steadyAim.selectionRequiresTargetLoS = true;
+            steadyAim.maxDistance = 64f;
+            steadyAim.minDistance = 8f;
+            steadyAim.requireSkillReady = true;
+            steadyAim.aimType = AISkillDriver.AimType.AtCurrentEnemy;
+            steadyAim.ignoreNodeGraph = true;
+            steadyAim.moveInputScale = 0.4f;
+            steadyAim.driverUpdateTimerOverride = 0.5f;
+            steadyAim.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            steadyAim.minTargetHealthFraction = Mathf.NegativeInfinity;
+            steadyAim.maxTargetHealthFraction = Mathf.Infinity;
+            steadyAim.minUserHealthFraction = Mathf.NegativeInfinity;
+            steadyAim.maxUserHealthFraction = Mathf.Infinity;
+            steadyAim.skillSlot = SkillSlot.Secondary;
 
-            AISkillDriver followCloseDriver = newMaster.AddComponent<AISkillDriver>();
-            followCloseDriver.customName = "ChaseClose";
-            followCloseDriver.movementType = AISkillDriver.MovementType.ChaseMoveTarget;
-            followCloseDriver.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
-            followCloseDriver.activationRequiresAimConfirmation = false;
-            followCloseDriver.activationRequiresTargetLoS = false;
-            followCloseDriver.maxDistance = 32f;
-            followCloseDriver.minDistance = 0f;
-            followCloseDriver.aimType = AISkillDriver.AimType.AtMoveTarget;
-            followCloseDriver.ignoreNodeGraph = false;
-            followCloseDriver.moveInputScale = 1f;
-            followCloseDriver.driverUpdateTimerOverride = -1f;
-            followCloseDriver.buttonPressType = AISkillDriver.ButtonPressType.Hold;
-            followCloseDriver.minTargetHealthFraction = Mathf.NegativeInfinity;
-            followCloseDriver.maxTargetHealthFraction = Mathf.Infinity;
-            followCloseDriver.minUserHealthFraction = Mathf.NegativeInfinity;
-            followCloseDriver.maxUserHealthFraction = Mathf.Infinity;
-            followCloseDriver.skillSlot = SkillSlot.None;
+            AISkillDriver steadyAimShoot = newMaster.AddComponent<AISkillDriver>();
+            steadyAimShoot.customName = "SteadyAimShoot";
+            steadyAimShoot.movementType = AISkillDriver.MovementType.StrafeMovetarget;
+            steadyAimShoot.moveTargetType = AISkillDriver.TargetType.CurrentEnemy;
+            steadyAimShoot.activationRequiresAimConfirmation = true;
+            steadyAimShoot.activationRequiresTargetLoS = true;
+            steadyAimShoot.maxDistance = 64f;
+            steadyAimShoot.minDistance = 8f;
+            steadyAimShoot.aimType = AISkillDriver.AimType.AtMoveTarget;
+            steadyAimShoot.ignoreNodeGraph = false;
+            steadyAimShoot.moveInputScale = 1f;
+            steadyAimShoot.driverUpdateTimerOverride = 1f;
+            steadyAimShoot.buttonPressType = AISkillDriver.ButtonPressType.Hold;
+            steadyAimShoot.minTargetHealthFraction = Mathf.NegativeInfinity;
+            steadyAimShoot.maxTargetHealthFraction = Mathf.Infinity;
+            steadyAimShoot.minUserHealthFraction = Mathf.NegativeInfinity;
+            steadyAimShoot.maxUserHealthFraction = Mathf.Infinity;
+            steadyAimShoot.skillSlot = SkillSlot.Primary;
+            steadyAim.nextHighPriorityOverride = steadyAimShoot;
 
             AISkillDriver followDriver = newMaster.AddComponent<AISkillDriver>();
             followDriver.customName = "Chase";
@@ -479,11 +394,11 @@ namespace RobDriver.Modules.Survivors
             followDriver.maxTargetHealthFraction = Mathf.Infinity;
             followDriver.minUserHealthFraction = Mathf.NegativeInfinity;
             followDriver.maxUserHealthFraction = Mathf.Infinity;
-            followDriver.skillSlot = SkillSlot.None;
+            followDriver.skillSlot = SkillSlot.Utility;
             followDriver.shouldSprint = true;
             #endregion
 
-            Modules.Prefabs.masterPrefabs.Add(newMaster);
+            Prefabs.masterPrefabs.Add(newMaster);
 
             return newMaster;
         }
@@ -493,44 +408,41 @@ namespace RobDriver.Modules.Survivors
             ChildLocator childLocator = prefab.GetComponentInChildren<ChildLocator>();
             GameObject model = childLocator.gameObject;
 
-            Transform hitboxTransform = childLocator.FindChild("HammerBaseHitbox");
-            hitboxTransform.localScale *= 1.3f;
-            Modules.Prefabs.SetupHitbox(model, new Transform[]
-                {
-                    hitboxTransform
-                }, "Hammer");
+            Prefabs.SetupHitbox(model, "Hammer",
+            [
+                childLocator.FindChild("HammerHitbox")
+            ]);
 
-            hitboxTransform = childLocator.FindChild("KnifeHitbox");
-            hitboxTransform.localScale *= 2f;
-            Modules.Prefabs.SetupHitbox(model, new Transform[]
-                {
-                    hitboxTransform
-                }, "Knife");
+            Prefabs.SetupHitbox(model, "Sword",
+            [
+                childLocator.FindChild("SwordHitboxL"),
+                childLocator.FindChild("SwordHitboxR")
+            ]);
+
+            Prefabs.SetupHitbox(model, "Knife",
+            [
+                childLocator.FindChild("KnifeHitbox")
+            ]);
         }
 
         private static void CreateSkills(GameObject prefab)
         {
-            bool hasArsenal = Config.enableArsenal.Value;
-            DriverPassive passive = prefab.AddComponent<DriverPassive>();
-            DriverArsenal arsenal = prefab.AddComponent<DriverArsenal>();
-            Modules.Skills.CreateSkillFamilies(prefab);
+            Skills.CreateSkillFamilies(prefab);
 
-            string prefix = DriverPlugin.developerPrefix;
-            SkillLocator skillLocator = prefab.GetComponent<SkillLocator>();
+            var passive = prefab.GetComponent<DriverPassive>();
+            var skillLoc = prefab.GetComponent<SkillLocator>();
+            skillLoc.passiveSkill.enabled = false;
 
-            skillLocator.passiveSkill.enabled = false;
-            //skillLocator.passiveSkill.skillNameToken = prefix + "_DRIVER_BODY_PASSIVE_NAME";
-            //skillLocator.passiveSkill.skillDescriptionToken = prefix + "_DRIVER_BODY_PASSIVE_DESCRIPTION";
-            //skillLocator.passiveSkill.icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPassiveIcon");
+            string prefix = "ROB_DRIVER_BODY_";
 
             #region Misc
-            Driver.pistolReloadSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.pistolReloadSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_PRIMARY_RELOAD_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_PRIMARY_RELOAD_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_RELOAD_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texConfirmIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.ReloadPistol)),
+                skillName = prefix + "RELOAD_NAME",
+                skillNameToken = prefix + "RELOAD_NAME",
+                skillDescriptionToken = prefix + "RELOAD_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texConfirmIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Reload)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 0f,
@@ -548,12 +460,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.confirmSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.confirmSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_CONFIRM_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_CONFIRM_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_CONFIRM_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texConfirmIcon"),
+                skillName = prefix + "CONFIRM_NAME",
+                skillNameToken = prefix + "CONFIRM_NAME",
+                skillDescriptionToken = prefix + "CONFIRM_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texConfirmIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "fuck",
                 baseMaxStock = 1,
@@ -572,12 +484,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 0,
             });
 
-            Driver.cancelSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.cancelSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_CANCEL_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_CANCEL_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_CANCEL_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texCancelIcon"),
+                skillName = prefix + "CANCEL_NAME",
+                skillNameToken = prefix + "CANCEL_NAME",
+                skillDescriptionToken = prefix + "CANCEL_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texCancelIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "fuck",
                 baseMaxStock = 1,
@@ -598,13 +510,12 @@ namespace RobDriver.Modules.Survivors
             #endregion Misc
 
             #region Passive
-            //ROB_DRIVER_BODY_PASSIVE_NAME
-            passive.defaultPassive = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            DriverPassive.defaultPassive = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_PASSIVE_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_PASSIVE_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_PASSIVE_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPassiveIcon"),
+                skillName = prefix + "PASSIVE_NAME",
+                skillNameToken = prefix + "PASSIVE_NAME",
+                skillDescriptionToken = prefix + "PASSIVE_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPassiveIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "",
                 baseMaxStock = 1,
@@ -623,12 +534,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            passive.bulletsPassive = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            DriverPassive.bulletsPassive = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_PASSIVE3_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_PASSIVE3_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_PASSIVE3_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texLeadfootIcon"),
+                skillName = prefix + "PASSIVE3_NAME",
+                skillNameToken = prefix + "PASSIVE3_NAME",
+                skillDescriptionToken = prefix + "PASSIVE3_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texLeadfootIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "",
                 baseMaxStock = 1,
@@ -647,12 +558,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            passive.godslingPassive = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            DriverPassive.godslingPassive = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_PASSIVE4_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_PASSIVE4_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_PASSIVE4_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon"),
+                skillName = prefix + "PASSIVE4_NAME",
+                skillNameToken = prefix + "PASSIVE4_NAME",
+                skillDescriptionToken = prefix + "PASSIVE4_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "",
                 baseMaxStock = 1,
@@ -671,12 +582,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            passive.pistolOnlyPassive = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            DriverPassive.pistolOnlyPassive = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_PASSIVE2_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_PASSIVE2_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_PASSIVE2_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveLegacyIcon"),
+                skillName = prefix + "PASSIVE2_NAME",
+                skillNameToken = prefix + "PASSIVE2_NAME",
+                skillDescriptionToken = prefix + "PASSIVE2_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texAltPassiveLegacyIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle)),
                 activationStateMachineName = "",
                 baseMaxStock = 1,
@@ -695,232 +606,228 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            if (Modules.Config.cursed.Value)
-            {
-                Modules.Skills.AddPassiveSkills(prefab,
-                    passive.defaultPassive,
-                    passive.bulletsPassive,
-                    passive.godslingPassive,
-                    passive.pistolOnlyPassive);
+            Skills.AddPassiveSkills(passive,
+                new Skills.SkillDefPair(DriverPassive.defaultPassive),
+                new Skills.SkillDefPair(DriverPassive.bulletsPassive, Unlockables.pistolPassiveUnlockableDef),
+                new Skills.SkillDefPair(DriverPassive.godslingPassive, Unlockables.godslingPassiveUnlockableDef));
 
-                Modules.Skills.AddUnlockablesToFamily(passive.passiveSkillSlot.skillFamily,
-                null, Unlockables.pistolPassiveUnlockableDef, Unlockables.godslingPassiveUnlockableDef, Unlockables.pistolPassiveUnlockableDef);
-            }
-            else
-            {
-                Modules.Skills.AddPassiveSkills(prefab,
-                    passive.defaultPassive,
-                    passive.bulletsPassive,
-                    passive.godslingPassive);
-
-                Modules.Skills.AddUnlockablesToFamily(passive.passiveSkillSlot.skillFamily,
-                null, Unlockables.pistolPassiveUnlockableDef, Unlockables.godslingPassiveUnlockableDef);
-            }
+            if (Config.cursed.Value)
+                Skills.AddPassiveSkills(passive, new Skills.SkillDefPair(DriverPassive.pistolOnlyPassive, Unlockables.pistolPassiveUnlockableDef));
             #endregion
 
             #region Primary
-            Modules.Skills.AddPrimarySkills(prefab,
-                Modules.Skills.CreatePrimarySkillDef(new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shoot)),
+            Skills.pistolPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_PISTOL_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_PISTOL_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false));
+                prefix + "PRIMARY_PISTOL_NAME",
+                prefix + "PRIMARY_PISTOL_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
 
-            Driver.goldenGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
-                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.GoldenGun.Shoot)),
-                "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_GOLDENGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_GOLDENGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunIcon"), false);
-
-            Driver.pyriteGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
-                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.PyriteGun.Shoot)),
-                "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_PYRITE_PISTOL_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_PYRITE_PISTOL_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunIcon"), false);
-
-            Driver.beetleShieldPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.beetleShieldPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.BeetleShield.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_PISTOL_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_PISTOL_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
+                prefix + "PRIMARY_BEETLESHIELD_NAME",
+                prefix + "PRIMARY_BEETLESHIELD_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
 
-            Driver.lunarPistolPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.lunarPistolPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.LunarPistol.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNAR_PISTOL_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNAR_PISTOL_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
+                prefix + "PRIMARY_LUNAR_PISTOL_NAME",
+                prefix + "PRIMARY_LUNAR_PISTOL_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
 
-            Driver.voidPistolPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.voidPistolPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.VoidPistol.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_VOID_PISTOL_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_VOID_PISTOL_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
+                prefix + "PRIMARY_VOID_PISTOL_NAME",
+                prefix + "PRIMARY_VOID_PISTOL_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolIcon"), false);
 
-            Driver.shotgunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.pyriteGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.PyriteGun.Shoot)),
+                "Weapon",
+                prefix + "PRIMARY_PYRITE_PISTOL_NAME",
+                prefix + "PRIMARY_PYRITE_PISTOL_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunIcon"), false);
+
+            Skills.goldenGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.GoldenGun.Shoot)),
+                "Weapon",
+                prefix + "PRIMARY_GOLDENGUN_NAME",
+                prefix + "PRIMARY_GOLDENGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunIcon"), false);
+
+            Skills.revolverPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Revolver.Shoot)),
+                "Weapon",
+                prefix + "PRIMARY_REVOLVER_NAME",
+                prefix + "PRIMARY_REVOLVER_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunIcon"),
+                false);
+
+            Skills.shotgunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_SHOTGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_SHOTGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunIcon"),
+                prefix + "PRIMARY_SHOTGUN_NAME",
+                prefix + "PRIMARY_SHOTGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunIcon"),
                 false);
 
-            Driver.riotShotgunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.riotShotgunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RiotShotgun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_RIOT_SHOTGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_RIOT_SHOTGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRiotShotgunIcon"),
+                prefix + "PRIMARY_RIOT_SHOTGUN_NAME",
+                prefix + "PRIMARY_RIOT_SHOTGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texRiotShotgunIcon"),
                 false);
 
-            Driver.slugShotgunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.slugShotgunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SlugShotgun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_SLUG_SHOTGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_SLUG_SHOTGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSlugShotgunIcon"),
+                prefix + "PRIMARY_SLUG_SHOTGUN_NAME",
+                prefix + "PRIMARY_SLUG_SHOTGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSlugShotgunIcon"),
                 false);
 
-            Driver.machineGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.machineGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.MachineGun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_MACHINEGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_MACHINEGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMachineGunIcon"),
+                prefix + "PRIMARY_MACHINEGUN_NAME",
+                prefix + "PRIMARY_MACHINEGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texMachineGunIcon"),
                 false);
 
-            Driver.heavyMachineGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.heavyMachineGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.HeavyMachineGun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_HEAVY_MACHINEGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_HEAVY_MACHINEGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texMachineGunIcon"),
+                prefix + "PRIMARY_HEAVY_MACHINEGUN_NAME",
+                prefix + "PRIMARY_HEAVY_MACHINEGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texMachineGunIcon"),
                 false);
 
-            Driver.bazookaPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.bazookaPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Bazooka.Charge)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_BAZOOKA_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_BAZOOKA_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
+                prefix + "PRIMARY_BAZOOKA_NAME",
+                prefix + "PRIMARY_BAZOOKA_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
                 false);
 
-            Driver.rocketLauncherPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.rocketLauncherPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RocketLauncher.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_ROCKETLAUNCHER_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_ROCKETLAUNCHER_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
+                prefix + "PRIMARY_ROCKETLAUNCHER_NAME",
+                prefix + "PRIMARY_ROCKETLAUNCHER_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
                 false);
 
-            Driver.behemothPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.behemothPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RocketLauncher.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_ROCKETLAUNCHER_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_ROCKETLAUNCHER_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
+                prefix + "PRIMARY_ROCKETLAUNCHER_NAME",
+                prefix + "PRIMARY_ROCKETLAUNCHER_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
                 false);
 
-            Driver.rocketLauncherAltPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.rocketLauncherAltPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RocketLauncher.NerfedShoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_ROCKETLAUNCHER_ALT_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_ROCKETLAUNCHER_ALT_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
+                prefix + "PRIMARY_ROCKETLAUNCHER_ALT_NAME",
+                prefix + "PRIMARY_ROCKETLAUNCHER_ALT_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
                 false);
 
-            Driver.grenadeLauncherPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.grenadeLauncherPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.GrenadeLauncher.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_GRENADELAUNCHER_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_GRENADELAUNCHER_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
+                prefix + "PRIMARY_GRENADELAUNCHER_NAME",
+                prefix + "PRIMARY_GRENADELAUNCHER_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherIcon"),
                 false);
 
-            Driver.armCannonPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.armCannonPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.ArmCannon.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_ARMCANNON_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_ARMCANNON_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texArmCannonIcon"),
+                prefix + "PRIMARY_ARMCANNON_NAME",
+                prefix + "PRIMARY_ARMCANNON_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texArmCannonIcon"),
                 false);
 
-            Driver.plasmaCannonPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.plasmaCannonPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.PlasmaCannon.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_PLASMACANNON_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_PLASMACANNON_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPlasmaCannonIcon"),
+                prefix + "PRIMARY_PLASMACANNON_NAME",
+                prefix + "PRIMARY_PLASMACANNON_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texPlasmaCannonIcon"),
                 false);
 
-            Driver.sniperPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.sniperPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SniperRifle.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_SNIPER_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_SNIPER_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSlugShotgunIcon"),
+                prefix + "PRIMARY_SNIPER_NAME",
+                prefix + "PRIMARY_SNIPER_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSlugShotgunIcon"),
                 false);
 
-            Driver.badassShotgunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.badassShotgunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.BadassShotgun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_BADASS_SHOTGUN_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_BADASS_SHOTGUN_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunIcon"),
+                prefix + "PRIMARY_BADASS_SHOTGUN_NAME",
+                prefix + "PRIMARY_BADASS_SHOTGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunIcon"),
                 false);
 
-            Driver.lunarRiflePrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.lunarRiflePrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.LunarRifle.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNARRIFLE_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNARRIFLE_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texLunarRifleIcon"),
+                prefix + "PRIMARY_LUNARRIFLE_NAME",
+                prefix + "PRIMARY_LUNARRIFLE_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texLunarRifleIcon"),
                 false);
 
-            Driver.golemGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.golemGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.GolemGun.ChargeLaser)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNARRIFLE_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNARRIFLE_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGolemGunIcon"),
+                prefix + "PRIMARY_GOLEMGUN_NAME",
+                prefix + "PRIMARY_GOLEMGUN_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texGolemGunIcon"),
                 false);
 
-            Driver.lunarHammerPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
+            Skills.lunarHammerPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.LunarHammer.SwingCombo)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNARHAMMER_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_LUNARHAMMER_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texLunarHammerIcon"),
+                prefix + "PRIMARY_LUNARHAMMER_NAME",
+                prefix + "PRIMARY_LUNARHAMMER_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texLunarHammerIcon"),
                 false);
 
-            Driver.nemmandoGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
-                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.NemmandoGun.Shoot)),
+            Skills.nemmandoGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.NemmandoGun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_NEMMANDO_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_NEMMANDO_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texNemmandoPrimaryIcon"),
+                prefix + "PRIMARY_NEMMANDO_NAME",
+                prefix + "PRIMARY_NEMMANDO_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texNemmandoPrimaryIcon"),
                 false);
 
-            Driver.nemmercGunPrimarySkillDef = Modules.Skills.CreatePrimarySkillDef(
-                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.NemmercGun.Shoot)),
+            Skills.nemmercGunPrimarySkillDef = Skills.CreateAndAddPrimarySkillDef(
+                new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.NemmercGun.Shoot)),
                 "Weapon",
-                prefix + "_DRIVER_BODY_PRIMARY_NEMMERC_NAME",
-                prefix + "_DRIVER_BODY_PRIMARY_NEMMERC_DESCRIPTION",
-                Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texNemmercPrimaryIcon"),
+                prefix + "PRIMARY_NEMMERC_NAME",
+                prefix + "PRIMARY_NEMMERC_DESCRIPTION",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texNemmercPrimaryIcon"),
                 false);
+
+            Skills.AddPrimarySkills(skillLoc, Skills.pistolPrimarySkillDef);
             #endregion
 
             #region Secondary
-            SkillDef steadyAimSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.pistolSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_PISTOL_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_PISTOL_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_PISTOL_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
+                skillName = prefix + "SECONDARY_PISTOL_NAME",
+                skillNameToken = prefix + "SECONDARY_PISTOL_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_PISTOL_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SteadyAim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 3,
@@ -937,14 +844,15 @@ namespace RobDriver.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 0,
                 stockToConsume = 0,
+                autoHandleLuminousShot = false
             });
 
-            Driver.beetleShieldSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.beetleShieldSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_BEETLESHIELD_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_BEETLESHIELD_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_BEETLESHIELD_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
+                skillName = prefix + "SECONDARY_BEETLESHIELD_NAME",
+                skillNameToken = prefix + "SECONDARY_BEETLESHIELD_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_BEETLESHIELD_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.BeetleShield.SteadyAim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 3,
@@ -961,14 +869,15 @@ namespace RobDriver.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 0,
                 stockToConsume = 0,
+                autoHandleLuminousShot = false
             });
 
-            Driver.pyriteGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.pyriteGunSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_PYRITE_PISTOL_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_PYRITE_PISTOL_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_PYRITE_PISTOL_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
+                skillName = prefix + "SECONDARY_PYRITE_PISTOL_NAME",
+                skillNameToken = prefix + "SECONDARY_PYRITE_PISTOL_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_PYRITE_PISTOL_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.PyriteGun.SteadyAim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 3,
@@ -985,14 +894,15 @@ namespace RobDriver.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 0,
                 stockToConsume = 0,
+                autoHandleLuminousShot = false
             });
 
-            Driver.lunarPistolSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.lunarPistolSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_LUNAR_PISTOL_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_LUNAR_PISTOL_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_LUNAR_PISTOL_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
+                skillName = prefix + "SECONDARY_LUNAR_PISTOL_NAME",
+                skillNameToken = prefix + "SECONDARY_LUNAR_PISTOL_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_LUNAR_PISTOL_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.LunarPistol.SteadyAim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 3,
@@ -1009,14 +919,15 @@ namespace RobDriver.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 0,
                 stockToConsume = 0,
+                autoHandleLuminousShot = false
             });
 
-            Driver.voidPistolSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.voidPistolSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_VOID_PISTOL_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_VOID_PISTOL_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_VOID_PISTOL_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
+                skillName = prefix + "SECONDARY_VOID_PISTOL_NAME",
+                skillNameToken = prefix + "SECONDARY_VOID_PISTOL_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_VOID_PISTOL_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.VoidPistol.SteadyAim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 3,
@@ -1033,14 +944,15 @@ namespace RobDriver.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 0,
                 stockToConsume = 0,
+                autoHandleLuminousShot = false
             });
 
-            Driver.goldenGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.goldenGunSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_GOLDENGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_GOLDENGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_GOLDENGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunSecondaryIcon"),
+                skillName = prefix + "SECONDARY_GOLDENGUN_NAME",
+                skillNameToken = prefix + "SECONDARY_GOLDENGUN_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_GOLDENGUN_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texGoldenGunSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.GoldenGun.AimLightsOut)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1059,13 +971,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.shotgunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.bashSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
+                skillName = prefix + "SECONDARY_BASH_NAME",
+                skillNameToken = prefix + "SECONDARY_BASH_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_BASH_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(Bash)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 6f,
@@ -1083,84 +995,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.riotShotgunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.machineGunSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.slugShotgunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.grenadeLauncherSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.machineGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_MACHINEGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_MACHINEGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_MACHINEGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texZapIcon"),
+                skillName = prefix + "SECONDARY_MACHINEGUN_NAME",
+                skillNameToken = prefix + "SECONDARY_MACHINEGUN_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_MACHINEGUN_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texZapIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.MachineGun.Zap)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1179,12 +1019,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.heavyMachineGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.heavyMachineGunSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_HEAVY_MACHINEGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_HEAVY_MACHINEGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_HEAVY_MACHINEGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texHeavyMachineGunSecondaryIcon"),
+                skillName = prefix + "SECONDARY_HEAVY_MACHINEGUN_NAME",
+                skillNameToken = prefix + "SECONDARY_HEAVY_MACHINEGUN_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_HEAVY_MACHINEGUN_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texHeavyMachineGunSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.HeavyMachineGun.ShootGrenade)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1203,12 +1043,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.rocketLauncherSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.rocketLauncherSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
+                skillName = prefix + "SECONDARY_ROCKETLAUNCHER_NAME",
+                skillNameToken = prefix + "SECONDARY_ROCKETLAUNCHER_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_ROCKETLAUNCHER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RocketLauncher.Barrage)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1227,12 +1067,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.behemothSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.behemothSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
+                skillName = prefix + "SECONDARY_ROCKETLAUNCHER_NAME",
+                skillNameToken = prefix + "SECONDARY_ROCKETLAUNCHER_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_ROCKETLAUNCHER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RocketLauncher.Barrage)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1251,12 +1091,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.rocketLauncherAltSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.rocketLauncherAltSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_ALT_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_ALT_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_ROCKETLAUNCHER_ALT_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
+                skillName = prefix + "SECONDARY_ROCKETLAUNCHER_ALT_NAME",
+                skillNameToken = prefix + "SECONDARY_ROCKETLAUNCHER_ALT_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_ROCKETLAUNCHER_ALT_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RocketLauncher.NerfedBarrage)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1275,36 +1115,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.bazookaSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.sniperSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.sniperSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SNIPER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SNIPER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SNIPER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
+                skillName = prefix + "SECONDARY_SNIPER_NAME",
+                skillNameToken = prefix + "SECONDARY_SNIPER_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_SNIPER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SniperRifle.Aim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1321,14 +1137,15 @@ namespace RobDriver.Modules.Survivors
                 rechargeStock = 1,
                 requiredStock = 0,
                 stockToConsume = 0,
+                autoHandleLuminousShot = false,
             });
 
-            Driver.plasmaCannonSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.plasmaCannonSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_PLASMACANNON_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_PLASMACANNON_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_PLASMACANNON_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
+                skillName = prefix + "SECONDARY_PLASMACANNON_NAME",
+                skillNameToken = prefix + "SECONDARY_PLASMACANNON_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_PLASMACANNON_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texRocketLauncherSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.PlasmaCannon.Barrage)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1347,93 +1164,21 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.armCannonSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.lunarHammerSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.badassShotgunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.lunarRifleSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.lunarHammerSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_LUNARHAMMER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_LUNARHAMMER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_LUNARHAMMER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texLunarShardIcon"),
+                skillName = prefix + "SECONDARY_LUNARHAMMER_NAME",
+                skillNameToken = prefix + "SECONDARY_LUNARHAMMER_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_LUNARHAMMER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texLunarShardIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.LunarHammer.FireShard)),
-                activationStateMachineName = "Shard",
+                activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 0f,
                 beginSkillCooldownOnSkillEnd = false,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
                 fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
+                interruptPriority = EntityStates.InterruptPriority.Any,
                 resetCooldownTimerOnUse = true,
                 isCombatSkill = true,
                 mustKeyPress = false,
@@ -1443,13 +1188,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 0,
             });
 
-            Driver.nemmandoGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.nemmandoGunSecondarySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_NEMMANDO_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_NEMMANDO_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_NEMMANDO_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texNemmandoSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.NemmandoGun.Submission)),
+                skillName = prefix + "SECONDARY_NEMMANDO_NAME",
+                skillNameToken = prefix + "SECONDARY_NEMMANDO_NAME",
+                skillDescriptionToken = prefix + "SECONDARY_NEMMANDO_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texNemmandoSecondaryIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.NemmandoGun.Submission)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 6f,
@@ -1458,7 +1203,7 @@ namespace RobDriver.Modules.Survivors
                 forceSprintDuringState = false,
                 fullRestockOnAssign = true,
                 interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
+                resetCooldownTimerOnUse = false,
                 isCombatSkill = true,
                 mustKeyPress = false,
                 cancelSprintingOnActivation = true,
@@ -1467,64 +1212,16 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1,
             });
 
-            Driver.nemmercGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Driver.golemGunSecondarySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
-            {
-                skillName = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SECONDARY_SHOTGUN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Shotgun.Bash)),
-                activationStateMachineName = "Weapon",
-                baseMaxStock = 1,
-                baseRechargeInterval = 6f,
-                beginSkillCooldownOnSkillEnd = false,
-                canceledFromSprinting = false,
-                forceSprintDuringState = false,
-                fullRestockOnAssign = true,
-                interruptPriority = EntityStates.InterruptPriority.Skill,
-                resetCooldownTimerOnUse = true,
-                isCombatSkill = true,
-                mustKeyPress = false,
-                cancelSprintingOnActivation = true,
-                rechargeStock = 1,
-                requiredStock = 1,
-                stockToConsume = 1,
-            });
-
-            Modules.Skills.AddSecondarySkills(prefab, steadyAimSkillDef/*, pissSkillDef*/);
+            Skills.AddSecondarySkills(skillLoc, Skills.pistolSecondarySkillDef);
             #endregion
 
             #region Utility
-            SkillDef slideSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.slideSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_UTILITY_SLIDE_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_UTILITY_SLIDE_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_UTILITY_SLIDE_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSlideIcon"),
+                skillName = prefix + "UTILITY_SLIDE_NAME",
+                skillNameToken = prefix + "UTILITY_SLIDE_NAME",
+                skillDescriptionToken = prefix + "UTILITY_SLIDE_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSlideIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Slide)),
                 activationStateMachineName = "Slide",
                 baseMaxStock = 1,
@@ -1543,17 +1240,17 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            skateboardSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.skateboardSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_UTILITY_SKATEBOARD_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_UTILITY_SKATEBOARD_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_UTILITY_SKATEBOARD_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSkateboardIcon"),
+                skillName = prefix + "UTILITY_SKATEBOARD_NAME",
+                skillNameToken = prefix + "UTILITY_SKATEBOARD_NAME",
+                skillDescriptionToken = prefix + "UTILITY_SKATEBOARD_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSkateboardIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Skateboard.Start)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 1f,
-                beginSkillCooldownOnSkillEnd = false,
+                beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = true,
                 fullRestockOnAssign = false,
@@ -1567,21 +1264,21 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            skateCancelSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.skateCancelSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_UTILITY_SKATEBOARD_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_UTILITY_SKATEBOARD_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_UTILITY_SKATEBOARD2_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texCancelIcon"),
+                skillName = prefix + "UTILITY_SKATEBOARD_NAME",
+                skillNameToken = prefix + "UTILITY_SKATEBOARD_NAME",
+                skillDescriptionToken = prefix + "UTILITY_SKATEBOARD2_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texCancelIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Skateboard.Stop)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 1f,
-                beginSkillCooldownOnSkillEnd = false,
+                beginSkillCooldownOnSkillEnd = true,
                 canceledFromSprinting = false,
                 forceSprintDuringState = true,
                 fullRestockOnAssign = false,
-                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
+                interruptPriority = EntityStates.InterruptPriority.Any,
                 resetCooldownTimerOnUse = true,
                 isCombatSkill = false,
                 mustKeyPress = true,
@@ -1591,12 +1288,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            SkillDef dashSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.dashSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_UTILITY_DASH_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_UTILITY_DASH_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_UTILITY_DASH_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texDashIcon"),
+                skillName = prefix + "UTILITY_DASH_NAME",
+                skillNameToken = prefix + "UTILITY_DASH_NAME",
+                skillDescriptionToken = prefix + "UTILITY_DASH_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texDashIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Dash)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 2,
@@ -1615,16 +1312,16 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            Modules.Skills.AddUtilitySkills(prefab, slideSkillDef, dashSkillDef, skateboardSkillDef);
+            Skills.AddUtilitySkills(skillLoc, Skills.slideSkillDef, Skills.dashSkillDef, Skills.skateboardSkillDef);
             #endregion
 
             #region Special
-            SkillDef stunGrenadeSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.stunGrenadeSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_GRENADE_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_GRENADE_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_GRENADE_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texStunGrenadeIcon"),
+                skillName = prefix + "SPECIAL_GRENADE_NAME",
+                skillNameToken = prefix + "SPECIAL_GRENADE_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_GRENADE_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texStunGrenadeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.ThrowGrenade)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1643,13 +1340,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            scepterGrenadeSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.scepterGrenadeSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_GRENADE_SCEPTER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_GRENADE_SCEPTER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_GRENADE_SCEPTER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texStunGrenadeScepterIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.ThrowMolotov)),
+                skillName = prefix + "SPECIAL_GRENADE_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_GRENADE_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_GRENADE_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texStunGrenadeScepterIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.ThrowMolotov)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 12f,
@@ -1667,12 +1364,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            knifeSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.knifeSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_KNIFE_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_KNIFE_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_KNIFE_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texKnifeIcon"),
+                skillName = prefix + "SPECIAL_KNIFE_NAME",
+                skillNameToken = prefix + "SPECIAL_KNIFE_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_KNIFE_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texKnifeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SwingKnife)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1691,16 +1388,16 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            scepterKnifeSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.scepterKnifeSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_KNIFE_SCEPTER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_KNIFE_SCEPTER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_KNIFE_SCEPTER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texKnifeScepterIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SwingKnifeScepter)),
+                skillName = prefix + "SPECIAL_KNIFE_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_KNIFE_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_KNIFE_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texKnifeScepterIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.SwingKnifeScepter)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 2,
-                baseRechargeInterval = 3.5f,
+                baseRechargeInterval = 4f,
                 beginSkillCooldownOnSkillEnd = false,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
@@ -1709,18 +1406,18 @@ namespace RobDriver.Modules.Survivors
                 resetCooldownTimerOnUse = false,
                 isCombatSkill = true,
                 mustKeyPress = false,
-                cancelSprintingOnActivation = true,
+                cancelSprintingOnActivation = false,
                 rechargeStock = 1,
                 requiredStock = 1,
                 stockToConsume = 1
             });
 
-            SkillDef supplyDropSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.supplyDropSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropIcon"),
+                skillName = prefix + "SPECIAL_SUPPLY_DROP_NAME",
+                skillNameToken = prefix + "SPECIAL_SUPPLY_DROP_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SUPPLY_DROP_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SupplyDrop.Nerfed.AimCrapDrop)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1739,13 +1436,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 0
             });
 
-            scepterSupplyDropSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.scepterSupplyDropSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_SCEPTER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_SCEPTER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_SCEPTER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropScepterIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SupplyDrop.Scepter.AimVoidDrop)),
+                skillName = prefix + "SPECIAL_SUPPLY_DROP_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_SUPPLY_DROP_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SUPPLY_DROP_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropScepterIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.SupplyDrop.AimVoidDrop)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 24f,
@@ -1763,12 +1460,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 0
             });
 
-            SkillDef supplyDropLegacySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.supplyDropLegacySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_LEGACY_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_LEGACY_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_LEGACY_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropLegacyIcon"),
+                skillName = prefix + "SPECIAL_SUPPLY_DROP_LEGACY_NAME",
+                skillNameToken = prefix + "SPECIAL_SUPPLY_DROP_LEGACY_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SUPPLY_DROP_LEGACY_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropLegacyIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SupplyDrop.AimSupplyDrop)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1787,13 +1484,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 0
             });
 
-            scepterSupplyDropLegacySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.scepterSupplyDropLegacySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_LEGACY_SCEPTER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_LEGACY_SCEPTER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SUPPLY_DROP_LEGACY_SCEPTER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropLegacyScepterIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.SupplyDrop.Scepter.AimVoidDrop)),
+                skillName = prefix + "SPECIAL_SUPPLY_DROP_LEGACY_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_SUPPLY_DROP_LEGACY_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SUPPLY_DROP_LEGACY_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSupplyDropLegacyScepterIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.SupplyDrop.AimVoidDrop)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 0f,
@@ -1811,12 +1508,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 0
             });
 
-            SkillDef healSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.healSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_HEAL_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_HEAL_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_HEAL_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texStunGrenadeIcon"),
+                skillName = prefix + "SPECIAL_HEAL_NAME",
+                skillNameToken = prefix + "SPECIAL_HEAL_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_HEAL_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texStunGrenadeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Heal)),
                 activationStateMachineName = "Body",
                 baseMaxStock = 1,
@@ -1835,12 +1532,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            SkillDef syringeSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.syringeSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SYRINGE_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGE_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGE_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeIcon"),
+                skillName = prefix + "SPECIAL_SYRINGE_NAME",
+                skillNameToken = prefix + "SPECIAL_SYRINGE_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SYRINGE_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.UseSyringe)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1859,13 +1556,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            scepterSyringeSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.scepterSyringeSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SYRINGE_SCEPTER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGE_SCEPTER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGE_SCEPTER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeScepterIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.UseSyringeScepter)),
+                skillName = prefix + "SPECIAL_SYRINGE_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_SYRINGE_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SYRINGE_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeScepterIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.UseSyringeScepter)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 12f,
@@ -1883,12 +1580,12 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            SkillDef syringeLegacySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.syringeLegacySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SYRINGELEGACY_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGELEGACY_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGELEGACY_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeLegacyIcon"),
+                skillName = prefix + "SPECIAL_SYRINGELEGACY_NAME",
+                skillNameToken = prefix + "SPECIAL_SYRINGELEGACY_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SYRINGELEGACY_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeLegacyIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.UseSyringeLegacy)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
@@ -1907,13 +1604,13 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            scepterSyringeLegacySkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.scepterSyringeLegacySkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_SYRINGELEGACY_SCEPTER_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGELEGACY_SCEPTER_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_SYRINGELEGACY_SCEPTER_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeLegacyScepterIcon"),
-                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.UseSyringeScepter)),
+                skillName = prefix + "SPECIAL_SYRINGELEGACY_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_SYRINGELEGACY_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_SYRINGELEGACY_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texSyringeLegacyScepterIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.UseSyringeScepter)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 1,
                 baseRechargeInterval = 12f,
@@ -1931,14 +1628,14 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            SkillDef coinSkillDef = Modules.Skills.CreateSkillDef(new SkillDefInfo
+            Skills.coinSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                skillName = prefix + "_DRIVER_BODY_SPECIAL_DRIVERCOIN_NAME",
-                skillNameToken = prefix + "_DRIVER_BODY_SPECIAL_DRIVERCOIN_NAME",
-                skillDescriptionToken = prefix + "_DRIVER_BODY_SPECIAL_DRIVERCOIN_DESCRIPTION",
-                skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
+                skillName = prefix + "SPECIAL_DRIVERCOIN_NAME",
+                skillNameToken = prefix + "SPECIAL_DRIVERCOIN_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_DRIVERCOIN_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Coin)),
-                activationStateMachineName = "Shard",
+                activationStateMachineName = "AltWeapon",
                 baseMaxStock = 2,
                 baseRechargeInterval = 5f,
                 beginSkillCooldownOnSkillEnd = false,
@@ -1955,46 +1652,70 @@ namespace RobDriver.Modules.Survivors
                 stockToConsume = 1
             });
 
-            if (Modules.Config.cursed.Value)
+            Skills.scepterCoinSkillDef = Skills.CreateAndAddSkillDef(new SkillDefInfo
             {
-                Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, supplyDropLegacySkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, syringeLegacySkillDef, coinSkillDef);
-                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, Unlockables.supplyDropUnlockableDef, Unlockables.supplyDropUnlockableDef);
-            }
-            else
-            {
-                Modules.Skills.AddSpecialSkills(prefab, stunGrenadeSkillDef, supplyDropSkillDef, knifeSkillDef, /*healSkillDef,*/ syringeSkillDef, coinSkillDef);
-                Modules.Skills.AddUnlockablesToFamily(skillLocator.special.skillFamily, null, Unlockables.supplyDropUnlockableDef);
-            }
+                skillName = prefix + "SPECIAL_DRIVERCOIN_SCEPTER_NAME",
+                skillNameToken = prefix + "SPECIAL_DRIVERCOIN_SCEPTER_NAME",
+                skillDescriptionToken = prefix + "SPECIAL_DRIVERCOIN_SCEPTER_DESCRIPTION",
+                skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texShotgunSecondaryIcon"),
+                activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Scepter.CoinScepter)),
+                activationStateMachineName = "AltWeapon",
+                baseMaxStock = 2,
+                baseRechargeInterval = 5f,
+                beginSkillCooldownOnSkillEnd = false,
+                canceledFromSprinting = false,
+                forceSprintDuringState = false,
+                fullRestockOnAssign = false,
+                interruptPriority = EntityStates.InterruptPriority.PrioritySkill,
+                resetCooldownTimerOnUse = false,
+                isCombatSkill = false,
+                mustKeyPress = true,
+                cancelSprintingOnActivation = false,
+                rechargeStock = 1,
+                requiredStock = 1,
+                stockToConsume = 1
+            });
+            
+            Skills.AddSpecialSkills(skillLoc, 
+                new Skills.SkillDefPair(Skills.stunGrenadeSkillDef),
+                new Skills.SkillDefPair(Skills.supplyDropSkillDef, Unlockables.supplyDropUnlockableDef));
+
+            if (Config.cursed.Value)
+                Skills.AddSpecialSkills(skillLoc, new Skills.SkillDefPair(Skills.supplyDropLegacySkillDef, Unlockables.supplyDropUnlockableDef));
+
+            Skills.AddSpecialSkills(skillLoc,
+                new Skills.SkillDefPair(Skills.knifeSkillDef),
+                new Skills.SkillDefPair(Skills.syringeSkillDef));
+
+            if (Config.cursed.Value)
+                Skills.AddSpecialSkills(skillLoc, new Skills.SkillDefPair(Skills.syringeLegacySkillDef));
+
+            Skills.AddSpecialSkills(skillLoc, new Skills.SkillDefPair(Skills.coinSkillDef));
             #endregion
 
             if (DriverPlugin.ScepterInstalled)
                 InitializeScepterSkills();
-
-            Assets.InitWeaponDefs();
-
-            if (hasArsenal)
-            {
-                Skills.AddWeaponSkill(prefab, DriverWeaponCatalog.Pistol, locked: false);
-                Skills.AddWeaponSkills(prefab, DriverWeaponCatalog.weaponDefs.Skip(1), locked: true);
-            }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void InitializeScepterSkills()
         {
-            AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterGrenadeSkillDef, bodyName, SkillSlot.Special, 0);
-            AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterSupplyDropSkillDef, bodyName, SkillSlot.Special, 1);
+            AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterGrenadeSkillDef, bodyName, SkillSlot.Special, 0);
+            AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterSupplyDropSkillDef, bodyName, SkillSlot.Special, 1);
 
-            if (Modules.Config.cursed.Value)
+            if (Config.cursed.Value)
             {
-                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterSupplyDropLegacySkillDef, bodyName, SkillSlot.Special, 2);
-                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterKnifeSkillDef, bodyName, SkillSlot.Special, 3);
-                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterSyringeSkillDef, bodyName, SkillSlot.Special, 4);
-                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterSyringeLegacySkillDef, bodyName, SkillSlot.Special, 5);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterSupplyDropLegacySkillDef, bodyName, SkillSlot.Special, 2);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterKnifeSkillDef, bodyName, SkillSlot.Special, 3);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterSyringeSkillDef, bodyName, SkillSlot.Special, 4);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterSyringeLegacySkillDef, bodyName, SkillSlot.Special, 5);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterCoinSkillDef, bodyName, SkillSlot.Special, 6);
             }
             else
             {
-                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterKnifeSkillDef, bodyName, SkillSlot.Special, 2);
-                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(scepterSyringeSkillDef, bodyName, SkillSlot.Special, 3);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterKnifeSkillDef, bodyName, SkillSlot.Special, 2);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterSyringeSkillDef, bodyName, SkillSlot.Special, 3);
+                AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterCoinSkillDef, bodyName, SkillSlot.Special, 4);
             }
         }
 
@@ -2009,370 +1730,274 @@ namespace RobDriver.Modules.Survivors
             ModelSkinController skinController = model.AddComponent<ModelSkinController>();
             ChildLocator childLocator = model.GetComponent<ChildLocator>();
 
-            List<SkinDef> skins = [];
-            GameObject sluggerCloth = childLocator.FindChild("SluggerCloth").gameObject;
-            GameObject tie = childLocator.FindChild("Tie").gameObject;
+            GameObject sluggerCloth = childLocator.FindChildGameObject("SluggerCloth");
+            GameObject tie = childLocator.FindChildGameObject("Tie");
 
-            #region DefaultSkin
-            SkinDef defaultSkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_DEFAULT_SKIN_NAME",
+            SkinDef defaultSkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_DEFAULT_SKIN_NAME",
                 Assets.mainAssetBundle.LoadAsset<Sprite>("texMainSkin"),
+                model, 
+                null,
                 defaultRenderers,
-                mainRenderer,
-                model);
-
-            defaultSkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshDriver")
-                }
-            };
-
-            defaultSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-
-
-            #endregion
-
-            #region MasterySkin
-            SkinDef masterySkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOON_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texMonsoonSkin"),
-                SkinRendererInfos(defaultRenderers, new Material[]
-                {
-                    Modules.Assets.CreateMaterial("matJacket", 1f, Color.white)
-                }),
-                mainRenderer,
-                model,
-                Unlockables.masteryUnlockableDef);
-
-            masterySkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshJacket")
-                }
-            };
-
-            masterySkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-
-
-            #endregion
-
-            #region GrandMasterySkin
-            SkinDef grandMasterySkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_TYPHOON_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texTyphoonSkin"),
-                SkinRendererInfos(defaultRenderers, new Material[]
-                {
-                    Modules.Assets.CreateMaterial("matSlugger", 1f, Color.white)
-                }),
-                mainRenderer,
-                model,
-                Unlockables.grandMasteryUnlockableDef);
-
-            grandMasterySkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshSlugger")
-                }
-            };
-
-            grandMasterySkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = true
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-
-            #endregion
-
-            #region SpecialForcesSkin
-            SkinDef specialForcesSkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_SPECIALFORCES_SKIN_NAME",
-            Assets.mainAssetBundle.LoadAsset<Sprite>("texSpecialForcesSkin"),
-            SkinRendererInfos(defaultRenderers, new Material[]
-            {
-                Modules.Assets.CreateMaterial("matSpecialForces", 1f, Color.white)
-            }),
-            mainRenderer,
-            model);
-
-            specialForcesSkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshSpecialForces")
-                }
-            };
-
-            specialForcesSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-            #endregion
-
-            #region GuerrillaSkin
-            SkinDef guerrillaSkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_GUERRILLA_SKIN_NAME",
-            Assets.mainAssetBundle.LoadAsset<Sprite>("texGuerrillaSkin"),
-            SkinRendererInfos(defaultRenderers, new Material[]
-            {
-                            Modules.Assets.CreateMaterial("matGuerrilla", 1f, Color.white)
-            }),
-            mainRenderer,
-            model);
-
-            guerrillaSkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshGuerrilla")
-                }
-            };
-
-            guerrillaSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-
-            #endregion
-
-            #region SuitSkin
-            SkinDef suitSkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuitSkin"),
-                SkinRendererInfos(defaultRenderers, new Material[]
-                {
-                    Modules.Assets.CreateMaterial("matSuit", 1f, Color.white)
-                }),
-                mainRenderer,
-                model,
-                Unlockables.suitUnlockableDef);
-
-            suitSkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshSuit")
-                }
-            };
-
-            suitSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = true
-                }
-            };
-
-            #endregion
-
-            #region Suit2Skin
-            SkinDef suit2Skin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT2_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuit2Skin"),
-                SkinRendererInfos(defaultRenderers, new Material[]
-                {
-                    Modules.Assets.CreateMaterial("matSuit", 1f, Color.white)
-                }),
-                mainRenderer,
-                model,
-                Unlockables.suitUnlockableDef);
-
-            suit2Skin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshSuit2")
-                }
-            };
-
-            suit2Skin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = true
-                }
-            };
-
-            #endregion
-
-            #region GreenSkin
-            SkinDef greenSkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_GREEN_SKIN_NAME",
-                Assets.mainAssetBundle.LoadAsset<Sprite>("texGreenSkin"),
-                SkinRendererInfos(defaultRenderers, new Material[]
-                {
-                    Modules.Assets.CreateMaterial("matDriverGreen", 1f, Color.white)
-                }),
-                mainRenderer,
-                model);
-
-            greenSkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-                new SkinDef.MeshReplacement
-                {
-                    renderer = mainRenderer,
-                    mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshDriver")
-                }
-            };
-
-            greenSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-
-            #endregion
-
-            #region MinecraftSkin
-
-            SkinDef minecraftSkin = Modules.Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_MINECRAFT_SKIN_NAME",
-            Assets.mainAssetBundle.LoadAsset<Sprite>("texMinecraftSkin"),
-            SkinRendererInfos(defaultRenderers, new Material[]
-            {
-                            Modules.Assets.CreateMaterial("matMinecraftDriver", 1f, Color.white)
-            }),
-            mainRenderer,
-            model);
-
-            minecraftSkin.meshReplacements = new SkinDef.MeshReplacement[]
-            {
-            new SkinDef.MeshReplacement
-            {
-                renderer = mainRenderer,
-                mesh = Modules.Assets.mainAssetBundle.LoadAsset<Mesh>("meshMinecraftDriver")
-            }
-            };
-
-            minecraftSkin.gameObjectActivations = new SkinDef.GameObjectActivation[]
-            {
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = sluggerCloth,
-                    shouldActivate = false
-                },
-                new SkinDef.GameObjectActivation
-                {
-                    gameObject = tie,
-                    shouldActivate = false
-                }
-            };
-            #endregion
-
-            skins.Add(defaultSkin);
-            skins.Add(masterySkin);
-            skins.Add(grandMasterySkin);
-            skins.Add(specialForcesSkin);
-            skins.Add(guerrillaSkin);
-            skins.Add(suitSkin);
-            if (Modules.Config.cursed.Value) skins.Add(suit2Skin);
-            if (Modules.Config.cursed.Value) skins.Add(greenSkin);
-            if (Modules.Config.cursed.Value) skins.Add(minecraftSkin);
-
-            skinController.skins = skins.ToArray();
-        }
-
-        internal static void LateSkinSetup()
-        {
-            GameObject model = characterPrefab.GetComponent<ModelLocator>().modelTransform.gameObject;
-            ModelSkinController skinController = model.GetComponent<ModelSkinController>();
-
-            foreach (var skinDef in skinController.skins)
-            {
-                var weaponReskins = new Dictionary<ushort, DriverWeaponSkinDef>();
-                for (int i = 0; i < skinDef.meshReplacements.Length; i++)
-                {
-                    var meshReplacement = skinDef.meshReplacements[i];
-                    var rendererName = meshReplacement.renderer?.name;
-                    if (!string.IsNullOrEmpty(rendererName) && model.transform.Find(rendererName))
+                [
+                    new SkinDef.MeshReplacement
                     {
-                        var weaponDef = DriverWeaponCatalog.weaponDefs.FirstOrDefault(weapon => weapon.mesh?.name == rendererName);
-                        if (weaponDef != null)
-                        {
-                            weaponReskins.Add(weaponDef.index, DriverWeaponSkinDef.CreateWeaponSkinDefFromInfo(new DriverWeaponSkinDef.DriverWeaponSkinDefInfo
-                            {
-                                nameToken = skinDef.name + weaponDef.nameToken,
-                                mainSkinName = skinDef.name,
-                                weaponDefIndex = weaponDef.index,
-                                weaponSkinMesh = meshReplacement.mesh,
-                                weaponSkinMaterial = skinDef.rendererInfos[i].defaultMaterial
-                            }));
-                        }
+                        renderer = mainRenderer,
+                        mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshDriver")
                     }
-                }
-                if (weaponReskins.Any()) DriverWeaponSkinCatalog.AddSkin(skinDef.skinIndex, weaponReskins);
+                ],
+                [
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = sluggerCloth,
+                        shouldActivate = false
+                    },
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = tie,
+                        shouldActivate = false
+                    }
+                ]);
+
+            SkinDef masterySkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_MONSOON_SKIN_NAME",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texMonsoonSkin"),
+                model,
+                Unlockables.masteryUnlockableDef,
+                Skins.SkinRendererInfos(defaultRenderers,
+                [
+                    Assets.LoadMaterial("matJacket")
+                ]),
+                [
+                    new SkinDef.MeshReplacement
+                    {
+                        renderer = mainRenderer,
+                        mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshJacket")
+                    }
+                ], 
+                [
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = sluggerCloth,
+                        shouldActivate = false
+                    },
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = tie,
+                        shouldActivate = false
+                    }
+                ]);
+
+            SkinDef grandMasterySkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_TYPHOON_SKIN_NAME",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texTyphoonSkin"),
+                model,
+                Unlockables.grandMasteryUnlockableDef,
+                Skins.SkinRendererInfos(defaultRenderers,
+                [
+                    Assets.LoadMaterial("matSlugger")
+                ]),
+                [
+                    new SkinDef.MeshReplacement
+                    {
+                        renderer = mainRenderer,
+                        mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSlugger")
+                    }
+                ], 
+                [
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = sluggerCloth,
+                        shouldActivate = true
+                    },
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = tie,
+                        shouldActivate = false
+                    }
+                ]);
+
+            SkinDef specialForcesSkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_SPECIALFORCES_SKIN_NAME",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSpecialForcesSkin"),
+                model,
+                null,
+                Skins.SkinRendererInfos(defaultRenderers,
+                [
+                    Assets.LoadMaterial("matSpecialForces")
+                ]), 
+                [
+                    new SkinDef.MeshReplacement
+                    {
+                        renderer = mainRenderer,
+                        mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSpecialForces")
+                    }
+                ],
+                [
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = sluggerCloth,
+                        shouldActivate = false
+                    },
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = tie,
+                        shouldActivate = false
+                    }
+                ]);
+
+            SkinDef guerrillaSkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_GUERRILLA_SKIN_NAME",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texGuerrillaSkin"),
+                model,
+                null,
+                Skins.SkinRendererInfos(defaultRenderers,
+                [
+                    Assets.LoadMaterial("matGuerrilla")
+                ]), 
+                [
+                    new SkinDef.MeshReplacement
+                    {
+                        renderer = mainRenderer,
+                        mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshGuerrilla")
+                    }
+                ],
+                [
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = sluggerCloth,
+                        shouldActivate = false
+                    },
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = tie,
+                        shouldActivate = false
+                    }
+                ]);
+
+            SkinDef suitSkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT_SKIN_NAME",
+                Assets.mainAssetBundle.LoadAsset<Sprite>("texSuitSkin"),
+                model,
+                Unlockables.suitUnlockableDef,
+                Skins.SkinRendererInfos(defaultRenderers,
+                [
+                    Assets.LoadMaterial("matSuit")
+                ]), 
+                [
+                    new SkinDef.MeshReplacement
+                    {
+                        renderer = mainRenderer,
+                        mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSuit")
+                    }
+                ],
+                [
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = sluggerCloth,
+                        shouldActivate = false
+                    },
+                    new SkinDef.GameObjectActivation
+                    {
+                        gameObject = tie,
+                        shouldActivate = true
+                    }
+                ]);
+
+            List<SkinDef> skins =
+            [
+                defaultSkin,
+                masterySkin,
+                grandMasterySkin,
+                specialForcesSkin,
+                guerrillaSkin,
+                suitSkin
+            ];
+
+            if (Config.cursed.Value)
+            {
+                SkinDef suit2Skin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_SUIT2_SKIN_NAME",
+                    Assets.mainAssetBundle.LoadAsset<Sprite>("texSuit2Skin"),
+                    model,
+                    Unlockables.suitUnlockableDef,
+                    Skins.SkinRendererInfos(defaultRenderers,
+                    [
+                        Assets.LoadMaterial("matSuit")
+                    ]), 
+                    [
+                        new SkinDef.MeshReplacement
+                        {
+                            renderer = mainRenderer,
+                            mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSuit2")
+                        }
+                    ],
+                    [
+                        new SkinDef.GameObjectActivation
+                        {
+                            gameObject = sluggerCloth,
+                            shouldActivate = false
+                        },
+                        new SkinDef.GameObjectActivation
+                        {
+                            gameObject = tie,
+                            shouldActivate = true
+                        }
+                    ]);
+
+                SkinDef greenSkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_GREEN_SKIN_NAME",
+                    Assets.mainAssetBundle.LoadAsset<Sprite>("texGreenSkin"),
+                    model,
+                    null,
+                    Skins.SkinRendererInfos(defaultRenderers,
+                    [
+                        Assets.LoadMaterial("matDriverGreen")
+                    ]), 
+                    [
+                        new SkinDef.MeshReplacement
+                        {
+                            renderer = mainRenderer,
+                            mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshDriver")
+                        }
+                    ], 
+                    [
+                        new SkinDef.GameObjectActivation
+                        {
+                            gameObject = sluggerCloth,
+                            shouldActivate = false
+                        },
+                        new SkinDef.GameObjectActivation
+                        {
+                            gameObject = tie,
+                            shouldActivate = false
+                        }
+                    ]);
+
+                SkinDef minecraftSkin = Skins.CreateSkinDef(DriverPlugin.developerPrefix + "_DRIVER_BODY_MINECRAFT_SKIN_NAME",
+                    Assets.mainAssetBundle.LoadAsset<Sprite>("texMinecraftSkin"),
+                    model,
+                    null,
+                    Skins.SkinRendererInfos(defaultRenderers,
+                    [
+                        Assets.LoadMaterial("matMinecraftDriver")
+                    ]),
+                    [
+                        new SkinDef.MeshReplacement
+                        {
+                            renderer = mainRenderer,
+                            mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshMinecraftDriver")
+                        }
+                    ], 
+                    [
+                        new SkinDef.GameObjectActivation
+                        {
+                            gameObject = sluggerCloth,
+                            shouldActivate = false
+                        },
+                        new SkinDef.GameObjectActivation
+                        {
+                            gameObject = tie,
+                            shouldActivate = false
+                        }
+                    ]);
+
+                skins.AddRange([suit2Skin, greenSkin, minecraftSkin]);
             }
+
+            skinController.skins = [.. skins];
         }
 
         #region Item Displays
@@ -2392,13 +2017,13 @@ namespace RobDriver.Modules.Survivors
             itemDisplayRules = itemDisplayRuleSet.keyAssetRuleGroups.ToList();
         }
 
-        internal static void SetItemDisplays()
+        internal static void SetItemDisplays(ReadOnlyArray<ReadOnlyContentPack> _)
         {
             // uhh
-            Modules.ItemDisplays.PopulateDisplays();
+            ItemDisplays.PopulateDisplays();
 
-            ReplaceItemDisplay(RoR2Content.Items.SecondarySkillMagazine, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.SecondarySkillMagazine,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2409,10 +2034,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(39.35415F, 348.9445F, 164.0792F),
                     localScale = new Vector3(0.06F, 0.06F, 0.06F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.CritGlasses, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.CritGlasses,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2423,12 +2048,12 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(314.7648F, 358.1459F, 0.48047F),
                     localScale = new Vector3(0.30902F, 0.09537F, 0.30934F)
                 }
-            });
+            ]);
 
-            if (Modules.Config.predatoryOnHead.Value)
+            if (Config.predatoryOnHead.Value)
             {
-                ReplaceItemDisplay(RoR2Content.Items.AttackSpeedOnCrit, new ItemDisplayRule[] 
-                {
+                ReplaceItemDisplay(RoR2Content.Items.AttackSpeedOnCrit,
+                [
                     new ItemDisplayRule
                     {
                         ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2439,12 +2064,12 @@ namespace RobDriver.Modules.Survivors
                         localAngles = new Vector3(302.566F, 0F, 0F),
                         localScale = new Vector3(0.47332F, 0.47332F, 0.47332F)
                     }
-                });
+                ]);
             }
             else
             {
-                ReplaceItemDisplay(RoR2Content.Items.AttackSpeedOnCrit, new ItemDisplayRule[]
-                {
+                ReplaceItemDisplay(RoR2Content.Items.AttackSpeedOnCrit,
+                [
                     new ItemDisplayRule
                     {
                         ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2455,11 +2080,11 @@ namespace RobDriver.Modules.Survivors
                         localAngles = new Vector3(309.4066F, 250.1116F, 175.7708F),
                         localScale = new Vector3(0.363F, 0.363F, 0.363F)
                     }
-                });
+                ]);
             }
 
-            ReplaceItemDisplay(DLC1Content.Items.CritGlassesVoid, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(DLC1Content.Items.CritGlassesVoid,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2470,10 +2095,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(340.0668F, 0F, 0F),
                     localScale = new Vector3(0.30387F, 0.39468F, 0.46147F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(DLC1Content.Items.LunarSun, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(DLC1Content.Items.LunarSun,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2504,10 +2129,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(0F, 0F, 0F),
                     localScale = new Vector3(0.90836F, 0.90836F, 0.90836F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.GhostOnKill, new ItemDisplayRule[]
-{
+            ReplaceItemDisplay(RoR2Content.Items.GhostOnKill,
+[
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2518,10 +2143,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(355.7367F, 0.15F, 0F),
                     localScale = new Vector3(0.6F, 0.6F, 0.6F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.GoldOnHit, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.GoldOnHit,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2532,10 +2157,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(8.52676F, 0F, 0F),
                     localScale = new Vector3(0.90509F, 0.90509F, 0.90509F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.JumpBoost, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.JumpBoost,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2546,10 +2171,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(0F, 0F, 0F),
                     localScale = new Vector3(0.79857F, 0.79857F, 0.79857F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.KillEliteFrenzy, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.KillEliteFrenzy,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2560,10 +2185,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(0F, 0F, 0F),
                     localScale = new Vector3(0.17982F, 0.17982F, 0.17982F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.LunarPrimaryReplacement, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.LunarPrimaryReplacement,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2574,10 +2199,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(306.9798F, 180F, 180F),
                     localScale = new Vector3(0.31302F, 0.31302F, 0.31302F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(DLC1Content.Items.FragileDamageBonus, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(DLC1Content.Items.FragileDamageBonus,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2588,10 +2213,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(84.24088f, 213.1651f, 131.5774f),
                     localScale = new Vector3(0.5f, 0.5f, 0.5f)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.BarrierOnOverHeal, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.BarrierOnOverHeal,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2602,10 +2227,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(90F, 270F, 0F),
                     localScale = new Vector3(0.3F, 0.3F, 0.3F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.SprintArmor, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.SprintArmor,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2616,10 +2241,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(0F, 90F, 0F),
                     localScale = new Vector3(0.3F, 0.3F, 0.3F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(RoR2Content.Items.ArmorPlate, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(RoR2Content.Items.ArmorPlate,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2630,10 +2255,10 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(90F, 180F, 0F),
                     localScale = new Vector3(-0.2958F, 0.2958F, 0.29581F)
                 }
-            });
+            ]);
 
-            ReplaceItemDisplay(DLC1Content.Items.CritDamage, new ItemDisplayRule[]
-            {
+            ReplaceItemDisplay(DLC1Content.Items.CritDamage,
+            [
                 new ItemDisplayRule
                 {
                     ruleType = ItemDisplayRuleType.ParentedPrefab,
@@ -2644,17 +2269,17 @@ namespace RobDriver.Modules.Survivors
                     localAngles = new Vector3(0F, 0F, 270F),
                     localScale = new Vector3(0.05261F, 0.05261F, 0.05261F)
                 }
-            });
+            ]);
 
-            if (DriverPlugin.LitInstalled) SetLITDisplays();
+            //if (DriverPlugin.LitInstalled) SetLITDisplays();
 
             itemDisplayRuleSet.keyAssetRuleGroups = itemDisplayRules.ToArray();
             //itemDisplayRuleSet.GenerateRuntimeValues();
         }
-
+        
         internal static void SetLITDisplays()
         {
-            return;
+            /*
             itemDisplayRules.Add(new ItemDisplayRuleSet.KeyAssetRuleGroup
             {
                 keyAsset = LostInTransit.LITContent.Items.Lopper,
@@ -2696,6 +2321,7 @@ namespace RobDriver.Modules.Survivors
                     }
                 }
             });
+            */
         }
 
         internal static void ReplaceItemDisplay(UnityEngine.Object keyAsset, ItemDisplayRule[] newDisplayRules)
@@ -2712,15 +2338,5 @@ namespace RobDriver.Modules.Survivors
             itemDisplayRules = cock.ToList();
         }
         #endregion
-
-        private static CharacterModel.RendererInfo[] SkinRendererInfos(CharacterModel.RendererInfo[] defaultRenderers, Material[] materials)
-        {
-            CharacterModel.RendererInfo[] newRendererInfos = new CharacterModel.RendererInfo[defaultRenderers.Length];
-            defaultRenderers.CopyTo(newRendererInfos, 0);
-
-            newRendererInfos[0].defaultMaterial = materials[0];
-
-            return newRendererInfos;
-        }
     }
 }

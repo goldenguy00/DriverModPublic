@@ -1,5 +1,7 @@
 ﻿using RoR2;
 using EntityStates;
+using RobDriver.SkillStates.BaseStates;
+using RobDriver.Modules;
 
 namespace RobDriver.SkillStates.Driver.Skateboard
 {
@@ -7,8 +9,9 @@ namespace RobDriver.SkillStates.Driver.Skateboard
     {
         public float baseDuration = 0.5f;
 
-        protected override bool hideGun => true;
-        protected override string prop => "SkateboardModel";
+        protected override bool cancelOnPickup => false;
+        protected override bool holsterGun => true;
+        protected override string showProp => "SkateboardModel";
 
         private float duration;
 
@@ -17,8 +20,9 @@ namespace RobDriver.SkillStates.Driver.Skateboard
             base.OnEnter();
             this.duration = this.baseDuration / this.attackSpeedStat;
 
-            this.skillLocator.utility.SetSkillOverride(this.skillLocator.utility, Modules.Survivors.Driver.skateCancelSkillDef, GenericSkill.SkillOverridePriority.Replacement);
-            this.GetModelChildLocator().FindChild("SkateboardBackModel").gameObject.SetActive(false);
+            this.skillLocator.utility.SetWeaponSkill(Skills.skateCancelSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+
+            this.childLocator.FindChildGameObject("SkateboardBackModel").SetActive(false);
 
             // pistol has good animation blending, others dont
             if (this.iDrive.weaponDef.animationSet != DriverWeaponDef.AnimationSet.Default)
@@ -30,9 +34,6 @@ namespace RobDriver.SkillStates.Driver.Skateboard
             base.PlayCrossfade("FullBody, Override", "StartSkate", "Slide.playbackRate", this.duration, 0.05f);
 
             this.SmallHop(this.characterMotor, 10f);
-
-
-            if (this.iDrive) this.iDrive.EnableBackWeaponModel();
         }
 
         public override void FixedUpdate()
@@ -47,7 +48,7 @@ namespace RobDriver.SkillStates.Driver.Skateboard
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
-            return InterruptPriority.Frozen;
+            return InterruptPriority.Death;
         }
     }
 }

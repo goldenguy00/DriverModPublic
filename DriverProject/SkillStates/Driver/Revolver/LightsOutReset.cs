@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿using RobDriver.Modules.Components.UI;
+using RoR2;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -57,7 +58,7 @@ namespace RobDriver.SkillStates.Driver.Revolver
                     effectData.SetHurtBoxReference(hitInfo.hitHurtBox);
                     EffectManager.SpawnEffect(Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/Common/VFX/WeakPointProcEffect.prefab").WaitForCompletion(), effectData, true);
                     Util.PlaySound("sfx_driver_headshot", base.gameObject);
-                    hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<Modules.Components.DriverHeadshotTracker>();
+                    hitInfo.hitHurtBox.healthComponent.gameObject.AddComponent<DriverHeadshotTracker>();
                 }
             };
             bulletAttack.Fire();

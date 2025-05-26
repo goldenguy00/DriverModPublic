@@ -1,50 +1,46 @@
 ﻿using UnityEngine;
 using RoR2;
 using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver
 {
-	public class Slide : BaseDriverSkillState
+    public class Slide : BaseDriverSkillState
 	{
+        protected override bool cancelOnPickup => false;
+
 		private Vector3 forwardDirection;
 		private GameObject slideEffectInstance;
 		private bool startedStateGrounded;
 		private Animator animator;
-		private bool classicSound;
 
 		public override void OnEnter()
 		{
 			base.OnEnter();
+
 			this.animator = this.GetModelAnimator();
 
-			this.classicSound = Modules.Config.classicDodgeSound.Value;
-
-			if (this.classicSound) Util.PlaySound(EntityStates.Commando.SlideState.soundString, base.gameObject);
+			if (Modules.Config.classicDodgeSound.Value) 
+                Util.PlaySound(EntityStates.Commando.SlideState.soundString, base.gameObject);
 
 			if (base.inputBank && base.characterDirection)
-			{
 				base.characterDirection.forward = ((base.inputBank.moveVector == Vector3.zero) ? base.characterDirection.forward : base.inputBank.moveVector).normalized;
-			}
 
 			if (base.characterMotor)
-			{
 				this.startedStateGrounded = base.characterMotor.isGrounded;
-			}
 
 			base.characterBody.SetSpreadBloom(0f, false);
 
-			if (this.iDrive && this.iDrive.weaponDef)
+			if (this.iDrive.weaponDef.animationSet == DriverWeaponDef.AnimationSet.TwoHanded && !this.iDrive.isReloading)
             {
-				if (this.iDrive.weaponDef.animationSet == DriverWeaponDef.AnimationSet.TwoHanded)
-                {
-					this.animator.SetBool("holding", true);
-					base.PlayAnimation("Gesture, Override", "HoldGun");
-                }
+				this.animator.SetBool("holding", true);
+				base.PlayAnimation("Gesture, Override", "HoldGun");
             }
 
 			if (!this.startedStateGrounded)
 			{
-				if (!this.classicSound) Util.PlaySound("sfx_driver_air_dodge", this.gameObject);
+				if (!Modules.Config.classicDodgeSound.Value)
+                    Util.PlaySound("sfx_driver_air_dodge", this.gameObject);
 
 				EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/CharacterLandImpact"), new EffectData
 				{
@@ -59,32 +55,38 @@ namespace RobDriver.SkillStates.Driver
 
 				Vector3 velocity = base.characterMotor.velocity;
 				velocity.y = base.characterBody.jumpPower;
+
 				base.characterMotor.velocity = velocity;
-				return;
 			}
+            else
+            {
+                if (!Modules.Config.classicDodgeSound.Value)
+                    Util.PlaySound("sfx_driver_dodge", this.gameObject);
 
-			if (!this.classicSound) Util.PlaySound("sfx_driver_dodge", this.gameObject);
-			base.PlayAnimation("FullBody, Override", "Slide", "Slide.playbackRate", EntityStates.Commando.SlideState.slideDuration);
+                base.PlayAnimation("FullBody, Override", "Slide", "Slide.playbackRate", EntityStates.Commando.SlideState.slideDuration);
 
-			if (EntityStates.Commando.SlideState.slideEffectPrefab)
-			{
-				Transform parent = base.FindModelChild("Root");
-				this.slideEffectInstance = UnityEngine.Object.Instantiate<GameObject>(EntityStates.Commando.SlideState.slideEffectPrefab, parent);
-			}
+                if (EntityStates.Commando.SlideState.slideEffectPrefab)
+                {
+                    Transform parent = base.FindModelChild("Root");
+                    this.slideEffectInstance = UnityEngine.Object.Instantiate<GameObject>(EntityStates.Commando.SlideState.slideEffectPrefab, parent);
+                }
+            }
 		}
 
         public override void Update()
         {
             base.Update();
-			if (this.animator) this.animator.SetBool("isGrounded", this.isGrounded);
+			
+            if (this.animator) 
+                this.animator.SetBool("isGrounded", this.isGrounded);
 		}
 
         public override void FixedUpdate()
 		{
 			base.FixedUpdate();
-			if (this.animator) this.animator.SetBool("isGrounded", this.isGrounded);
 
-			if (!this.isGrounded && this.slideEffectInstance) EntityState.Destroy(this.slideEffectInstance);
+			if (!this.isGrounded && this.slideEffectInstance) 
+                EntityState.Destroy(this.slideEffectInstance);
 
 			if (base.isAuthority)
 			{
@@ -120,23 +122,21 @@ namespace RobDriver.SkillStates.Driver
 		}
 
 		public override void OnExit()
-		{
-			this.PlayImpactAnimation();
-			if (this.slideEffectInstance) EntityState.Destroy(this.slideEffectInstance);
+        {
+            if (this.slideEffectInstance)
+                EntityState.Destroy(this.slideEffectInstance);
 
-			this.animator.SetBool("holding", false);
+            if (this.animator)
+            {
+                this.animator.SetBool("holding", false);
+                int layerIndex = this.animator.GetLayerIndex("Impact");
+                if (layerIndex >= 0)
+                {
+                    animator.SetLayerWeight(layerIndex, 1f);
+                }
+            }
 
 			base.OnExit();
-		}
-
-		private void PlayImpactAnimation()
-		{
-			Animator modelAnimator = base.GetModelAnimator();
-			int layerIndex = modelAnimator.GetLayerIndex("Impact");
-			if (layerIndex >= 0)
-			{
-				modelAnimator.SetLayerWeight(layerIndex, 1f);
-			}
 		}
 
 		public override InterruptPriority GetMinimumInterruptPriority()

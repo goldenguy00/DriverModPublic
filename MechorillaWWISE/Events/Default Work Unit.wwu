@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<WwiseDocument Type="WorkUnit" ID="{0E6DDC47-9831-4C9F-9E50-5872B4A7E01C}" SchemaVersion="97">
+<WwiseDocument Type="WorkUnit" ID="{0E6DDC47-9831-4C9F-9E50-5872B4A7E01C}" SchemaVersion="119">
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{0E6DDC47-9831-4C9F-9E50-5872B4A7E01C}" PersistMode="Standalone">
+			<PropertyList>
+				<Property Name="Inclusion" Type="bool">
+					<ValueList>
+						<Value>False</Value>
+					</ValueList>
+				</Property>
+			</PropertyList>
 			<ChildrenList>
 				<Event Name="sfx_driver_pistol_shoot" ID="{1816E2A8-8E97-4D1A-A78F-60B643717851}">
 					<ChildrenList>

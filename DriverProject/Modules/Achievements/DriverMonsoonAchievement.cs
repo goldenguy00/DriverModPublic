@@ -5,17 +5,15 @@ namespace RobDriver.Modules.Achievements
 {
     //string identifier, string unlockableRewardIdentifier, string prerequisiteAchievementIdentifier, uint lunarCoinReward, Type serverTrackerType = null
     //automatically creates language tokens "ACHIEVEMENT_{identifier.ToUpper()}_NAME" and "ACHIEVEMENT_{identifier.ToUpper()}_DESCRIPTION" 
-    [RegisterAchievement(identifier, unlockableIdentifier, null, 10, null)]
-    internal class MasteryAchievement : BaseMasteryAchievement
+    [RegisterAchievement(IDENTIFIER, UNLOCKABLE_IDENTIFIER, DriverUnlockAchievement.IDENTIFIER, 10, null)]
+    internal class DriverMonsoonAchievement : BaseDifficultyAchievement
     {
-        public const string identifier = "ROB_DRIVER_MONSOON";
-        public const string nameToken = "ACHIEVEMENT_ROB_DRIVER_MONSOON_NAME";
-        public const string unlockableIdentifier = "ROB_DRIVER_MONSOON_UNLOCKABLE";
+        public const string IDENTIFIER = "ROB_DRIVER_BODY_MONSOONUNLOCKABLE_ACHIEVEMENT_ID";
+        public const string UNLOCKABLE_IDENTIFIER = "ROB_DRIVER_BODY_MONSOONUNLOCKABLE_REWARD_ID";
 
         public static Sprite Sprite => Assets.mainAssetBundle.LoadAsset<Sprite>("texMonsoonSkin");
 
-        //difficulty coeff 3 is monsoon. 3.5 is typhoon for grandmastery skins
-        public override float RequiredDifficultyCoefficient => 3;
-        public override DifficultyIndex RequiredEclipseLevel => DifficultyIndex.Eclipse1;
+        public override float RequiredDifficultyCoefficient => 3f;
+        public override DifficultyIndex MinimumDifficultyIndex => DifficultyIndex.Hard;
     }
 }

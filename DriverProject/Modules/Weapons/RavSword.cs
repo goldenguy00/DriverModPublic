@@ -1,42 +1,46 @@
-﻿using RoR2.Skills;
+﻿using RobDriver.SkillStates.Driver.RavSword;
+using RoR2.Skills;
 using UnityEngine;
 
 namespace RobDriver.Modules.Weapons
 {
     public class RavSword : BaseWeapon<RavSword>
     {
-        public override string weaponNameToken => "RAV_SWORD";
         public override string weaponName => "Fury";
+        public override string weaponNameToken => "ROB_DRIVER_WEAPON_RAV_SWORD_NAME";
         public override string weaponDesc => "Jump and Slash your way through enemies.";
-        public override string iconName => "texSpinSlashIcon";
-        public override GameObject crosshairPrefab => Modules.Assets.needlerCrosshairPrefab;
-        public override DriverWeaponTier tier => DriverWeaponTier.Unique;
-        public override int shotCount => 64;
-        public override Mesh mesh => Config.enableRevengence.Value ? Assets.nemKatanaMesh : Modules.Assets.LoadMesh("meshRavagerSword");
-        public override Material material => Config.enableRevengence.Value ? Assets.nemKatanaMat : Modules.Assets.CreateMaterial("matRavagerSword");
+        public override string weaponDescToken => "ROB_DRIVER_WEAPON_RAV_SWORD_DESC";
+
+        public override Sprite icon => Assets.mainAssetBundle.LoadAsset<Sprite>("texSpinSlashIcon");
+        public override DriverWeaponTier dropTier => DriverWeaponTier.Void;
         public override DriverWeaponDef.AnimationSet animationSet => DriverWeaponDef.AnimationSet.BigMelee;
         public override DriverWeaponDef.BuffType buffType => DriverWeaponDef.BuffType.Damage;
-        public override string calloutSoundString => "sfx_driver_callout_generic";
-        public override string configIdentifier => "Ravagers Sword";
+        public override int shotCount => 64;
+
+        public override Mesh mesh => Config.enableRevengence.Value ? Assets.LoadMesh("meshKatana") : Modules.Assets.LoadMesh("meshRavagerSword");
+        public override Material material => Config.enableRevengence.Value ? Assets.nemKatanaMat : Modules.Assets.LoadMaterial("matRavagerSword");
+        public override GameObject crosshairPrefab => Modules.Assets.needlerCrosshairPrefab;
+        public override GameObject pickupPrefabOverride => Assets.voidPickupModel;
+        public override Color? colorOverride => Helpers.voidItemColor;
+
         public override float dropChance => 100f;
-        public override bool addToPool => false;
         public override string uniqueDropBodyName => "RobRavagerBody";
 
-        public override SkillDef primarySkillDef => Modules.Skills.CreatePrimarySkillDef(
-            new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.SlashCombo)),
+        public override SkillDef primarySkillDef => Modules.Skills.CreateAndAddPrimarySkillDef(
+            new EntityStates.SerializableEntityStateType(typeof(SlashCombo)),
             "Weapon",
-            DriverPlugin.developerPrefix + "_DRIVER_BODY_PRIMARY_SLASHCOMBO_NAME",
-            DriverPlugin.developerPrefix + "_DRIVER_BODY_PRIMARY_SLASHCOMBO_DESCRIPTION",
+            "ROB_DRIVER_BODY_PRIMARY_RAV_SLASHCOMBO_NAME",
+            "ROB_DRIVER_BODY_PRIMARY_RAV_SLASHCOMBO_DESCRIPTION",
             Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSlashIcon"),
             true);
 
-        public override SkillDef secondarySkillDef => Modules.Skills.CreateSkillDef(new SkillDefInfo
+        public override SkillDef secondarySkillDef => Modules.Skills.CreateAndAddSkillDef(new SkillDefInfo
         {
-            skillName = DriverPlugin.developerPrefix + "_RAVAGER_BODY_SPECIAL_PUNCH_NAME",
-            skillNameToken = DriverPlugin.developerPrefix + "_RAVAGER_BODY_SPECIAL_PUNCH_NAME",
-            skillDescriptionToken = DriverPlugin.developerPrefix + "_RAVAGER_BODY_SPECIAL_PUNCH_DESCRIPTION",
+            skillName = "ROB_DRIVER_BODY_SECONDARY_RAV_PUNCH_NAME",
+            skillNameToken = "ROB_DRIVER_BODY_SECONDARY_RAV_PUNCH_NAME",
+            skillDescriptionToken = "ROB_DRIVER_BODY_SECONDARY_RAV_PUNCH_DESCRIPTION",
             skillIcon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPunchIcon"),
-            activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.Compat.DashPunch)),
+            activationState = new EntityStates.SerializableEntityStateType(typeof(DashPunch)),
             activationStateMachineName = "Weapon",
             baseMaxStock = 1,
             baseRechargeInterval = 10f,
@@ -53,11 +57,5 @@ namespace RobDriver.Modules.Weapons
             requiredStock = 1,
             stockToConsume = 1,
         });
-
-        public override void Init()
-        {
-            CreateLang();
-            CreateWeapon();
-        }
     }
 }

@@ -12,8 +12,8 @@ namespace RobDriver.Modules.Components
             {
                 this.renderers[i].colorGradient = new Gradient
                 {
-                    alphaKeys = new GradientAlphaKey[] { new GradientAlphaKey(1f, 0f) },
-                    colorKeys = new GradientColorKey[] { new GradientColorKey(color, 0f) },
+                    alphaKeys = [new GradientAlphaKey(1f, 0f)],
+                    colorKeys = [new GradientColorKey(color, 0f)],
                     mode = GradientMode.Fixed,
                 };
             }

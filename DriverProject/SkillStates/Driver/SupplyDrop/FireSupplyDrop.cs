@@ -1,24 +1,25 @@
-﻿﻿using UnityEngine;
+﻿using UnityEngine;
 using RoR2;
 using UnityEngine.Networking;
 using UnityEngine.AddressableAssets;
 using EntityStates;
 using RobDriver.Modules.Components;
+using RobDriver.SkillStates.BaseStates;
 
 namespace RobDriver.SkillStates.Driver.SupplyDrop
 {
     public class FireSupplyDrop : BaseDriverSkillState
     {
-        public float baseDuration = 0.8f;
-
+        public static float baseDuration = 0.8f;
         public static float damageCoefficient = 16f;
 
         public Vector3 dropPosition;
         public Quaternion dropRotation;
-
         protected float duration;
         private bool hasFired;
 
+        protected override string showProp => "ButtonModel";
+        protected override bool holsterGun => true;
         protected virtual bool cutAmmo => false;
         protected virtual DriverWeaponDef weaponDef => DriverWeaponCatalog.PrototypeRocketLauncher;
         protected virtual DriverBulletDef bulletDef => DriverBulletCatalog.GetRandomBulletFromTier(DriverWeaponTier.Legendary);
@@ -26,26 +27,16 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
         public override void OnEnter()
         {
             base.OnEnter();
-            this.duration = this.baseDuration / this.attackSpeedStat;
+
+            this.duration = baseDuration / this.attackSpeedStat;
 
             this.PlayAnim();
-        }
-
-        public override void OnExit()
-        {
-            base.OnExit();
-            this.HideButton();
         }
 
         protected virtual void PlayAnim()
         {
             Util.PlaySound("sfx_driver_button_foley", this.gameObject);
             base.PlayAnimation("Gesture, Override", "PressButton", "Action.playbackRate", this.duration);
-        }
-
-        protected virtual void HideButton()
-        {
-            this.FindModelChild("ButtonModel").gameObject.SetActive(false);
         }
 
         public override void FixedUpdate()
@@ -58,7 +49,9 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
                 {
                     this.hasFired = true;
                     this.skillLocator.special.DeductStock(1);
-                    this.Fire();
+
+                    this.SpawnWeapon();
+                    this.FireBlast();
                 }
             }
 
@@ -73,7 +66,7 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
             if (NetworkServer.active)
             {
                 var weaponPickup = GameObject.Instantiate(Modules.Assets.weaponPickup, this.dropPosition, Random.rotation);
-                weaponPickup.GetComponent<SyncPickup>().SpawnWeapon(this.teamComponent.teamIndex, this.weaponDef, this.bulletDef, this.cutAmmo);
+                weaponPickup.GetComponent<SyncPickup>().SpawnWeapon(this.weaponDef, this.bulletDef, this.cutAmmo, false);
             }
         }
 
@@ -107,12 +100,6 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
             }
 
             Util.PlaySound("sfx_driver_explosion", this.gameObject);
-        }
-
-        private void Fire()
-        {
-            this.SpawnWeapon();
-            this.FireBlast();
         }
 
         public override InterruptPriority GetMinimumInterruptPriority()

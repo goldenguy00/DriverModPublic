@@ -1,4 +1,5 @@
 ﻿using EntityStates;
+using RobDriver.SkillStates.BaseStates;
 using RoR2;
 using RoR2.Projectile;
 using UnityEngine;
@@ -47,14 +48,15 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
                 ProjectileManager.instance.FireProjectile(fireProjectileInfo);
             }
 
-            base.PlayAnimation("LeftArm, Override", "FireShard", "Shard.playbackRate", this.duration * 5f);
+            base.PlayAnimation("LeftArm, Override", "FireShard");
 
             float recoil = FireShard.recoilAmplitude / this.attackSpeedStat;
-            base.AddRecoil2(-0.4f * recoil, -0.8f * recoil, -0.3f * recoil, 0.3f * recoil);
+            base.AddRecoil(0.8f * recoil,0.3f * recoil);
             base.characterBody.AddSpreadBloom(FireShard.spreadBloomValue);
 
             EffectManager.SimpleMuzzleFlash(Modules.Assets.lunarShardMuzzleFlash, base.gameObject, "HandL", false);
             Util.PlaySound(EntityStates.BrotherMonster.Weapon.FireLunarShards.fireSound, base.gameObject);
+            this.characterBody.SetAimTimer(2f);
 
             //base.skillLocator.secondary.rechargeStopwatch = 0f;
         }
@@ -71,7 +73,7 @@ namespace RobDriver.SkillStates.Driver.LunarHammer
 
         public override InterruptPriority GetMinimumInterruptPriority()
         {
-            return InterruptPriority.PrioritySkill;
+            return InterruptPriority.Skill;
         }
     }
 }
