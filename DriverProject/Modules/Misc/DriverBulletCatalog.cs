@@ -47,7 +47,7 @@ namespace RobDriver
         internal static DriverBulletDef Ruinous;
         internal static DriverBulletDef GiantSlayer;
         internal static DriverBulletDef Disabling;
-        internal static DriverBulletDef Amputating;
+        //internal static DriverBulletDef Amputating;
         internal static DriverBulletDef Gouging;
 
         // Void
@@ -98,7 +98,7 @@ namespace RobDriver
             Hemorrhaging = CreateBulletType("Hemorrhaging", DriverWeaponTier.Unique, DamageColor.FindColor(DamageColorIndex.SuperBleed), DriverDamageTypes.Hemorrhage);
             Helfire = CreateBulletType("Helfire", DriverWeaponTier.Unique, new Color32(255, 127, 127, 255), DriverDamageTypes.Helfire);
             GiantSlayer = CreateBulletType("Giant Slayer", DriverWeaponTier.Unique, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.DamagePercentOfMaxHealth);
-            Amputating = CreateBulletType("Amputating", DriverWeaponTier.Unique, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.Amputate);
+            //Amputating = CreateBulletType("Amputating", DriverWeaponTier.Unique, DamageColor.FindColor(DamageColorIndex.DeathMark), DamageTypeExtended.);
         }
 
         public static DriverBulletDef CreateBulletType(string bulletName, DriverWeaponTier tier, Color color, DamageType damageType) => CreateBulletType(bulletName, tier, color, damageType, null, null);

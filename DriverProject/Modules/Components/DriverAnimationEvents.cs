@@ -25,7 +25,7 @@ namespace RobDriver.Modules.Components
 
             if (!this.iDrive.IsHoldingWeapon && !this.iDrive.HasSpecialBullets)
             {
-                this.iDrive.FinishReload();
+                this.iDrive.SetBulletAmmo();
             }
         }
 

@@ -6,7 +6,6 @@ namespace RobDriver.Modules.Components
 {
     public class DriverCSS : CharacterSelectSurvivorPreviewDisplayController
     {
-        private SkinnedMeshRenderer weaponRenderer;
         private CharacterModel characterModel;
         private ChildLocator childLocator;
         private Animator animator;
@@ -16,37 +15,34 @@ namespace RobDriver.Modules.Components
 
         private DriverWeaponDef weaponDef;
         private BodyIndex driverBodyIndex;
+        private DriverWeaponDef.ModelSwapInfo modelSwapInfo;
 
         private void Awake()
         {
             this.animator = this.GetComponent<Animator>();
             this.childLocator = this.GetComponent<ChildLocator>();
             this.characterModel = this.GetComponent<CharacterModel>();
-            this.weaponRenderer = this.childLocator.FindChild("PistolModel").GetComponent<SkinnedMeshRenderer>();
+
+            this.driverArsenal = Driver.characterPrefab.GetComponent<DriverArsenal>();
+            this.skillLocator = Driver.characterPrefab.GetComponent<SkillLocator>();
+
+            this.driverBodyIndex = Driver.bodyIndex;
+            this.currentLoadout = Loadout.RequestInstance();
         }
 
         private new void OnEnable()
         {
-            this.driverArsenal = this.bodyPrefab.GetComponent<DriverArsenal>();
-            this.skillLocator = this.bodyPrefab.GetComponent<SkillLocator>();
-
-            this.currentLoadout = Loadout.RequestInstance();
-            this.driverBodyIndex = Driver.bodyIndex;
-
             NetworkUser.onLoadoutChangedGlobal += this.OnLoadoutChangedGlobal;
-            RoR2Application.onNextUpdate += this.Refresh;
         }
 
         private new void OnDisable()
         {
             NetworkUser.onLoadoutChangedGlobal -= this.OnLoadoutChangedGlobal;
-            this.currentLoadout = Loadout.ReturnInstance(this.currentLoadout);
         }
 
-        private new void Refresh()
+        private void OnDestroy()
         {
-            if (this && this.networkUser)
-                this.OnLoadoutChangedGlobal(this.networkUser);
+            this.currentLoadout = Loadout.ReturnInstance(this.currentLoadout);
         }
 
         private new void OnLoadoutChangedGlobal(NetworkUser changedNetworkUser)
@@ -83,27 +79,22 @@ namespace RobDriver.Modules.Components
 
                 this.animator.Play("CSSIdleIn", (int)DriverWeaponDef.AnimationSet.Default);
             }
+        }
 
+        private void Update()
+        {
             SetModelVisuals();
-            RoR2Application.onNextUpdate += SetModelVisuals;
         }
 
         private void SetModelVisuals()
         {
             int skinIndex = (int)this.currentLoadout.bodyLoadoutManager.GetSkinIndex(this.driverBodyIndex);
-            var bodySkins = BodyCatalog.GetBodySkins(this.driverBodyIndex);
-            var modelSwapInfo = DriverWeaponSkinCatalog.GetModelSwapInfoForWeapon(bodySkins, skinIndex, this.weaponDef)[0];
+            var bodySkins = SkinCatalog.GetBodySkinDefs(this.driverBodyIndex);
+            var modelSwapInfos = DriverWeaponSkinCatalog.GetModelSwapInfoForWeapon(bodySkins, skinIndex, this.weaponDef);
 
-            this.weaponRenderer.sharedMesh = modelSwapInfo.mesh;
-            this.weaponRenderer.sharedMaterial = modelSwapInfo.material;
-
-            for (int i = 0; i < this.characterModel.baseRendererInfos.Length; i++)
+            for (int i = 0; i < modelSwapInfos.Length; i++)
             {
-                ref var info = ref this.characterModel.baseRendererInfos[i];
-
-                info.renderer.enabled = true;
-                if (info.renderer == this.weaponRenderer)
-                    info.defaultMaterial = modelSwapInfo.material;
+                SetMeshRenderer(modelSwapInfos[i].childName, modelSwapInfos[i].material, modelSwapInfos[i].mesh);
             }
 
             this.childLocator.FindChildGameObject("PistolModel").SetActive(true);
@@ -117,6 +108,34 @@ namespace RobDriver.Modules.Components
                 this.childLocator.FindChildGameObject("BackpackModel").SetActive(active);
             }*/
             //this.childLocator.FindChildGameObject("BackpackModel").SetActive(true);
+        }
+
+        private void SetMeshRenderer(string childName, Material material, Mesh mesh)
+        {
+            var childTransform = this.childLocator.FindChild(childName);
+            if (!childTransform)
+            {
+                Log.Error("No child transform with name " + childName);
+                return;
+            }
+
+            for (int i = 0; i < this.characterModel.baseRendererInfos.Length; i++)
+            {
+                ref var info = ref this.characterModel.baseRendererInfos[i];
+
+                if (info.renderer?.transform != childTransform)
+                    continue;
+
+                info.defaultMaterial = material;
+                info.renderer.sharedMaterial = material;
+
+                if (info.renderer is SkinnedMeshRenderer skinRenderer)
+                    skinRenderer.sharedMesh = mesh;
+                else if (info.renderer.TryGetComponent<MeshFilter>(out var filter))
+                    filter.sharedMesh = mesh;
+                else
+                    Log.Error("no skinned mesh renderer or mesh filter found for " + childTransform.name);
+            }
         }
 
         public void ThrowGun()

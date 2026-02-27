@@ -108,6 +108,7 @@ namespace RobDriver.Modules.Components
         public Action onWeaponUpdate;
         public Action<DriverWeaponDef> onWeaponChanged;
 
+        #region Init
         private void Awake()
         {
             this.arsenal = this.GetComponent<DriverArsenal>();
@@ -121,6 +122,7 @@ namespace RobDriver.Modules.Components
             this.animator = modelTransform.GetComponentInChildren<Animator>();
             this.characterModel = modelTransform.GetComponentInChildren<CharacterModel>();
             this.skinController = modelTransform.GetComponent<ModelSkinController>();
+            this.weaponESM = EntityStateMachine.FindByCustomName(this.gameObject, "Weapon");
 
             this.machineGunVFX = this.childLocator.FindChildComponent<ParticleSystem>("MachineGunVFX");
 
@@ -128,18 +130,61 @@ namespace RobDriver.Modules.Components
             this._defaultWeapon = DriverWeaponCatalog.Pistol;
             this.weaponDef = DriverWeaponCatalog.Pistol;
         }
-
+        private EntityStateMachine weaponESM;
         private void Start()
         {
-            this.skillLocator.special.AddOneStock();
-
-            this.InitShells();
             this.Invoke(nameof(SetInventoryHook), 0.5f);
             this.Invoke(nameof(CheckForUpgrade), 3f);
+            this.InitShells();
+
+            this.skillLocator.special.AddOneStock();
         }
 
-        public void OnEnable() => InstanceTracker.Add(this);
-        public void OnDisable() => InstanceTracker.Remove(this);
+        public bool isSkaterBoi;
+
+        public void OnEnable()
+        {
+            InstanceTracker.Add(this);
+            VehicleSeat.onPassengerEnterGlobal += this.VehicleSeat_onPassengerEnterGlobal;
+            VehicleSeat.onPassengerExitGlobal += this.VehicleSeat_onPassengerExitGlobal;
+        }
+
+        public void OnDisable()
+        {
+            InstanceTracker.Remove(this);
+            VehicleSeat.onPassengerEnterGlobal -= VehicleSeat_onPassengerEnterGlobal;
+            VehicleSeat.onPassengerExitGlobal -= VehicleSeat_onPassengerExitGlobal;
+        }
+
+        private void VehicleSeat_onPassengerEnterGlobal(VehicleSeat vehicle, GameObject passenger)
+        {
+            if (passenger != this.gameObject || !vehicle.GetComponent<ZiprailVehicle>())
+                return;
+
+            if (characterBody.hasEffectiveAuthority)
+                this.weaponESM.SetNextState(new SkillStates.Driver.Skateboard.StartGrind());
+
+            if (vehicle.hidePassenger)
+                characterModel.invisibilityCount--;
+        }
+
+        private void VehicleSeat_onPassengerExitGlobal(VehicleSeat vehicle, GameObject passenger)
+        {
+            if (passenger != this.gameObject || !vehicle.GetComponent<ZiprailVehicle>())
+                return;
+
+            if (characterBody.hasEffectiveAuthority)
+            {
+                if (!isSkaterBoi)
+                    this.weaponESM.SetNextState(new SkillStates.Driver.Skateboard.Stop());
+                else
+                    this.weaponESM.SetNextState(new SkillStates.Driver.Skateboard.Idle());
+            }
+
+            if (vehicle.hidePassenger)
+                characterModel.invisibilityCount++;
+
+        }
 
         private void SetInventoryHook()
         {
@@ -149,12 +194,13 @@ namespace RobDriver.Modules.Components
 
             // modelskinswapper compat
             // i hate this as much as you do.
+            this.isSkaterBoi = this.skillLocator.utility.skillDef == Skills.skateboardSkillDef;
             this.childLocator.FindChildGameObject("PistolModel").SetActive(true);
             this.childLocator.FindChildGameObject("KnifeModel").SetActive(false);
             this.childLocator.FindChildGameObject("ButtonModel").SetActive(false);
             this.childLocator.FindChildGameObject("SyringeModel").SetActive(false);
             this.childLocator.FindChildGameObject("SkateboardModel").SetActive(false);
-            this.childLocator.FindChildGameObject("SkateboardBackModel").SetActive(this.skillLocator.utility.skillDef == Skills.skateboardSkillDef);
+            this.childLocator.FindChildGameObject("SkateboardBackModel").SetActive(isSkaterBoi);
             this.childLocator.FindChildGameObject("AltWeaponModel").SetActive(false);
 
             // enable all the renderers...
@@ -191,14 +237,44 @@ namespace RobDriver.Modules.Components
             this.onWeaponChanged += this.OnWeaponChanged;
         }
 
-        private void OnWeaponChanged(DriverWeaponDef newWeapon)
+        private void OnDestroy()
         {
-            this.TryPickupNotification(newWeapon);
-            this.TryCallout(newWeapon);
-            this.TryUnlockServer(newWeapon);
-            this.TrySetDefault(newWeapon);
-        }
+            this.onWeaponChanged -= this.OnWeaponChanged;
 
+            if (!ReferenceEquals(this.inventory, null))
+            {
+                this.inventory.onItemAddedClient -= this.Inventory_onItemAddedClient;
+                this.inventory.onInventoryChanged -= this.Inventory_onInventoryChanged;
+            }
+
+            if (NetworkServer.active)
+                this.weaponTracker?.StoreWeapon(this.defaultWeaponDef, this.weaponDef, this.currentBulletDef, this.weaponTimer);
+
+            if (this.weaponEffectInstance)
+                Destroy(this.weaponEffectInstance);
+
+            if (this.muzzleTrail)
+                Destroy(this.muzzleTrail);
+
+            if (this.shellObjects != null && this.shellObjects.Length > 0)
+            {
+                for (int i = 0; i < this.shellObjects.Length; i++)
+                {
+                    if (this.shellObjects[i]) Destroy(this.shellObjects[i]);
+                }
+            }
+
+            if (this.slugObjects != null && this.slugObjects.Length > 0)
+            {
+                for (int i = 0; i < this.slugObjects.Length; i++)
+                {
+                    if (this.slugObjects[i]) Destroy(this.slugObjects[i]);
+                }
+            }
+        }
+        #endregion
+
+        #region Upgrades
         private void CheckForUpgrade()
         {
             if (!Config.enablePistolUpgrade.Value || !DriverWeaponCatalog.IsWeaponPistol(this.defaultWeaponDef)) 
@@ -263,7 +339,10 @@ namespace RobDriver.Modules.Components
             }
         }
 
-        private void Inventory_onInventoryChanged() => this.shurikenComponent = this.GetComponent<PrimarySkillShurikenBehavior>();
+        private void Inventory_onInventoryChanged()
+        {
+            this.shurikenComponent = this.GetComponent<PrimarySkillShurikenBehavior>();
+        }
 
         private void Inventory_onItemAddedClient(ItemIndex itemIndex)
         {
@@ -313,7 +392,9 @@ namespace RobDriver.Modules.Components
                 this.ServerPickUpWeapon(DriverWeaponCatalog.Needler);
             }
         }
+        #endregion
 
+        #region Consume Ammo
         public void ConsumeAmmo(float multiplier = 1f, bool scaleWithAttackSpeed = true)
         {
             if (this.maxWeaponTimer <= 0f)
@@ -327,8 +408,8 @@ namespace RobDriver.Modules.Components
 
             if (scaleWithAttackSpeed)
             {
-                int alienHeadCount = this.inventory.GetItemCount(RoR2Content.Items.AlienHead);
-                alienHeadCount += this.inventory.GetItemCount(RoR2Content.Items.LunarBadLuck);
+                int alienHeadCount = this.inventory.GetItemCountEffective(RoR2Content.Items.AlienHead);
+                alienHeadCount += this.inventory.GetItemCountEffective(RoR2Content.Items.LunarBadLuck);
                 if (alienHeadCount > 0)
                 {
                     for (int i = 0; i < alienHeadCount; i++)
@@ -393,7 +474,9 @@ namespace RobDriver.Modules.Components
                 }
             }
         }
+        #endregion
 
+        #region Weapon Swap
         /// <summary>
         /// Decides what to do for dropped weapons with each passive
         /// </summary>
@@ -405,7 +488,7 @@ namespace RobDriver.Modules.Components
             }
             else if (this.passive.isPistolOnly)
             {
-                this.FinishReload();
+                this.SetBulletAmmo();
             }
             else if (this.passive.isBullets || isNewAmmoType)
             {
@@ -423,8 +506,8 @@ namespace RobDriver.Modules.Components
                     if (this.AmmoPercent > 0.2f)
                     {
                         ammo = newWeapon.shotCount;
-                        if (Config.backupMagExtendDuration.Value && !this.passive.isPistolOnly)
-                            ammo += this.inventory?.GetItemCount(RoR2Content.Items.SecondarySkillMagazine) ?? 0;
+                        if (Config.backupMagExtendDuration.Value && this.inventory)
+                            ammo += this.inventory.GetItemCountEffective(RoR2Content.Items.SecondarySkillMagazine);
 
                         ammo *= this.AmmoPercent;
                     }
@@ -447,6 +530,7 @@ namespace RobDriver.Modules.Components
                 this.onWeaponChanged?.Invoke(newWeapon);
 
             this.skillLocator.UnsetWeaponSkills(this.weaponDef);
+
             if (newWeapon != this.defaultWeaponDef && newWeapon != DriverWeaponCatalog.Pistol)
                 this.skillLocator.SetWeaponSkills(newWeapon);
 
@@ -456,8 +540,6 @@ namespace RobDriver.Modules.Components
             this.SetSkinnedWeaponModel(newWeapon);
             this.SetBulletAmmo(cutAmmo, ammo);
         }
-
-        public void FinishReload() => this.SetBulletAmmo();
 
         /// <summary>
         /// Resets ammo for current weapon
@@ -495,9 +577,9 @@ namespace RobDriver.Modules.Components
             {
                 this.maxWeaponTimer = this.weaponDef.shotCount;
 
-                if (Config.backupMagExtendDuration.Value)
+                if (Config.backupMagExtendDuration.Value && this.inventory)
                 {
-                    this.maxWeaponTimer += this.inventory?.GetItemCount(RoR2Content.Items.SecondarySkillMagazine) ?? 0;
+                    this.maxWeaponTimer += this.inventory.GetItemCountEffective(RoR2Content.Items.SecondarySkillMagazine);
                 }
 
                 if (ammo.HasValue)
@@ -527,14 +609,14 @@ namespace RobDriver.Modules.Components
 
             for (int i = 0; i < modelSwapInfo.Length; i++)
             {
-                ref var info = ref modelSwapInfo[i];
-                SetMeshRenderer(info.childName, info.material, info.mesh);
+                SetMeshRenderer(modelSwapInfo[i].childName, modelSwapInfo[i].material, modelSwapInfo[i].mesh);
             }
 
             // animator layer
             this.animator.SetLayerWeight((int)DriverWeaponDef.AnimationSet.TwoHanded, 0f);
             this.animator.SetLayerWeight((int)DriverWeaponDef.AnimationSet.BigMelee, 0f);
 
+            this.animator.SetInteger("AnimationSet", (int)newWeapon.animationSet);
             if (newWeapon.animationSet != DriverWeaponDef.AnimationSet.Default)
                 this.animator.SetLayerWeight((int)newWeapon.animationSet, 1f);
 
@@ -544,6 +626,11 @@ namespace RobDriver.Modules.Components
         private void SetMeshRenderer(string childName, Material material, Mesh mesh)
         {
             var childTransform = this.childLocator.FindChild(childName);
+            if (!childTransform)
+            {
+                Log.Error("No child transform with name " + childName);
+                return;
+            }
 
             for (int i = 0; i < this.characterModel.baseRendererInfos.Length; i++)
             {
@@ -560,7 +647,7 @@ namespace RobDriver.Modules.Components
                 else if (info.renderer.TryGetComponent<MeshFilter>(out var filter))
                     filter.sharedMesh = mesh;
                 else
-                    Log.Error("no skinned mesh renderer or mesh filter found for " + childName);
+                    Log.Error("no skinned mesh renderer or mesh filter found for " + childTransform.name);
             }
         }
 
@@ -600,6 +687,16 @@ namespace RobDriver.Modules.Components
                 GameObject.Destroy(this.weaponEffectInstance);
                 this.weaponEffectInstance = null;
             }
+        }
+        #endregion
+
+        #region OnWeaponChanged
+        private void OnWeaponChanged(DriverWeaponDef newWeapon)
+        {
+            this.TryPickupNotification(newWeapon);
+            this.TryCallout(newWeapon);
+            this.TryUnlockServer(newWeapon);
+            this.TrySetDefault(newWeapon);
         }
 
         private void TryPickupNotification(DriverWeaponDef newWeapon)
@@ -687,7 +784,9 @@ namespace RobDriver.Modules.Components
             if (DriverWeaponCatalog.IsWeaponPistol(newWeapon) && this.defaultWeaponDef == DriverWeaponCatalog.Pistol)
                 this.defaultWeaponDef = newWeapon;
         }
+        #endregion
 
+        #region VFX
         private void UpdateHammerVfx(DriverWeaponDef newWeapon)
         {
             if (newWeapon != DriverWeaponCatalog.LunarHammer)
@@ -794,6 +893,7 @@ namespace RobDriver.Modules.Components
             Rigidbody rb = shell.GetComponent<Rigidbody>();
             if (rb) rb.velocity = force;
         }
+        #endregion
 
         #region Server
         public void ServerResetTimer()
@@ -823,41 +923,5 @@ namespace RobDriver.Modules.Components
             }
         }
         #endregion
-
-        private void OnDestroy()
-        {
-            if (NetworkServer.active)
-                this.weaponTracker?.StoreWeapon(this.defaultWeaponDef, this.weaponDef, this.currentBulletDef, this.weaponTimer);
-
-            this.onWeaponChanged -= this.OnWeaponChanged;
-
-            if (this.inventory)
-            {
-                this.inventory.onItemAddedClient -= this.Inventory_onItemAddedClient;
-                this.inventory.onInventoryChanged -= this.Inventory_onInventoryChanged;
-            }
-
-            if (this.weaponEffectInstance) 
-                Destroy(this.weaponEffectInstance);
-
-            if (this.muzzleTrail)
-                Destroy(this.muzzleTrail);
-
-            if (this.shellObjects != null && this.shellObjects.Length > 0)
-            {
-                for (int i = 0; i < this.shellObjects.Length; i++)
-                {
-                    if (this.shellObjects[i]) Destroy(this.shellObjects[i]);
-                }
-            }
-
-            if (this.slugObjects != null && this.slugObjects.Length > 0)
-            {
-                for (int i = 0; i < this.slugObjects.Length; i++)
-                {
-                    if (this.slugObjects[i]) Destroy(this.slugObjects[i]);
-                }
-            }
-        }
     }
 }

@@ -4,38 +4,99 @@ using EntityStates;
 using RobDriver.Modules;
 using RobDriver.SkillStates.Emote;
 using BepInEx.Configuration;
-using RobDriver.Modules.Components;
 
 namespace RobDriver.SkillStates.Driver
 {
     public class MainState : GenericCharacterMain
     {
-		private Animator animator;
 		public LocalUser localUser;
-		private DriverController iDrive;
+        private int layerIndex = -1;
 
-		public override void OnEnter()
+        public override void OnEnter()
         {
             base.OnEnter();
-            if (!iDrive) iDrive = this.GetComponent<DriverController>();
-            this.animator = this.modelAnimator;
 			this.FindLocalUser();
+
+            if (hasCharacterBody && hasModelAnimator)
+            {
+                layerIndex = base.modelAnimator.GetLayerIndex("Body");
+                characterBody.onJump += OnJump;
+            }
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+
+            if (hasCharacterBody && hasModelAnimator)
+                characterBody.onJump -= OnJump;
+        }
+
+        private void OnJump()
+        {
+            if (layerIndex >= 0)
+            {
+                if (this.characterBody.isSprinting)
+                {
+                    this.modelAnimator.CrossFadeInFixedTime("SprintJump", this.smoothingParameters.intoJumpTransitionTime, layerIndex);
+                }
+                // jumpCount has already been added to, used to be >=
+                else if (base.characterMotor.jumpCount > base.characterBody.baseJumpCount)
+                {
+                    this.modelAnimator.CrossFadeInFixedTime("BonusJump", this.smoothingParameters.intoJumpTransitionTime, layerIndex);
+                }
+            }
+
+            // fuck you fuck you fuck you
+            // dont name the y variable x and the x variable y
+            float right = this.animatorWalkParamCalculator.animatorWalkSpeed.y;
+            float forward = this.animatorWalkParamCalculator.animatorWalkSpeed.x;
+
+            // neutral jump
+            if (Mathf.Abs(right) <= 0.45f && Mathf.Abs(forward) <= 0.45f || this.inputBank.moveVector == Vector3.zero)
+            {
+                right = 0f;
+                forward = 0f;
+            }
+
+            if (Mathf.Abs(right) > Mathf.Abs(forward))
+            {
+                // side flip
+                right = Mathf.Sign(right);
+                forward = 0f;
+            }
+            else if (Mathf.Abs(right) < Mathf.Abs(forward))
+            {
+                // forward/backflips
+                forward = Mathf.Sign(forward);
+                right = 0f;
+            }
+            // eh this feels less dynamic. ignore the slight anim clipping issues ig and just blend them
+            //  actualyl don't because the clipping issues are nightmarish
+
+            // have to cache it at time of jump otherwise you can fuck up the jump anim in weird ways by turning during it
+            this.modelAnimator.SetFloat("forwardSpeedCached", forward);
+            this.modelAnimator.SetFloat("rightSpeedCached", right);
+            // turns out this wasn't even used in the end. the animation didn't break at all in practice, only in theory
+            // Fuck You rob you fucking moron
+
+            //  update: this was actually used. what the hell are you doing?
         }
 
         public override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (this.animator)
+            if (this.modelAnimator)
             {
                 bool cock = false;
                 if (!this.characterBody.outOfDanger || !this.characterBody.outOfCombat) cock = true;
+                this.modelAnimator.SetBool("inCombat", cock);
 
-                this.animator.SetBool("inCombat", cock);
-
-				if (this.isGrounded) this.animator.SetFloat("airBlend", 0f);
-				else this.animator.SetFloat("airBlend", 1f);
+				if (this.isGrounded) this.modelAnimator.SetFloat("airBlend", 0f);
+				else this.modelAnimator.SetFloat("airBlend", 1f);
             }
+
 			//emotes
 			if (base.isAuthority && base.characterMotor.isGrounded)
 			{
@@ -85,132 +146,79 @@ namespace RobDriver.SkillStates.Driver
 					}
 				}
 			}
-		}
+        }
 
-		public override void ProcessJump()
+        public override void ProcessJump()
         {
-			if (this.hasCharacterMotor)
-			{
-				bool hopooFeather = false;
-				bool waxQuail = false;
+            if (!hasCharacterMotor)
+            {
+                return;
+            }
 
-				if (this.jumpInputReceived && base.characterBody && base.characterMotor.jumpCount < base.characterBody.maxJumpCount)
-				{
-					int waxQuailCount = base.characterBody.inventory.GetItemCount(RoR2Content.Items.JumpBoost);
-					float horizontalBonus = 1f;
-					float verticalBonus = 1f;
+            bool hopooFeather = false;
+            bool waxQuail = false;
+            bool canJump = base.characterMotor.jumpCount < base.characterBody.maxJumpCount;
 
-					if (base.characterMotor.jumpCount >= base.characterBody.baseJumpCount)
-					{
-						this.iDrive.featherTimer = 0.1f;
+            if (!(jumpInputReceived && (bool)base.characterBody && canJump))
+            {
+                return;
+            }
 
-						hopooFeather = true;
-						horizontalBonus = 1.5f;
-						verticalBonus = 1.5f;
-					}
-					else if (waxQuailCount > 0 && base.characterBody.isSprinting)
-					{
-						float v = base.characterBody.acceleration * base.characterMotor.airControl;
+            int itemCountEffective = base.characterBody.inventory.GetItemCountEffective(RoR2Content.Items.JumpBoost);
+            float horizontalBonus = 1f;
+            float verticalBonus = 1f;
+            if (base.characterMotor.jumpCount >= base.characterBody.baseJumpCount)
+            {
+                hopooFeather = true;
+                horizontalBonus = 1.5f;
+                verticalBonus = 1.5f;
+            }
+            else if ((float)itemCountEffective > 0f && base.characterBody.isSprinting)
+            {
+                float num = base.characterBody.acceleration * base.characterMotor.airControl;
+                if (base.characterBody.moveSpeed > 0f && num > 0f)
+                {
+                    waxQuail = true;
+                    float num2 = Mathf.Sqrt(10f * (float)itemCountEffective / num);
+                    float num3 = base.characterBody.moveSpeed / num;
+                    horizontalBonus = (num2 + num3) / num3;
+                }
+            }
 
-						if (base.characterBody.moveSpeed > 0f && v > 0f)
-						{
-							waxQuail = true;
-							float num2 = Mathf.Sqrt(10f * (float)waxQuailCount / v);
-							float num3 = base.characterBody.moveSpeed / v;
-							horizontalBonus = (num2 + num3) / num3;
-						}
-					}
+            ApplyJumpVelocity(base.characterMotor, base.characterBody, horizontalBonus, verticalBonus);
 
-					GenericCharacterMain.ApplyJumpVelocity(base.characterMotor, base.characterBody, horizontalBonus, verticalBonus, false);
+            if (sfxLocator && !string.IsNullOrEmpty(base.sfxLocator.jumpSound))
+            {
+                Util.PlaySound(base.sfxLocator.jumpSound, outer.gameObject);
+            }
 
-					if (this.hasModelAnimator)
-					{
-						int layerIndex = base.modelAnimator.GetLayerIndex("Body");
-						if (layerIndex >= 0)
-						{
-							if (this.characterBody.isSprinting)
-                            {
-								this.modelAnimator.CrossFadeInFixedTime("SprintJump", this.smoothingParameters.intoJumpTransitionTime, layerIndex);
-							}
-							else
-                            {
-								if (hopooFeather)
-                                {
-									this.modelAnimator.CrossFadeInFixedTime("BonusJump", this.smoothingParameters.intoJumpTransitionTime, layerIndex);
-								}
-								else
-                                {
-									this.modelAnimator.CrossFadeInFixedTime("Jump", this.smoothingParameters.intoJumpTransitionTime, layerIndex);
-								}
-                            }
-						}
-					}
+            if (hopooFeather)
+            {
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/FeatherEffect"), new EffectData
+                {
+                    origin = base.characterBody.footPosition
+                }, transmit: true);
+            }
+            else if (base.characterMotor.jumpCount > 0)
+            {
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/CharacterLandImpact"), new EffectData
+                {
+                    origin = base.characterBody.footPosition,
+                    scale = base.characterBody.radius
+                }, transmit: true);
+            }
 
-					if (hopooFeather)
-					{
-						EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/FeatherEffect"), new EffectData
-						{
-							origin = base.characterBody.footPosition
-						}, true);
-					}
-					else if (base.characterMotor.jumpCount > 0)
-					{
-						EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/CharacterLandImpact"), new EffectData
-						{
-							origin = base.characterBody.footPosition,
-							scale = base.characterBody.radius
-						}, true);
-					}
+            if (waxQuail)
+            {
+                EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/BoostJumpEffect"), new EffectData
+                {
+                    origin = base.characterBody.footPosition,
+                    rotation = Util.QuaternionSafeLookRotation(base.characterMotor.velocity)
+                }, transmit: true);
+            }
 
-					if (waxQuail)
-					{
-						EffectManager.SpawnEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/BoostJumpEffect"), new EffectData
-						{
-							origin = base.characterBody.footPosition,
-							rotation = Util.QuaternionSafeLookRotation(base.characterMotor.velocity)
-						}, true);
-					}
-
-					base.characterMotor.jumpCount++;
-
-					// set up double jump anim
-					if (this.animator)
-					{
-						float x = this.animatorWalkParamCalculator.animatorWalkSpeed.y;
-						float y = this.animatorWalkParamCalculator.animatorWalkSpeed.x;
-
-						// neutral jump
-						if (Mathf.Abs(x) <= 0.45f && Mathf.Abs(y) <= 0.45f || this.inputBank.moveVector == Vector3.zero)
-						{
-							x = 0f;
-							y = 0f;
-						}
-
-						if (Mathf.Abs(x) > Mathf.Abs(y))
-						{
-							// side flip
-							x = x > 0f ? 1f : -1f;
-                            y = 0f;
-						}
-						else if (Mathf.Abs(x) < Mathf.Abs(y))
-						{
-							// forward/backflips
-							y = y > 0f ? 1f : -1f;
-                            x = 0f;
-						}
-						// eh this feels less dynamic. ignore the slight anim clipping issues ig and just blend them
-						//  actualyl don't because the clipping issues are nightmarish
-
-						// have to cache it at time of jump otherwise you can fuck up the jump anim in weird ways by turning during it
-						this.animator.SetFloat("forwardSpeedCached", y);
-						this.animator.SetFloat("rightSpeedCached", x);
-						// turns out this wasn't even used in the end. the animation didn't break at all in practice, only in theory
-						// Fuck You rob you fucking moron
-
-						//  update: this was actually used. what the hell are you doing?
-					}
-				}
-			}
+            base.characterMotor.jumpCount++;
+            base.characterBody.TriggerJumpEventGlobally();
 		}
     }
 }

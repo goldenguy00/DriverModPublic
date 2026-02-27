@@ -18,7 +18,7 @@ namespace RobDriver.Modules
         internal static BuffDef syringeScepterBuff;
         internal static BuffDef syringeNewBuff;
 
-        static Buffs()
+        internal static void Init()
         {
             dazedDebuff = AddNewBuff("RobDriverDazedDebuff", Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/Common/bdCloak.asset").WaitForCompletion().iconSprite, Color.grey, canStack: false, isDebuff: true);
             woundDebuff = AddNewBuff("RobDriverWoundDebuff", Addressables.LoadAssetAsync<BuffDef>("RoR2/Base/Bandit2/bdBanditSkull.asset").WaitForCompletion().iconSprite, Color.red, canStack: false, isDebuff: true);

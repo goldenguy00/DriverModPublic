@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 205684968
+CRC: 2024203988
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 760f25d387866ce0e3fa5e0f2b5c1935
+    Hash: d501b123e6bfc7dd249d137ed1e83ed2
   TypeTreeHash:
     serializedVersion: 2
     Hash: 9c4acba5aef84ab3b4cf9c16504a7828
@@ -96,6 +96,7 @@ Assets:
 - Assets/Driver/Animations/Sword/Descend.anim
 - Assets/Driver/Meshes/Weapon/meshGoldenGun.mesh
 - Assets/Driver/Icons/texMinecraftSkin.png
+- Assets/Driver/Animations/Skateboard/StopGrind.anim
 - Assets/Driver/Icons/Weapon/texVoidPistolWeaponIcon.png
 - Assets/Driver/Animations/Shotgun/RunF.anim
 - Assets/Driver/Meshes/Weapon/meshCommandoGun.mesh
@@ -192,6 +193,7 @@ Assets:
 - Assets/Driver/Animations/Shotgun/Descend.anim
 - Assets/Driver/Icons/Weapon/texMachineGunWeaponIcon.png
 - Assets/Driver/Textures/texSkateboard.png
+- Assets/Driver/WeaponDefs/EbonyIvory.asset
 - Assets/Driver/Animations/Default/ReadyButtonLoop.anim
 - Assets/Driver/Textures/texBriefcaseGold.png
 - Assets/Driver/Icons/Weapon/texNemmandoWeaponIcon.png
@@ -288,9 +290,10 @@ Assets:
 - Assets/Driver/Animations/Skateboard/SkateFast.anim
 - Assets/Driver/Animations/Default/CSSIdleIn.anim
 - Assets/Driver/Animations/Default/Taunt.anim
-- Assets/Driver/Textures/texBazooka.png
+- Assets/Driver/Icons/Weapon/texEbonyIvory.png
 - Assets/Driver/Animations/Sword/Ascend.anim
 - Assets/Driver/Animations/Sword/RunR.anim
+- Assets/Driver/Textures/texBazooka.png
 - Assets/Driver/Meshes/meshSuit.mesh
 - Assets/Driver/Textures/Import/texHalcyoniteFresnel.png
 - Assets/Driver/Meshes/Weapon/meshRevolver.mesh
@@ -405,6 +408,7 @@ Assets:
 - Assets/Driver/Icons/texSuitSkin.png
 - Assets/Driver/Meshes/Weapon/Import/meshToolbotWeapons.mesh
 - Assets/Driver/Materials/Weapons/Hopoo/matToolbot.mat
+- Assets/Driver/Animations/Skateboard/Armature_GrindStop.anim
 - Assets/Driver/Materials/Weapons/matNemmercGun.mat
 - Assets/Driver/Icons/Weapon/texSniperRifleWeaponIcon.png
 - Assets/Driver/Animations/Skateboard/Ascend.anim
@@ -477,12 +481,14 @@ Assets:
 - Assets/Driver/Materials/matShotgunShell.mat
 - Assets/Driver/Animations/Sword/RunF.anim
 - Assets/Driver/Icons/Skill/texGoldenGunIcon.png
-- Assets/Driver/WeaponDefs/ChefCleaver.asset
+- Assets/Driver/FBX/animDriverSkateboardTimb2.fbx
 - Assets/Driver/Animations/maskDriverAim.mask
 - Assets/Driver/Meshes/Weapon/Import/meshCaptainGun.mesh
 - Assets/Driver/Prefabs/ShotgunSlug.prefab
+- Assets/Driver/Prefabs/mdlWeaponPickupUnique.prefab
 - Assets/Driver/Icons/Weapon/texGenericWeaponGreen.png
 - Assets/Driver/Materials/Weapons/matNemmandoGun.mat
+- Assets/Driver/WeaponDefs/ChefCleaver.asset
 - Assets/Driver/Icons/Weapon/texHeavyMachineGunWeaponIcon.png
 - Assets/Driver/DriverDisplay.prefab
 - Assets/Driver/Meshes/Weapon/meshCrabGun.mesh
@@ -563,7 +569,6 @@ Assets:
 - Assets/Driver/Animations/animDriverCSS.controller
 - Assets/Driver/Textures/texRocketLauncherAlt.png
 - Assets/Driver/VFX/Badass/SandHitEffect.prefab
-- Assets/Driver/Prefabs/mdlWeaponPickupUnique.prefab
 - Assets/Driver/Icons/Skill/texGoldenGunSecondaryIcon.png
 - Assets/Driver/Materials/Weapons/matPistol.mat
 - Assets/Driver/FBX/Shell.dae

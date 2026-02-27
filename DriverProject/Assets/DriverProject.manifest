@@ -1,7 +1,0 @@
-ManifestFileVersion: 0
-CRC: 101241640
-AssetBundleManifest:
-  AssetBundleInfos:
-    Info_0:
-      Name: robdriver
-      Dependencies: {}

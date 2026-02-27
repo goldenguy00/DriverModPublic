@@ -123,7 +123,7 @@ namespace RobDriver.SkillStates.BaseStates
 
             int icbmCount = 0;
             if (this.useICBM)
-                icbmCount = (this.characterBody.inventory?.GetItemCount(DLC1Content.Items.MoreMissile)).GetValueOrDefault();
+                icbmCount = this.characterBody.inventory ? this.characterBody.inventory.GetItemCountEffective(DLC1Content.Items.MoreMissile) : 0;
 
             float damageMult = Mathf.Max(1f, 1f + (0.5f * (icbmCount - 1)));
 

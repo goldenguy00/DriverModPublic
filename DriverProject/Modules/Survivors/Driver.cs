@@ -65,7 +65,7 @@ namespace RobDriver.Modules.Survivors
         private static GameObject CreateBodyPrefab()
         {
             #region Body
-            GameObject newPrefab = Prefabs.CreatePrefab(bodyName, "mdlDriver", new BodyInfo
+            GameObject bodyPrefab = Prefabs.CreatePrefab(bodyName, "mdlDriver", new BodyInfo
             {
                 armor = Config.baseArmor.Value,
                 armorGrowth = Config.armorGrowth.Value,
@@ -88,9 +88,10 @@ namespace RobDriver.Modules.Survivors
                 crit = Config.baseCrit.Value
             });
 
-            ChildLocator childLocator = newPrefab.GetComponentInChildren<ChildLocator>();
+            ChildLocator childLocator = bodyPrefab.GetComponentInChildren<ChildLocator>();
             childLocator.gameObject.AddComponent<DriverAnimationEvents>();
 
+            /*
             //CharacterBody body = newPrefab.GetComponent<CharacterBody>();
             //body.preferredInitialStateType = new EntityStates.SerializableEntityStateType(typeof(SpawnState));
             //body.bodyFlags = CharacterBody.BodyFlags.IgnoreFallDamage;
@@ -121,36 +122,40 @@ namespace RobDriver.Modules.Survivors
             //interactor.maxInteractionDistance = 8f;
 
             //newPrefab.GetComponent<CharacterDirection>().turnSpeed = 720f;
-             
+             */
 
-            newPrefab.GetComponent<CameraTargetParams>().cameraParams = CameraParams.CreateCameraParamsWithData(DriverCameraParams.DEFAULT);
+            bodyPrefab.GetComponent<CameraTargetParams>().cameraParams = CameraParams.CreateCameraParamsWithData(DriverCameraParams.DEFAULT);
 
-            foreach (EntityStateMachine i in newPrefab.GetComponents<EntityStateMachine>())
-            {
-                if (i.customName == "Body")
-                    i.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.MainState));
+            var allESM = bodyPrefab.GetComponents<EntityStateMachine>();
 
-                if (i.customName == "Weapon")
-                    i.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.WeaponMainState));
-            }
+            EntityStateMachine bodyESM = allESM.First(esm => esm.customName == "Body");
+            bodyESM.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.MainState));
+            EntityStateMachine weaponESM = allESM.First(esm => esm.customName == "Weapon");
+            weaponESM.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.WeaponMainState));
 
-            EntityStateMachine passiveController = newPrefab.AddComponent<EntityStateMachine>();
+            EntityStateMachine passiveController = bodyPrefab.AddComponent<EntityStateMachine>();
             passiveController.customName = "RavPassive";
             passiveController.initialStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RavSword.WallJump));
             passiveController.mainStateType = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.RavSword.WallJump));
 
-            EntityStateMachine stateMachine = newPrefab.AddComponent<EntityStateMachine>();
-            stateMachine.customName = "AltWeapon";
-            stateMachine.initialStateType = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle));
-            stateMachine.mainStateType = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle));
+            EntityStateMachine altWeapon = bodyPrefab.AddComponent<EntityStateMachine>();
+            altWeapon.customName = "AltWeapon";
+            altWeapon.initialStateType = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle));
+            altWeapon.mainStateType = new EntityStates.SerializableEntityStateType(typeof(EntityStates.Idle));
 
+            bodyPrefab.GetComponent<CharacterBody>().vehicleIdleStateMachine = new EntityStateMachine[]
+            {
+                EntityStateMachine.FindByCustomName(bodyPrefab, "Body"),
+                EntityStateMachine.FindByCustomName(bodyPrefab, "Weapon"),
+                EntityStateMachine.FindByCustomName(bodyPrefab, "Weapon2")
+            };
             //var state = isPlayer ? typeof(EntityStates.SpawnTeleporterState) : typeof(SpawnState);
             //newPrefab.GetComponent<EntityStateMachine>().initialStateType = new EntityStates.SerializableEntityStateType(state);
 
             // schizophrenia
-            newPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.FuckMyAss));
+            bodyPrefab.GetComponent<CharacterDeathBehavior>().deathState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.FuckMyAss));
 
-            newPrefab.AddComponent<DriverController>();
+            bodyPrefab.AddComponent<DriverController>();
             #endregion
 
             #region Model
@@ -223,8 +228,8 @@ namespace RobDriver.Modules.Survivors
                 }
             };
 
-            CharacterModel characterModel = newPrefab.GetComponent<ModelLocator>().modelTransform.gameObject.AddComponent<CharacterModel>();
-            Prefabs.SetupCharacterModel(newPrefab, characterModel, customRendererInfo);
+            CharacterModel characterModel = bodyPrefab.GetComponent<ModelLocator>().modelTransform.gameObject.AddComponent<CharacterModel>();
+            Prefabs.SetupCharacterModel(bodyPrefab, characterModel, customRendererInfo);
 
             // hide the extra stuff
             childLocator.FindChildGameObject("PistolModel").SetActive(true);
@@ -247,13 +252,13 @@ namespace RobDriver.Modules.Survivors
             childLocator.FindChildGameObject("TimbsModelR").SetActive(Config.cursed.Value);
             #endregion
 
-            CreateHitboxes(newPrefab);
-            SetupHurtboxes(newPrefab);
-            CreateSkills(newPrefab);
-            CreateSkins(newPrefab);
-            InitializeItemDisplays(newPrefab);
+            CreateHitboxes(bodyPrefab);
+            SetupHurtboxes(bodyPrefab);
+            CreateSkills(bodyPrefab);
+            CreateSkins(bodyPrefab);
+            InitializeItemDisplays(bodyPrefab);
 
-            return newPrefab;
+            return bodyPrefab;
         }
 
         private static void SetupHurtboxes(GameObject bodyPrefab)
@@ -1739,19 +1744,19 @@ namespace RobDriver.Modules.Survivors
                 null,
                 defaultRenderers,
                 [
-                    new SkinDef.MeshReplacement
+                    new SkinDefParams.MeshReplacement
                     {
                         renderer = mainRenderer,
                         mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshDriver")
                     }
                 ],
                 [
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = sluggerCloth,
                         shouldActivate = false
                     },
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = tie,
                         shouldActivate = false
@@ -1767,19 +1772,19 @@ namespace RobDriver.Modules.Survivors
                     Assets.LoadMaterial("matJacket")
                 ]),
                 [
-                    new SkinDef.MeshReplacement
+                    new SkinDefParams.MeshReplacement
                     {
                         renderer = mainRenderer,
                         mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshJacket")
                     }
                 ], 
                 [
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = sluggerCloth,
                         shouldActivate = false
                     },
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = tie,
                         shouldActivate = false
@@ -1795,19 +1800,19 @@ namespace RobDriver.Modules.Survivors
                     Assets.LoadMaterial("matSlugger")
                 ]),
                 [
-                    new SkinDef.MeshReplacement
+                    new SkinDefParams.MeshReplacement
                     {
                         renderer = mainRenderer,
                         mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSlugger")
                     }
                 ], 
                 [
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = sluggerCloth,
                         shouldActivate = true
                     },
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = tie,
                         shouldActivate = false
@@ -1823,19 +1828,19 @@ namespace RobDriver.Modules.Survivors
                     Assets.LoadMaterial("matSpecialForces")
                 ]), 
                 [
-                    new SkinDef.MeshReplacement
+                    new SkinDefParams.MeshReplacement
                     {
                         renderer = mainRenderer,
                         mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSpecialForces")
                     }
                 ],
                 [
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = sluggerCloth,
                         shouldActivate = false
                     },
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = tie,
                         shouldActivate = false
@@ -1851,19 +1856,19 @@ namespace RobDriver.Modules.Survivors
                     Assets.LoadMaterial("matGuerrilla")
                 ]), 
                 [
-                    new SkinDef.MeshReplacement
+                    new SkinDefParams.MeshReplacement
                     {
                         renderer = mainRenderer,
                         mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshGuerrilla")
                     }
                 ],
                 [
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = sluggerCloth,
                         shouldActivate = false
                     },
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = tie,
                         shouldActivate = false
@@ -1879,19 +1884,19 @@ namespace RobDriver.Modules.Survivors
                     Assets.LoadMaterial("matSuit")
                 ]), 
                 [
-                    new SkinDef.MeshReplacement
+                    new SkinDefParams.MeshReplacement
                     {
                         renderer = mainRenderer,
                         mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSuit")
                     }
                 ],
                 [
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = sluggerCloth,
                         shouldActivate = false
                     },
-                    new SkinDef.GameObjectActivation
+                    new SkinDefParams.GameObjectActivation
                     {
                         gameObject = tie,
                         shouldActivate = true
@@ -1919,19 +1924,19 @@ namespace RobDriver.Modules.Survivors
                         Assets.LoadMaterial("matSuit")
                     ]), 
                     [
-                        new SkinDef.MeshReplacement
+                        new SkinDefParams.MeshReplacement
                         {
                             renderer = mainRenderer,
                             mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshSuit2")
                         }
                     ],
                     [
-                        new SkinDef.GameObjectActivation
+                        new SkinDefParams.GameObjectActivation
                         {
                             gameObject = sluggerCloth,
                             shouldActivate = false
                         },
-                        new SkinDef.GameObjectActivation
+                        new SkinDefParams.GameObjectActivation
                         {
                             gameObject = tie,
                             shouldActivate = true
@@ -1947,19 +1952,19 @@ namespace RobDriver.Modules.Survivors
                         Assets.LoadMaterial("matDriverGreen")
                     ]), 
                     [
-                        new SkinDef.MeshReplacement
+                        new SkinDefParams.MeshReplacement
                         {
                             renderer = mainRenderer,
                             mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshDriver")
                         }
                     ], 
                     [
-                        new SkinDef.GameObjectActivation
+                        new SkinDefParams.GameObjectActivation
                         {
                             gameObject = sluggerCloth,
                             shouldActivate = false
                         },
-                        new SkinDef.GameObjectActivation
+                        new SkinDefParams.GameObjectActivation
                         {
                             gameObject = tie,
                             shouldActivate = false
@@ -1975,19 +1980,19 @@ namespace RobDriver.Modules.Survivors
                         Assets.LoadMaterial("matMinecraftDriver")
                     ]),
                     [
-                        new SkinDef.MeshReplacement
+                        new SkinDefParams.MeshReplacement
                         {
                             renderer = mainRenderer,
                             mesh = Assets.mainAssetBundle.LoadAsset<Mesh>("meshMinecraftDriver")
                         }
                     ], 
                     [
-                        new SkinDef.GameObjectActivation
+                        new SkinDefParams.GameObjectActivation
                         {
                             gameObject = sluggerCloth,
                             shouldActivate = false
                         },
-                        new SkinDef.GameObjectActivation
+                        new SkinDefParams.GameObjectActivation
                         {
                             gameObject = tie,
                             shouldActivate = false

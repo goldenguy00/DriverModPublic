@@ -48,6 +48,7 @@ namespace RobDriver.SkillStates.Driver.Skateboard
                 }
 
                 this.isSprinting = this.inputBank.moveVector != Vector3.zero;
+                this.characterBody.isSprinting = this.isSprinting;
 
                 Vector2 vector = Util.Vector3XZToVector2XY(base.inputBank.moveVector);
                 if (vector != Vector2.zero)
@@ -66,7 +67,7 @@ namespace RobDriver.SkillStates.Driver.Skateboard
                 }
             }
 
-            this.characterBody.isSprinting = this.isSprinting;
+            this.isSprinting = base.characterBody.isSprinting;
 
             if (!this.wasSprinting && this.isSprinting && this.isGrounded)
                 base.PlayCrossfade("FullBody, Override", "SkateAccelerate", 0.1f);

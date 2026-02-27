@@ -35,7 +35,7 @@ namespace RobDriver
     {
         public const string MODUID = "com.rob.Driver";
         public const string MODNAME = "Driver";
-        public const string MODVERSION = "2.1.8";
+        public const string MODVERSION = "2.3.5";
 
         public const string developerPrefix = "ROB";
 
@@ -52,6 +52,7 @@ namespace RobDriver
         public static bool RavagerInstalled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rob.Ravager");
         public static bool HunkInstalled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.rob.Hunk");
         public static bool HunkHudInstalled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.public_ParticleSystem.HunkHud");
+        public static bool CleanerHudInstalled => BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("LordVGames.CleanestHud");
 
         private void Awake()
         {
@@ -60,6 +61,8 @@ namespace RobDriver
 
             Modules.Config.ReadConfig(Config);
             Modules.Assets.PopulateAssets();
+            Modules.Buffs.Init();
+            Modules.DriverDamageTypes.Init();
             Modules.CameraParams.InitializeParams();
             Modules.States.RegisterStates();
             Modules.Projectiles.RegisterProjectiles();
@@ -78,7 +81,7 @@ namespace RobDriver
             float mult = 1f;
             if (body && body.inventory)
             {
-                int itemcount = body.inventory.GetItemCount(DLC1Content.Items.MoreMissile);
+                int itemcount = body.inventory.GetItemCountEffective(DLC1Content.Items.MoreMissile);
                 int stack = itemcount - 1;
                 if (stack > 0) mult += stack * 0.5f;
             }

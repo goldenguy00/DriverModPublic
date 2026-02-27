@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HunkMod.Modules.Survivors;
 using R2API;
 using RobDriver.Modules.Components;
 using RobDriver.Modules.Components.UI;
@@ -132,6 +133,15 @@ namespace RobDriver.Modules
             {
                 mainAssetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(path, "robdriver"));
             }
+
+            Hunk.heartCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.heartCostDef);
+            Hunk.spadeCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.spadeCostDef);
+            Hunk.clubCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.clubCostDef);
+            Hunk.diamondCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.diamondCostDef);
+            Hunk.starCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.starCostDef);
+            Hunk.wristbandCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.wristbandCostDef);
+            Hunk.starsBadgeCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.starsBadgeCostDef);
+            Hunk.sampleCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.sampleCostDef);
 
             Modules.Config.InitROO(Assets.mainAssetBundle.LoadAsset<Sprite>("texDriverIcon"), "Literally me");
 

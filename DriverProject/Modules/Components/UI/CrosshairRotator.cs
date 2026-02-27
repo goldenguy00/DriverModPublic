@@ -15,8 +15,7 @@ namespace RobDriver.Modules.Components.UI
 
         private void FixedUpdate()
         {
-            if (this.rectTransform)
-                this.rectTransform.eulerAngles = new Vector3(0f, 0f, this.rectTransform.eulerAngles.z + Time.fixedDeltaTime * this.speed);
+            this.rectTransform.eulerAngles = new Vector3(0f, 0f, this.rectTransform.eulerAngles.z + Time.fixedDeltaTime * this.speed);
         }
     }
 }

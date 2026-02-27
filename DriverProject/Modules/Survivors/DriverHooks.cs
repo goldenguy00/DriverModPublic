@@ -35,7 +35,6 @@ namespace RobDriver.Modules.Misc
             On.RoR2.HealthComponent.TakeDamageProcess += HealthComponent_TakeDamageProcess;
             On.RoR2.GlobalEventManager.ProcessHitEnemy += GlobalEventManager_ProcessHitEnemy;
             On.RoR2.GlobalEventManager.OnHitAllProcess += GlobalEventManager_OnHitAllProcess;
-            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
 
             HUD.onHudTargetChangedGlobal += HUDSetup;
             On.RoR2.UI.HGButton.Start += HGButton_Start;
@@ -67,6 +66,7 @@ namespace RobDriver.Modules.Misc
                 On.RoR2.UI.LoadoutPanelController.Row.UpdateHighlightedChoice += Row_UpdateHighlightedChoice;
                 On.RoR2.UI.CharacterSelectController.BuildSkillStripDisplayData += CharacterSelectController_BuildSkillStripDisplayData;
             }
+            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
         }
 
         #region Damage Handling
@@ -193,8 +193,8 @@ namespace RobDriver.Modules.Misc
             {
                 damageInfo.procChainMask.AddProc(ProcType.MicroMissile);
 
-                var icbmCount = attackerBody.inventory.GetItemCount(DLC1Content.Items.MoreMissile);
-                var missileCount = attackerBody.inventory.GetItemCount(DLC1Content.Items.MissileVoid) + attackerBody.inventory.GetItemCount(RoR2Content.Items.Missile);
+                var icbmCount = attackerBody.inventory.GetItemCountEffective(DLC1Content.Items.MoreMissile);
+                var missileCount = attackerBody.inventory.GetItemCountEffective(DLC1Content.Items.MissileVoid) + attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.Missile);
                 var damageValue = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 0.4f + 0.4f * missileCount) * DriverPlugin.GetICBMDamageMult(attackerBody);
 
                 for (var i = 0; i < (icbmCount == 0 ? 1 : 3); i++)
@@ -232,7 +232,7 @@ namespace RobDriver.Modules.Misc
 
             if (damageInfo.HasModdedDamageType(DriverDamageTypes.IceBlastShot))
             {
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.IceRing);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.IceRing);
                 var damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 1.25f + 1.25f * itemCount);
 
                 EffectManager.SimpleImpactEffect(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/ImpactEffects/IceRingExplosion"), damageInfo.position, Vector3.up, transmit: true);
@@ -257,7 +257,7 @@ namespace RobDriver.Modules.Misc
             {
                 damageInfo.procChainMask.AddProc(ProcType.BounceNearby);
 
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.BounceNearby);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.BounceNearby);
                 var damageValue = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 0.25f + itemCount);
 
                 var targets = CollectionPool<HurtBox, List<HurtBox>>.RentCollection();
@@ -294,7 +294,7 @@ namespace RobDriver.Modules.Misc
 
             if (damageInfo.HasModdedDamageType(DriverDamageTypes.FlameTornadoShot) && Util.CheckRoll(procChance, attackerBody.master))
             {
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.FireRing);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.FireRing);
                 var damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 1.5f + 1.5f * itemCount) / 3.3f * 0.3f;
 
                 var vector = damageInfo.position - attackerBody.aimOrigin;
@@ -329,7 +329,7 @@ namespace RobDriver.Modules.Misc
                 var position = Vector3.Lerp(victim.transform.position, attackerBody.transform.position, 0.75f) + Vector3.up * 1.8f + UnityEngine.Random.insideUnitSphere * 0.5f;
                 var rotation = Util.QuaternionSafeLookRotation(Vector3.up + UnityEngine.Random.insideUnitSphere * 0.1f);
 
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.Dagger);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.Dagger);
                 var damageValue = Util.OnKillProcDamage(attackerBody.damage, 3f + 1.5f * itemCount);
                 var force = 200f;
 
@@ -348,8 +348,8 @@ namespace RobDriver.Modules.Misc
             {
                 damageInfo.procChainMask.AddProc(ProcType.Missile);
 
-                var icbmCount = attackerBody.inventory.GetItemCount(DLC1Content.Items.MoreMissile);
-                var missileCount = attackerBody.inventory.GetItemCount(DLC1Content.Items.MissileVoid) + attackerBody.inventory.GetItemCount(RoR2Content.Items.Missile);
+                var icbmCount = attackerBody.inventory.GetItemCountEffective(DLC1Content.Items.MoreMissile);
+                var missileCount = attackerBody.inventory.GetItemCountEffective(DLC1Content.Items.MissileVoid) + attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.Missile);
 
                 var missileDamage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 1.5f + 1.5f * missileCount) * DriverPlugin.GetICBMDamageMult(attackerBody);
 
@@ -388,7 +388,7 @@ namespace RobDriver.Modules.Misc
             {
                 damageInfo.procChainMask.AddProc(ProcType.LightningStrikeOnHit);
 
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.LightningStrikeOnHit);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.LightningStrikeOnHit);
                 var damageValue = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 2.5f + 2.5f * itemCount);
 
                 var target = victimBody.mainHurtBox;
@@ -419,7 +419,7 @@ namespace RobDriver.Modules.Misc
                     origin = origin
                 }, transmit: true);
 
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.FireballsOnHit);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.FireballsOnHit);
                 var damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 1.5f + 1.5f * itemCount);
 
                 var rotation = Vector3.up;
@@ -451,7 +451,7 @@ namespace RobDriver.Modules.Misc
                 var forward = victimBody.corePosition - damageInfo.position;
                 var rotation = forward.magnitude != 0f ? Util.QuaternionSafeLookRotation(forward) : UnityEngine.Random.rotationUniform;
 
-                var itemCount = attackerBody.inventory.GetItemCount(RoR2Content.Items.StickyBomb);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.StickyBomb);
                 var damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 1.8f + 0.2f * itemCount);
 
                 ProjectileManager.instance.FireProjectile(
@@ -471,7 +471,7 @@ namespace RobDriver.Modules.Misc
             {
                 damageInfo.procChainMask.AddProc(ProcType.ChainLightning);
 
-                var itemCount = attackerBody.inventory.GetItemCount(DLC1Content.Items.ChainLightningVoid) + attackerBody.inventory.GetItemCount(RoR2Content.Items.ChainLightning);
+                var itemCount = attackerBody.inventory.GetItemCountEffective(DLC1Content.Items.ChainLightningVoid) + attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.ChainLightning);
                 var damage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 0.4f);
 
                 OrbManager.instance.AddOrb(new VoidLightningOrb
@@ -495,6 +495,7 @@ namespace RobDriver.Modules.Misc
                 DotController.InflictDot(
                     victim,
                     damageInfo.attacker,
+                    null,
                     DotController.DotIndex.SuperBleed,
                     15f * damageInfo.procCoefficient);
             } // end superbleed
@@ -504,6 +505,7 @@ namespace RobDriver.Modules.Misc
                 DotController.InflictDot(
                     victim,
                     damageInfo.attacker,
+                    null,
                     DriverDamageTypes.GougeDotIndex,
                     4f,
                     1.5f);
@@ -548,6 +550,7 @@ namespace RobDriver.Modules.Misc
                 DotController.InflictDot(
                     duration: DotController.GetDotDef(DotController.DotIndex.Fracture).interval,
                     victimObject: victim,
+                    hitHurtBox: damageInfo.inflictedHurtbox,
                     attackerObject: damageInfo.attacker,
                     dotIndex: DotController.DotIndex.Fracture,
                     damageMultiplier: 1f,
@@ -565,7 +568,7 @@ namespace RobDriver.Modules.Misc
                 var attackerBody = damageInfo.attacker ? damageInfo.attacker.GetComponent<CharacterBody>() : null;
                 if (attackerBody)
                 {
-                    var itemCount = attackerBody.inventory ? attackerBody.inventory.GetItemCount(RoR2Content.Items.Behemoth) : 0;
+                    var itemCount = attackerBody.inventory ? attackerBody.inventory.GetItemCountEffective(RoR2Content.Items.Behemoth) : 0;
                     var radius = (1.5f + 2.5f * itemCount) * damageInfo.procCoefficient;
                     var baseDamage = Util.OnHitProcDamage(damageInfo.damage, attackerBody.damage, 0.6f);
 
@@ -926,23 +929,19 @@ namespace RobDriver.Modules.Misc
         {
             if (hud.targetBodyObject && hud.targetMaster && hud.targetMaster.backupBodyIndex == Driver.bodyIndex)
             {
-                if (!hud.targetMaster.hasAuthority) 
+                if (!hud.targetMaster.hasAuthority)
                     return;
 
                 // weapon pickup notification
-                var notificationPanel = hud.transform.Find("MainContainer").Find("NotificationArea").gameObject;
-                var _new = notificationPanel.AddComponent<WeaponNotificationUIController>();
+                var notificationPanel = hud.GetComponent<ChildLocator>().FindChild("NotificationArea") ?? hud.mainContainer.transform.Find("NotificationArea");
+                var _new = notificationPanel.gameObject.EnsureComponent<WeaponNotificationUIController>();
 
                 _new.hud = hud;
-                _new.notificationQueue = hud.targetMaster.gameObject.AddComponent<WeaponNotificationQueue>();
+                _new.notificationQueue = hud.targetMaster.gameObject.EnsureComponent<WeaponNotificationQueue>();
 
                 if (DriverPlugin.HunkHudInstalled)
-                {
                     HunkHudSetupNew(hud);
-                    return;
-                }
-
-                if (DriverPlugin.RiskUIInstalled)
+                else if (DriverPlugin.RiskUIInstalled)
                     RiskUIHudSetup(hud);
                 else 
                     NormalHudSetup(hud);
@@ -951,108 +950,96 @@ namespace RobDriver.Modules.Misc
 
         private static void NormalHudSetup(HUD hud)
         {
-            var skillsContainer = hud.equipmentIcons[0].gameObject.transform.parent;
+            var childLoc = hud.GetComponent<ChildLocator>();
+            var skillsContainer = childLoc.FindChild("SkillDisplayRoot") ?? hud.equipmentIcons[0].transform.parent;
 
-            // remove existing
-            if (skillsContainer.Find("WeaponSlot")) UnityEngine.Object.Destroy(skillsContainer.Find("WeaponSlot").gameObject);
+            if (!DriverPlugin.CleanerHudInstalled)
+            {
+                // no one will notice these missing
+                skillsContainer.Find("SprintCluster")?.gameObject.SetActive(false);
+                skillsContainer.Find("InventoryCluster")?.gameObject.SetActive(false);
+            }
 
-            var oldUI = hud.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas").Find("CrosshairExtras").Find("AmmoTracker");
-            if (oldUI) UnityEngine.Object.Destroy(oldUI.gameObject);
+            #region weapon slot
+            var weaponSlot = skillsContainer.Find("WeaponSlot")?.gameObject;
+            if (weaponSlot)
+                GameObject.DestroyImmediate(weaponSlot);
 
-            // no one will notice these missing
-            skillsContainer.Find("SprintCluster").gameObject.SetActive(false);
-            skillsContainer.Find("InventoryCluster").gameObject.SetActive(false);
-
-            var weaponSlot = UnityEngine.Object.Instantiate(skillsContainer.Find("EquipmentSlot").gameObject, skillsContainer);
+            weaponSlot = GameObject.Instantiate(hud.equipmentIcons[0].gameObject, skillsContainer);
             weaponSlot.name = "WeaponSlot";
-
-            var equipmentIconComponent = weaponSlot.GetComponent<EquipmentIcon>();
-            var weaponIconComponent = weaponSlot.AddComponent<WeaponIcon>();
-
-            weaponIconComponent.iconImage = equipmentIconComponent.iconImage;
-            weaponIconComponent.displayRoot = equipmentIconComponent.displayRoot;
-            weaponIconComponent.flashPanelObject = equipmentIconComponent.stockFlashPanelObject;
-            weaponIconComponent.reminderFlashPanelObject = equipmentIconComponent.reminderFlashPanelObject;
-            weaponIconComponent.isReadyPanelObject = equipmentIconComponent.isReadyPanelObject;
-            weaponIconComponent.tooltipProvider = equipmentIconComponent.tooltipProvider;
-            weaponIconComponent.targetHUD = hud;
             weaponSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(-480f, -17.1797f);
 
-            var keyText = weaponSlot.transform.Find("DisplayRoot").Find("EquipmentTextBackgroundPanel").Find("EquipmentKeyText").gameObject.GetComponent<HGTextMeshProUGUI>();
-            keyText.gameObject.GetComponent<InputBindingDisplayController>().enabled = false;
-            keyText.text = "Weapon";
+            var keyText = weaponSlot.GetComponentInChildren<InputBindingDisplayController>();
+            keyText.enabled = false;
+            keyText.transform.parent.gameObject.SetActive(false);
 
-            weaponSlot.transform.Find("DisplayRoot").Find("EquipmentStack").gameObject.SetActive(false);
-            weaponSlot.transform.Find("DisplayRoot").Find("CooldownText").gameObject.SetActive(false);
+            var equipmentIcon = weaponSlot.GetComponent<EquipmentIcon>();
+            equipmentIcon.stockText.gameObject.SetActive(false);
+            equipmentIcon.cooldownText.gameObject.SetActive(false);
 
-            // duration bar
-            var chargeBar = UnityEngine.Object.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("WeaponChargeBar"));
-            chargeBar.transform.SetParent(weaponSlot.transform.Find("DisplayRoot"));
+            var weaponIcon = weaponSlot.AddComponent<WeaponIcon>();
+            weaponIcon.iconImage = equipmentIcon.iconImage;
+            weaponIcon.displayRoot = equipmentIcon.displayRoot;
+            weaponIcon.flashPanelObject = equipmentIcon.stockFlashPanelObject;
+            weaponIcon.reminderFlashPanelObject = equipmentIcon.reminderFlashPanelObject;
+            weaponIcon.isReadyPanelObject = equipmentIcon.isReadyPanelObject;
+            weaponIcon.tooltipProvider = equipmentIcon.tooltipProvider;
+            weaponIcon.targetHUD = hud;
+
+            MonoBehaviour.DestroyImmediate(equipmentIcon);
+
+            #region duration bar
+            var chargeBar = GameObject.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("WeaponChargeBar"), weaponIcon.displayRoot.transform);
+            chargeBar.name = "WeaponChargeBar";
 
             var rect = chargeBar.GetComponent<RectTransform>();
-
-            rect.localScale = new Vector3(0.75f, 0.1f, 1f);
+            rect.localScale = new Vector3(0.5f, 0.08f, 1f);
             rect.anchorMin = new Vector2(0f, 0f);
             rect.anchorMax = new Vector2(0f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
             rect.anchoredPosition = new Vector2(-10f, 13f);
-            rect.localPosition = new Vector3(-33f, -10f, 0f);
-            rect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
+            rect.localPosition = new Vector3(-30f, 0f, 0f);
+            rect.localEulerAngles = new Vector3(0f, 0f, 90f);
 
-            weaponIconComponent.durationDisplay = chargeBar;
-            weaponIconComponent.durationBar = chargeBar.transform.GetChild(1).gameObject.GetComponent<Image>();
-            weaponIconComponent.durationBarRed = chargeBar.transform.GetChild(0).gameObject.GetComponent<Image>();
+            weaponIcon.durationDisplay = chargeBar;
+            weaponIcon.durationBar = chargeBar.transform.GetChild(1).gameObject.GetComponent<Image>();
+            weaponIcon.durationBarRed = chargeBar.transform.GetChild(0).gameObject.GetComponent<Image>();
+            #endregion
+            #endregion
 
-            UnityEngine.Object.Destroy(equipmentIconComponent);
+            #region ammo text and charge bar
+            var ammoTracker = childLoc.FindChild("CrosshairExtras").Find("AmmoBar")?.gameObject;
+            if (ammoTracker)
+                GameObject.DestroyImmediate(ammoTracker);
 
-            // ammo display for alt passive
-            var healthbarContainer = hud.transform.Find("MainContainer").Find("MainUIArea").Find("SpringCanvas").Find("BottomLeftCluster").Find("BarRoots").Find("LevelDisplayCluster");
+            ammoTracker = GameObject.Instantiate(weaponSlot, childLoc.FindChild("CrosshairExtras"));
+            ammoTracker.name = "AmmoBar";
 
-            var ammoTracker = UnityEngine.Object.Instantiate(healthbarContainer.gameObject, hud.transform.Find("MainContainer").Find("MainUIArea").Find("SpringCanvas").Find("BottomLeftCluster"));
-            ammoTracker.name = "AmmoTracker";
-            ammoTracker.transform.SetParent(hud.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas").Find("CrosshairExtras"));
+            var ammoDisplay = ammoTracker.AddComponent<AmmoDisplay>();
+            weaponIcon = ammoTracker.GetComponent<WeaponIcon>();
 
-            UnityEngine.Object.DestroyImmediate(ammoTracker.transform.GetChild(0).gameObject);
-            UnityEngine.Object.Destroy(ammoTracker.GetComponentInChildren<LevelText>());
-            UnityEngine.Object.Destroy(ammoTracker.GetComponentInChildren<ExpBar>());
-
-            ammoTracker.transform.Find("LevelDisplayRoot").Find("ValueText").gameObject.SetActive(false);
-            UnityEngine.Object.DestroyImmediate(ammoTracker.transform.Find("ExpBarRoot").gameObject);
-
-            ammoTracker.transform.Find("LevelDisplayRoot").GetComponent<RectTransform>().anchoredPosition = new Vector2(-12f, 0f);
+            keyText = weaponSlot.GetComponentInChildren<InputBindingDisplayController>(true);
+            keyText.transform.parent.gameObject.SetActive(true);
 
             rect = ammoTracker.GetComponent<RectTransform>();
-            rect.localScale = new Vector3(0.8f, 0.8f, 1f);
-            rect.anchorMin = new Vector2(0f, 0f);
-            rect.anchorMax = new Vector2(0f, 0f);
-            rect.offsetMin = new Vector2(120f, -40f);
-            rect.offsetMax = new Vector2(120f, -40f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            //positional data doesnt get sent to clients? Manually making offsets works..
-            rect.anchoredPosition = new Vector2(50f, 0f);
-            rect.localPosition = new Vector3(120f, -40f, 0f);
+            rect.localScale = new Vector3(1f, 1f, 1f);
+            rect.localPosition = new Vector3(150f, 0f, 0f);
 
-            var chargeBarAmmo = UnityEngine.Object.Instantiate(Assets.mainAssetBundle.LoadAsset<GameObject>("WeaponChargeBar"));
-            chargeBarAmmo.name = "AmmoBar";
-            chargeBarAmmo.transform.SetParent(hud.transform.Find("MainContainer").Find("MainUIArea").Find("CrosshairCanvas").Find("CrosshairExtras"));
+            ammoDisplay.targetHUD = hud;
+            ammoDisplay.durationDisplay = weaponIcon.durationDisplay;
+            ammoDisplay.durationBar = weaponIcon.durationBar;
+            ammoDisplay.durationBarRed = weaponIcon.durationBarRed;
+            ammoDisplay.targetText = weaponSlot.GetComponentInChildren<InputBindingDisplayController>(true).GetComponent<HGTextMeshProUGUI>();
 
-            rect = chargeBarAmmo.GetComponent<RectTransform>();
+            weaponIcon.iconImage.gameObject.SetActive(false);
+            weaponIcon.flashPanelObject.SetActive(false);
+            weaponIcon.reminderFlashPanelObject.SetActive(false);
+            weaponIcon.tooltipProvider.gameObject.SetActive(false);
+            weaponIcon.isReadyPanelObject.SetActive(false);
+            weaponIcon.displayRoot.transform.Find("BGPanel").gameObject.SetActive(false);
 
-            rect.localScale = new Vector3(0.75f, 0.1f, 1f);
-            rect.anchorMin = new Vector2(100f, 2f);
-            rect.anchorMax = new Vector2(100f, 2f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.anchoredPosition = new Vector2(100f, 2f);
-            rect.localPosition = new Vector3(100f, 2f, 0f);
-            rect.rotation = Quaternion.Euler(new Vector3(0f, 0f, 90f));
-
-            var ammoTrackerComponent = ammoTracker.AddComponent<AmmoDisplay>();
-
-            ammoTrackerComponent.targetHUD = hud;
-            ammoTrackerComponent.targetText = ammoTracker.transform.Find("LevelDisplayRoot").Find("PrefixText").gameObject.GetComponent<LanguageTextMeshController>();
-            ammoTrackerComponent.durationDisplay = chargeBarAmmo;
-            ammoTrackerComponent.durationBar = chargeBarAmmo.transform.GetChild(1).gameObject.GetComponent<Image>();
-            ammoTrackerComponent.durationBarRed = chargeBarAmmo.transform.GetChild(0).gameObject.GetComponent<Image>();
+            MonoBehaviour.DestroyImmediate(weaponIcon);
+            #endregion
         }
 
         private static void RiskUIHudSetup(HUD hud)
@@ -1138,7 +1125,8 @@ namespace RobDriver.Modules.Misc
 
         private static void HunkHudSetup(HUD hud, GameObject weaponSlot, WeaponIcon weaponIconComponent)
         {
-            var center = hud.transform.Find("MainContainer/MainUIArea/SpringCanvas/BottomRightCluster/CustomHealthBar/Center");
+            var childLoc = hud.GetComponent<ChildLocator>();
+            var center = childLoc.FindChild("BottomRightCluster") ?? hud.mainUIPanel.transform.Find("SpringCanvas/BottomRightCluster/CustomHealthBar/Center");
             center.GetComponent<HunkMod.Modules.Components.RectMover>().pos = new Vector3(-125f, 180f, 0f);
             center.Find("GunIcon").gameObject.SetActive(false);
 
@@ -1163,33 +1151,29 @@ namespace RobDriver.Modules.Misc
         private static void HunkHudSetupNew(HUD hud)
         {
             var hpBar = HunkHud.Components.UI.CustomHealthBar.instance;
-            if (hpBar)
-            {
-                var weaponIcon = hpBar.gunIconHolder.GetComponent<WeaponIcon>();
-                if (!weaponIcon)
-                    weaponIcon = hpBar.gunIconHolder.AddComponent<WeaponIcon>();
+            if (!hpBar)
+                return;
 
-                weaponIcon.targetHUD = hud;
-                weaponIcon.iconImage = hpBar.gunIcon;
-                weaponIcon.maxFill = 0.751f;
-                weaponIcon.durationDisplay = hpBar.biomassBar;
-                weaponIcon.durationBar = hpBar.biomassBar.transform.Find("BiomassFill").GetComponent<Image>();
-                weaponIcon.durationBar.sprite = hpBar.biomassBar.transform.Find("BiomassBackground").GetComponent<Image>().sprite;
-                weaponIcon.durationBarRed = hpBar.biomassBar.transform.Find("BiomassFillLag").GetComponent<Image>();
-                weaponIcon.durationBarRed.sprite = hpBar.biomassBar.transform.Find("BiomassBackground").GetComponent<Image>().sprite;
+            var weaponIcon = hpBar.gunIconHolder.EnsureComponent<WeaponIcon>();
+            var materialWeaponIcon = hpBar.gunIconHolder.EnsureComponent<MaterialWeaponIcon>();
+            var biomassTransform = hpBar.biomassBar.transform;
+            biomassTransform.Find("BiomassFillInstant")?.gameObject.SetActive(false);
 
-                var materialWeaponIcon = hpBar.gunIconHolder.GetComponent<MaterialWeaponIcon>();
-                if (!materialWeaponIcon)
-                    materialWeaponIcon = hpBar.gunIconHolder.AddComponent<MaterialWeaponIcon>();
+            hpBar.gunIconHolder.SetActive(value: true);
+            hpBar.characterIconHolder.SetActive(value: false);
 
-                materialWeaponIcon.targetHUD = hud;
-                materialWeaponIcon.ammoBackground = hpBar.gunText.transform.parent.gameObject;
-                materialWeaponIcon.ammoText = hpBar.gunText;
+            weaponIcon.targetHUD = hud;
+            weaponIcon.iconImage = hpBar.gunIcon;
+            weaponIcon.maxFill = 0.751f;
+            weaponIcon.durationDisplay = hpBar.biomassBar;
+            weaponIcon.durationBar = biomassTransform.Find("BiomassFill")?.GetComponent<Image>();
+            weaponIcon.durationBar.sprite = biomassTransform.Find("BiomassBackground")?.GetComponent<Image>()?.sprite;
+            weaponIcon.durationBarRed = biomassTransform.Find("BiomassFillLag")?.GetComponent<Image>();
+            weaponIcon.durationBarRed.sprite = biomassTransform.Find("BiomassBackground")?.GetComponent<Image>()?.sprite;
 
-                hpBar.biomassBar.transform.Find("BiomassFillInstant").gameObject.SetActive(false);
-                hpBar.gunIconHolder.SetActive(value: true);
-                hpBar.characterIconHolder.SetActive(value: false);
-            }
+            materialWeaponIcon.targetHUD = hud;
+            materialWeaponIcon.ammoBackground = hpBar.gunText.transform.parent.gameObject;
+            materialWeaponIcon.ammoText = hpBar.gunText;
         }
         #endregion
 

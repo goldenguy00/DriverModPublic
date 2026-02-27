@@ -29,6 +29,11 @@ namespace RobDriver.Modules
         public static DamageAPI.ModdedDamageType StunGrenadeDazed = DamageAPI.ReserveDamageType();
         public static DamageAPI.ModdedDamageType KnifeWound = DamageAPI.ReserveDamageType();
 
-        public static DotController.DotIndex GougeDotIndex = DotAPI.RegisterDotDef(0.25f, 0.25f, DamageColorIndex.SuperBleed, Buffs.gougeDebuff);
+        public static DotController.DotIndex GougeDotIndex;
+
+        public static void Init()
+        {
+            GougeDotIndex = DotAPI.RegisterDotDef(0.25f, 0.25f, DamageColorIndex.SuperBleed, Buffs.gougeDebuff);
+        }
     }
 }

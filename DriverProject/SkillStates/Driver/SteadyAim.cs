@@ -259,7 +259,7 @@ namespace RobDriver.SkillStates.Driver
 
             if (this.wasCharged && NetworkServer.active)
             {
-                var itemCount = this.characterBody.inventory ? this.characterBody.inventory.GetItemCount(DLC2Content.Items.IncreasePrimaryDamage) : 0;
+                var itemCount = this.characterBody.inventory ? this.characterBody.inventory.GetItemCountEffective(DLC2Content.Items.IncreasePrimaryDamage) : 0;
                 if (itemCount > 0)
                     this.characterBody.AddIncreasePrimaryDamageStack();
             }

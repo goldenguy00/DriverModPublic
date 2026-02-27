@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 66435352, guid: da60ad5a794e80f47b53f786e5dae53c, type: 3}
+  m_Name: EbonyIvory
+  m_EditorClassIdentifier: 
+  weaponName: Ebony & Ivory
+  nameToken: ROB_DRIVER_WEAPON_EBONY_IVORY_NAME
+  description: Jackpot!
+  descriptionToken: ROB_DRIVER_WEAPON_EBONY_IVORY_DESC
+  icon: {fileID: 21300000, guid: 60c13d57480e4c549b178646b3bc0499, type: 3}
+  tier: 5
+  animationSet: 0
+  buffType: 1
+  shotCount: 8
+  primarySkillDef: {fileID: 0}
+  secondarySkillDef: {fileID: 0}
+  arsenalSkillDef: {fileID: 0}
+  unlockableDef: {fileID: 0}
+  modelSwapInfo:
+  - mesh: {fileID: -5693466910466917845, guid: 8c7e162bfa7bd074daf53b242ec69001, type: 3}
+    material: {fileID: 0}
+    childName: PistolModel
+  crosshairPrefab: {fileID: 0}
+  pickupPrefabOverride: {fileID: 0}
+  disableHolster: 0
+  equipAnimationString: BufferEmpty
+  reloadAnimationString: ReloadPistol
+  calloutSoundString: sfx_driver_callout_generic
+  dropBodyName: 
+  dropChance: 0
+  index: 0
+  enabled: 0

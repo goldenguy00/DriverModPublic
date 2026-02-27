@@ -11,6 +11,7 @@ namespace RobDriver.Modules.Weapons
         public override void LoadWeaponFromBundle()
         {
             this.weaponDef = Assets.mainAssetBundle.LoadAsset<DriverWeaponDef>("VulkanShotgun");
+            this.weaponDef.unlockableDef ??= Unlockables.CreateAndAddWeaponUnlockableDef("VULKAN_SHOTGUN");
 
             this.CreateCrosshair();
             this.CreateSkills();

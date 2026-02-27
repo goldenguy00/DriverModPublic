@@ -936,7 +936,7 @@ namespace RobDriver
                 };
             }
 
-            if (Config.enableArsenal.Value)
+            if (Config.enableArsenal.Value && weaponDef.enabled)
             {
                 weaponDef.arsenalSkillDef ??= Skills.CreateAndAddWeaponSkillDef(weaponDef.nameToken, weaponDef.descriptionToken);
                 Skills.AddWeaponSkillToFamily(weaponDef.arsenalSkillDef, weaponDef.unlockableDef, weaponDef.icon);

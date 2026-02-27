@@ -7,6 +7,7 @@ namespace RobDriver.Modules.Weapons
         public override void LoadWeaponFromBundle()
         {
             this.weaponDef = Assets.mainAssetBundle.LoadAsset<DriverWeaponDef>("FalsePistol");
+            this.weaponDef.unlockableDef ??= Unlockables.CreateAndAddWeaponUnlockableDef("FALSE_PISTOL");
 
             this.weaponDef.primarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.FalsePistol.Shoot)),

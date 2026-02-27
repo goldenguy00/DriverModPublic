@@ -2,6 +2,7 @@
 using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace RobDriver.Modules
@@ -12,8 +13,8 @@ namespace RobDriver.Modules
 
         internal static void PopulateDisplays()
         {
-            PopulateFromBody("Commando");
-            PopulateFromBody("Croco");
+            PopulateFromBody(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Commando.idrsCommando_asset);
+            PopulateFromBody(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Croco.idrsCroco_asset);
 
             // i forgot this cursed code was lying here
             // waht the fuck dude?
@@ -32,7 +33,12 @@ namespace RobDriver.Modules
 
         private static void PopulateFromBody(string bodyName)
         {
-            ItemDisplayRuleSet itemDisplayRuleSet = Resources.Load<GameObject>("Prefabs/CharacterBodies/" + bodyName + "Body").GetComponent<ModelLocator>().modelTransform.GetComponent<CharacterModel>().itemDisplayRuleSet;
+            ItemDisplayRuleSet itemDisplayRuleSet = Addressables.LoadAssetAsync<ItemDisplayRuleSet>(bodyName).WaitForCompletion();
+            if (!itemDisplayRuleSet)
+            {
+                Log.Error("No idrs for " + bodyName);
+                return;
+            }
 
             ItemDisplayRuleSet.KeyAssetRuleGroup[] item = itemDisplayRuleSet.keyAssetRuleGroups;
 
@@ -46,8 +52,8 @@ namespace RobDriver.Modules
                     if (followerPrefab)
                     {
                         string name = followerPrefab.name;
-                        string key = (name != null) ? name.ToLower() : null;
-                        if (!itemDisplayPrefabs.ContainsKey(key))
+                        string key = name?.ToLower();
+                        if (!string.IsNullOrEmpty(key) && !itemDisplayPrefabs.ContainsKey(key))
                         {
                             itemDisplayPrefabs[key] = followerPrefab;
                         }
@@ -58,9 +64,12 @@ namespace RobDriver.Modules
 
         internal static GameObject LoadDisplay(string name)
         {
-            if (itemDisplayPrefabs.ContainsKey(name.ToLower()))
+            if (!string.IsNullOrEmpty(name))
             {
-                if (itemDisplayPrefabs[name.ToLower()]) return itemDisplayPrefabs[name.ToLower()];
+                if (itemDisplayPrefabs.ContainsKey(name.ToLower()))
+                {
+                    if (itemDisplayPrefabs[name.ToLower()]) return itemDisplayPrefabs[name.ToLower()];
+                }
             }
 
             Debug.LogError("Could not find display prefab " + name);

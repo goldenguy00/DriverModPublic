@@ -6,9 +6,9 @@ namespace RobDriver.Modules
     internal static class Skins
     {
         public static SkinDef CreateSkinDef(string skinName, Sprite skinIcon, GameObject root, UnlockableDef unlockableDef,
-            CharacterModel.RendererInfo[] rendererInfos, SkinDef.MeshReplacement[] meshReplacements, SkinDef.GameObjectActivation[] gameObjectActivations)
+            CharacterModel.RendererInfo[] rendererInfos, SkinDefParams.MeshReplacement[] meshReplacements, SkinDefParams.GameObjectActivation[] gameObjectActivations)
         {
-            return R2API.Skins.CreateNewSkinDef(new R2API.SkinDefInfo
+            return R2API.Skins.CreateNewSkinDef(new R2API.SkinDefParamsInfo
             {
                 Name = skinName,
                 NameToken = skinName,

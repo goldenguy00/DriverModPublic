@@ -13,6 +13,7 @@ namespace RobDriver.Modules
             entityStates.Add(typeof(SkillStates.Driver.MainState));
             entityStates.Add(typeof(SkillStates.Driver.WeaponMainState));
             entityStates.Add(typeof(SkillStates.Driver.DiscardWeapon));
+            entityStates.Add(typeof(SkillStates.Driver.Skateboard.StartGrind));
 
             entityStates.Add(typeof(SkillStates.Driver.Bash));
             entityStates.Add(typeof(SkillStates.Driver.Coin));

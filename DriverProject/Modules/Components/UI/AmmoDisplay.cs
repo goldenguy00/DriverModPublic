@@ -10,7 +10,7 @@ namespace RobDriver.Modules.Components.UI
         public HUD targetHUD;
         public DriverController iDrive;
 
-        public LanguageTextMeshController targetText;
+        public HGTextMeshProUGUI targetText;
         public GameObject durationDisplay;
         public Image durationBar;
         public Image durationBarRed;
@@ -18,20 +18,19 @@ namespace RobDriver.Modules.Components.UI
         private void Start()
         {
             this.iDrive = this.targetHUD?.targetBodyObject?.GetComponent<DriverController>();
-            if (this.iDrive && !this.iDrive.passive.isDefault) this.iDrive.onConsumeAmmo += SetDisplay;
 
-            this.targetText.token = string.Empty;
+            if (this.iDrive && !this.iDrive.passive.isDefault) 
+                this.iDrive.onConsumeAmmo += SetDisplay;
+
+            this.targetText.text = string.Empty;
+            this.targetText.gameObject.SetActive(false);
             this.durationDisplay.SetActive(false);
         }
 
         private void OnDestroy()
         {
-            if (this.iDrive) this.iDrive.onConsumeAmmo -= SetDisplay;
-
-            // why wont it just die
-            this.targetText.token = string.Empty;
-            this.durationDisplay.SetActive(false);
-            Destroy(this.durationDisplay);
+            if (this.iDrive)
+                this.iDrive.onConsumeAmmo -= SetDisplay;
         }
 
         private void Update()
@@ -56,7 +55,8 @@ namespace RobDriver.Modules.Components.UI
             {
                 if (this.iDrive.maxWeaponTimer <= 0f)
                 {
-                    this.targetText.token = string.Empty;
+                    this.targetText.text = string.Empty;
+                    this.targetText.gameObject.SetActive(false);
                     this.durationDisplay.SetActive(false);
                     return;
                 }
@@ -64,12 +64,15 @@ namespace RobDriver.Modules.Components.UI
                 // pistol only, text and no bar
                 if (this.iDrive.passive.isPistolOnly)
                 {
+                    this.targetText.gameObject.SetActive(true);
                     if (this.iDrive.weaponTimer <= 0f)
                     {
-                        this.targetText.token = "<color=#C80000>0 / " + Mathf.CeilToInt(this.iDrive.maxWeaponTimer).ToString() + Helpers.colorSuffix;
-                        return;
+                        this.targetText.text = "<color=#C80000>0 / " + Mathf.CeilToInt(this.iDrive.maxWeaponTimer).ToString() + Helpers.colorSuffix;
                     }
-                    this.targetText.token = Mathf.CeilToInt(this.iDrive.weaponTimer).ToString() + " / " + Mathf.CeilToInt(this.iDrive.maxWeaponTimer).ToString();
+                    else
+                    {
+                        this.targetText.text = Mathf.CeilToInt(this.iDrive.weaponTimer).ToString() + " / " + Mathf.CeilToInt(this.iDrive.maxWeaponTimer).ToString();
+                    }
                     return;
                 }
 
@@ -78,21 +81,25 @@ namespace RobDriver.Modules.Components.UI
                 {
                     if (this.iDrive.weaponTimer <= 0)
                     {
-                        this.targetText.token = string.Empty;
+                        this.targetText.text = string.Empty;
+                        this.targetText.gameObject.SetActive(false);
                         return;
                     }
                     this.durationDisplay.SetActive(true);
+                    this.targetText.gameObject.SetActive(true);
 
                     this.durationBar.color = this.iDrive.AmmoPercent < 0.2f ? Helpers.badColor : this.iDrive.currentBulletDef.trailColor;
-                    this.targetText.token = $"<color=#{ColorUtility.ToHtmlStringRGBA(this.iDrive.currentBulletDef.trailColor)}>" + this.iDrive.currentBulletDef.bulletName + Helpers.colorSuffix;
+                    this.targetText.text = $"<color=#{ColorUtility.ToHtmlStringRGBA(this.iDrive.currentBulletDef.trailColor)}>" + this.iDrive.currentBulletDef.bulletName + Helpers.colorSuffix;
                 }
                 else if (this.iDrive.weaponTimer == this.iDrive.maxWeaponTimer)
                 {
                     this.durationDisplay.SetActive(false);
+                    this.targetText.gameObject.SetActive(false);
                 }
                 else
                 {
                     this.durationDisplay.SetActive(false);
+                    this.targetText.gameObject.SetActive(false);
                 }
             }
         }

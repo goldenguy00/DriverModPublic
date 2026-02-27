@@ -65,7 +65,7 @@ namespace RobDriver.SkillStates.Driver.RocketLauncher
 
                 // copied from moff's rocket
                 // the fact that this item literally has to be hardcoded into character skillstates makes me so fucking angry you have no idea
-                if (this.characterBody.inventory && this.characterBody.inventory.GetItemCount(DLC1Content.Items.MoreMissile) > 0)
+                if (this.characterBody.inventory && this.characterBody.inventory.GetItemCountEffective(DLC1Content.Items.MoreMissile) > 0)
                 {
                     float damageMult = DriverPlugin.GetICBMDamageMult(this.characterBody);
 
