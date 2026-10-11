@@ -1,5 +1,9 @@
 ## Changelog
 
+`2.4.2`
+- Disabled white screen flashbang until i make it less bad
+- Update Github link
+
 `2.4.1`
 - Fixed soundbank
 - Added SoundFixer dependency

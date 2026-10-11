@@ -8,7 +8,7 @@ namespace RobDriver.Modules.Components
     {
         private void OnEnable()
         {
-            if (HunkMod.Modules.Config.disableFlashbang.Value)
+            //if (HunkMod.Modules.Config.disableFlashbang.Value)
                 return;
 
             PlayerCharacterMasterController localPlayer = null;
@@ -34,7 +34,7 @@ namespace RobDriver.Modules.Components
 
             if (localPlayer.body != null)
             {
-                if (Vector3.Distance(base.transform.position, localPlayer.body.aimOrigin) < 50f &&
+                if (Vector3.Distance(base.transform.position, localPlayer.body.aimOrigin) < 20f &&
                     !Physics.Linecast(base.transform.position, localPlayer.body.aimOrigin, LayerIndex.world.mask))
                 {
                     GameObject overlay = Object.Instantiate(HunkAssets.mainAssetBundle.LoadAsset<GameObject>("FlashbangOverlay"));
