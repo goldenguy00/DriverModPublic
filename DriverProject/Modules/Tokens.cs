@@ -90,9 +90,6 @@ namespace RobDriver.Modules
             LanguageAPI.Add(prefix + "PRIMARY_VOID_PISTOL_NAME", "Shoot");
             LanguageAPI.Add(prefix + "PRIMARY_VOID_PISTOL_DESCRIPTION", $"Fire your pistol for <style=cIsDamage>{100f * SkillStates.Driver.VoidPistol.Shoot._damageCoefficient}% damage</style>.\n<style=cIsDamage>Critical hits shoot twice.</style>");
 
-            LanguageAPI.Add(prefix + "PRIMARY_FALSE_PISTOL_NAME", "Shoot");
-            LanguageAPI.Add(prefix + "PRIMARY_FALSE_PISTOL_DESCRIPTION", $"Fire your pistol for <style=cIsDamage>{100f * SkillStates.Driver.FalsePistol.Shoot._damageCoefficient}% damage</style>.\n<style=cIsDamage>Critical hits shoot twice.</style>");
-
             LanguageAPI.Add(prefix + "PRIMARY_GOLDENGUN_NAME", "Shoot");
             LanguageAPI.Add(prefix + "PRIMARY_GOLDENGUN_DESCRIPTION", $"Fire your pistol for <style=cIsDamage>{100f * SkillStates.Driver.GoldenGun.Shoot._damageCoefficient}% damage</style>.\n<style=cIsDamage>Critical hits shoot twice.</style>");
 
@@ -187,9 +184,6 @@ namespace RobDriver.Modules
 
             LanguageAPI.Add(prefix + "SECONDARY_VOID_PISTOL_NAME", "Focus");
             LanguageAPI.Add(prefix + "SECONDARY_VOID_PISTOL_DESCRIPTION", $"Take aim and charge a shot for up to <style=cIsDamage>{100f * SkillStates.Driver.VoidPistol.SteadyAim._damageCoefficient}% damage</style>. <style=cIsUtility>Boosts rate of fire and accuracy.</style>");
-
-            LanguageAPI.Add(prefix + "SECONDARY_FALSE_PISTOL_NAME", "Focus");
-            LanguageAPI.Add(prefix + "SECONDARY_FALSE_PISTOL_DESCRIPTION", $"Take aim and charge a shot for up to <style=cIsDamage>{100f * SkillStates.Driver.FalsePistol.SteadyAim._damageCoefficient}% damage</style>. <style=cIsUtility>Boosts rate of fire and accuracy.</style>");
 
             LanguageAPI.Add(prefix + "SECONDARY_BEETLESHIELD_NAME", "Focus");
             LanguageAPI.Add(prefix + "SECONDARY_BEETLESHIELD_DESCRIPTION", $"Take aim and charge a shot for up to <style=cIsDamage>{100f * SkillStates.Driver.BeetleShield.SteadyAim._damageCoefficient}% damage</style>. <style=cIsUtility>Boosts rate of fire, accuracy, and armor.</style>");

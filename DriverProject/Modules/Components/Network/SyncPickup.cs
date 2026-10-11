@@ -30,17 +30,15 @@ namespace RobDriver.Modules.Components
 
         public WeaponPickup weaponPickup;
 
+        [Server]
         public void SpawnWeapon(DriverWeaponDef weaponDef, DriverBulletDef bulletDef, bool cutAmmo, bool isNewAmmoType)
         {
-            if (NetworkServer.active)
-            {
-                this.WeaponDef = weaponDef;
-                this.BulletDef = bulletDef;
-                this.cutAmmo = cutAmmo;
-                this.isNewAmmoType = isNewAmmoType;
+            this.WeaponDef = weaponDef;
+            this.BulletDef = bulletDef;
+            this.cutAmmo = cutAmmo;
+            this.isNewAmmoType = isNewAmmoType;
 
-                NetworkServer.Spawn(this.gameObject);
-            }
+            NetworkServer.Spawn(this.gameObject);
         }
 
         private void Awake()

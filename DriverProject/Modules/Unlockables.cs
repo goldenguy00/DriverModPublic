@@ -37,7 +37,9 @@ namespace RobDriver.Modules
             var unlockableDef = ScriptableObject.CreateInstance<UnlockableDef>();
             unlockableDef.cachedName = unlockableIdentifier.ToUpperInvariant();
             unlockableDef.nameToken = "ACHIEVEMENT_" + identifier.ToUpperInvariant() + "_NAME";
+#pragma warning disable CS0618 // Type or member is obsolete
             unlockableDef.achievementIcon = achievementIcon;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             unlockableDefs.Add(unlockableDef);
 
@@ -53,7 +55,9 @@ namespace RobDriver.Modules
             unlockableDef.nameToken = nameToken;
             unlockableDef.getHowToUnlockString = () => Language.GetString(descriptionToken);
             unlockableDef.getUnlockedString = () => Language.GetString(descriptionToken);
+#pragma warning disable CS0618 // Type or member is obsolete
             unlockableDef.achievementIcon = null;
+#pragma warning restore CS0618 // Type or member is obsolete
             unlockableDef.hidden = false;
 
             unlockableDefs.Add(unlockableDef);

@@ -24,21 +24,21 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
-    <PackageReference Include="MMHOOK.RoR2" Version="2025.11.19" NoWarn="NU1701" />
-    <PackageReference Include="R2API.ContentManagement" Version="1.0.10" />
-    <PackageReference Include="R2API.Core" Version="5.2.0" />
+    <PackageReference Include="MMHOOK.RoR2" Version="2026.10.8" NoWarn="NU1701" />
+    <PackageReference Include="R2API.ContentManagement" Version="1.0.11" />
+    <PackageReference Include="R2API.Core" Version="5.3.0" />
     <PackageReference Include="R2API.DamageType" Version="1.1.7" />
     <PackageReference Include="R2API.Dot" Version="1.1.2" />
     <PackageReference Include="R2API.Language" Version="1.1.0" />
     <PackageReference Include="R2API.Networking" Version="1.0.4" />
     <PackageReference Include="R2API.Prefab" Version="1.1.1" />
-    <PackageReference Include="R2API.RecalculateStats" Version="1.6.5" />
-    <PackageReference Include="R2API.Skills" Version="1.0.4" />
-    <PackageReference Include="R2API.Skins" Version="1.4.4" />
+    <PackageReference Include="R2API.RecalculateStats" Version="1.6.6" />
+    <PackageReference Include="R2API.Skills" Version="1.0.5" />
+    <PackageReference Include="R2API.Skins" Version="1.4.10" />
     <PackageReference Include="R2API.Sound" Version="1.0.3" />
-    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.4.0-r.0" />
-    <PackageReference Include="RoR2BepInExPack" Version="1.38.0" />
-    <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.3" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.5.0-r.1" />
+    <PackageReference Include="RoR2BepInExPack" Version="1.45.0" />
+    <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.6" />
   </ItemGroup>
 
   <ItemGroup>

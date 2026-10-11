@@ -768,15 +768,20 @@ namespace RobDriver.Modules.Components
         private void TrySetDefault(DriverWeaponDef newWeapon)
         {
             // force hammer over anything else fuck it
-            if (newWeapon == DriverWeaponCatalog.LunarHammer || this.defaultWeaponDef == DriverWeaponCatalog.LunarHammer)
+            if (this.defaultWeaponDef == DriverWeaponCatalog.LunarHammer)
             {
-                this.defaultWeaponDef = newWeapon;
                 return;
             }
 
-            if (newWeapon == DriverWeaponCatalog.Needler || this.defaultWeaponDef == DriverWeaponCatalog.Needler)
+            if (newWeapon == DriverWeaponCatalog.LunarHammer)
             {
-                this.defaultWeaponDef = newWeapon;
+                this.defaultWeaponDef = DriverWeaponCatalog.LunarHammer;
+                return;
+            }
+
+            if (newWeapon == DriverWeaponCatalog.Needler && inventory.GetItemCountTotal(RoR2Content.Items.LunarPrimaryReplacement) > 0)
+            {
+                this.defaultWeaponDef = DriverWeaponCatalog.Needler;
                 return;
             }
 

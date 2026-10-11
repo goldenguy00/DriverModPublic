@@ -108,7 +108,7 @@ namespace RobDriver.SkillStates.Driver.SupplyDrop
                 {
                     if (base.fixedAge >= 0.1f)
                     {
-                        this.GetCancelState();
+                        this.outer.SetNextState(this.GetCancelState());
                     }
                 }
             }

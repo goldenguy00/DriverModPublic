@@ -2,6 +2,7 @@
 using RobDriver.Modules.Components;
 using RoR2;
 using RoR2.Projectile;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -48,7 +49,7 @@ namespace RobDriver.Modules
             bazookaProjectilePrefab = CreateRocket(true, "DriverBazookaProjectile", "DriverBazookaGhost", "DriverRocketGhost");
 
             plasmaCannonProjectilePrefab = CreateRocket(false, "DriverPlasmaCannonProjectile");
-            plasmaCannonProjectilePrefab.GetComponent<ProjectileController>().ghostPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/BFG/BeamSphereGhost.prefab").WaitForCompletion();
+            plasmaCannonProjectilePrefab.GetComponent<ProjectileController>().ghostPrefabAddress = new AssetReferenceT<GameObject>(RoR2_Base_BFG.BeamSphereGhost_prefab);
             plasmaCannonProjectilePrefab.GetComponent<ProjectileImpactExplosion>().impactEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/BFG/BeamSphereExplosion.prefab").WaitForCompletion();
 
             armCannonPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Vagrant/VagrantCannon.prefab").WaitForCompletion().InstantiateClone("DriverArmCannonProjectile", true);
@@ -117,6 +118,23 @@ namespace RobDriver.Modules
             radiusIndicator.transform.localRotation = Quaternion.identity;
             #endregion
 
+            // i forgot this cursed code was lying here
+            // waht the fuck dude?
+            GameObject fuckYou = Assets.mainAssetBundle.LoadAsset<GameObject>("DriverStunGrenadeGhost").InstantiateClone("DriverStunGrenadeGhost", true);//ItemDisplays.LoadDisplay("DisplayStunGrenade").InstantiateClone("DriverStunGrenadeGhost", true);
+            fuckYou.AddComponent<RoR2.Projectile.ProjectileGhostController>();
+            fuckYou.AddComponent<NetworkIdentity>();
+
+            GameObject model = GameObject.Instantiate(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_StunChanceOnHit.DisplayStunGrenade_prefab).WaitForCompletion());
+            model.transform.parent = fuckYou.transform;
+            model.transform.localPosition = Vector3.zero;
+            model.transform.localRotation = Quaternion.identity;
+            model.transform.localScale = Vector3.one * 3f;
+
+            Projectiles.stunGrenadeProjectilePrefab.GetComponent<RoR2.Projectile.ProjectileController>().ghostPrefabAddress = null;
+#pragma warning disable CS0618 // Type or member is obsolete
+            Projectiles.stunGrenadeProjectilePrefab.GetComponent<RoR2.Projectile.ProjectileController>().ghostPrefab = fuckYou;
+#pragma warning restore CS0618 // Type or member is obsolete
+
             Prefabs.projectilePrefabs.Add(stunGrenadeProjectilePrefab);
         }
 
@@ -130,7 +148,12 @@ namespace RobDriver.Modules
             Prefabs.projectilePrefabs.Add(lunarShard);
 
             lunarShardRed = lunarShard.InstantiateClone("DriverLunarShardRed", false);
-            GameObject ghost = lunarShardRed.GetComponent<ProjectileController>().ghostPrefab.InstantiateClone("DriverLunarShardRedGhost", false);
+#pragma warning disable CS0618 // Type or member is obsolete
+            var ghostOld = lunarShardRed.GetComponent<ProjectileController>().ghostPrefab;
+#pragma warning restore CS0618 // Type or member is obsolete
+            if (!ghostOld)
+                ghostOld = lunarShardRed.GetComponent<ProjectileController>().ghostPrefabAddress.LoadAssetAsync<GameObject>().WaitForCompletion();
+            GameObject ghost = ghostOld.InstantiateClone("DriverLunarShardRedGhost", false);
             ghost.transform.GetChild(0).GetComponent<MeshRenderer>().materials[0] = Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpDust.mat").WaitForCompletion();
             ghost.transform.GetChild(1).GetComponent<TrailRenderer>().materials[0] = Addressables.LoadAssetAsync<Material>("RoR2/Base/Imp/matImpPortalEffectEdge.mat").WaitForCompletion();
             ghost.transform.GetChild(2).GetComponent<ParticleSystemRenderer>().material.SetColor("_TintColor", Color.red);
@@ -138,7 +161,10 @@ namespace RobDriver.Modules
             var life = ghost.transform.GetChild(3).GetComponent<ParticleSystem>().colorOverLifetime;
             life.enabled = false;
 
+            lunarShardRed.GetComponent<ProjectileController>().ghostPrefabAddress = null;
+#pragma warning disable CS0618 // Type or member is obsolete
             lunarShardRed.GetComponent<ProjectileController>().ghostPrefab = ghost;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             Prefabs.projectilePrefabs.Add(lunarShardRed);
         }
@@ -175,7 +201,10 @@ namespace RobDriver.Modules
 
             ProjectileController rocketController = hmgGrenadeProjectilePrefab.GetComponent<ProjectileController>();
 
+            rocketController.ghostPrefabAddress = stunGrenadeProjectilePrefab.GetComponent<ProjectileController>().ghostPrefabAddress;
+#pragma warning disable CS0618 // Type or member is obsolete
             rocketController.ghostPrefab = stunGrenadeProjectilePrefab.GetComponent<ProjectileController>().ghostPrefab;
+#pragma warning restore CS0618 // Type or member is obsolete
             rocketController.startSound = "";
 
             hmgGrenadeProjectilePrefab.GetComponent<Rigidbody>().useGravity = true;
@@ -199,7 +228,7 @@ namespace RobDriver.Modules
 
             ProjectileController rocketController = lunarGrenadeProjectilePrefab.GetComponent<ProjectileController>();
 
-            rocketController.ghostPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/LunarExploder/LunarExploderShardGhost.prefab").WaitForCompletion();
+            rocketController.ghostPrefabAddress = new AssetReferenceT<GameObject>(RoR2_Base_LunarExploder.LunarExploderShardGhost_prefab);
             rocketController.startSound = "";
 
             lunarGrenadeProjectilePrefab.GetComponent<Rigidbody>().useGravity = true;
@@ -240,7 +269,9 @@ namespace RobDriver.Modules
 
             var projectileController = coinProjectile.AddComponent<ProjectileController>();
             projectileController.CheckChildrenForCollidersAndIncludeDisabled = true;
+#pragma warning disable CS0618 // Type or member is obsolete
             projectileController.ghostPrefab = coinProjectileGhost;
+#pragma warning restore CS0618 // Type or member is obsolete
             projectileController.allowPrediction = false;
             projectileController.procCoefficient = 1;
             //projectileController.authorityHandlesCollisionEvents = true;
@@ -310,7 +341,9 @@ namespace RobDriver.Modules
             coinProjectileGhost.transform.GetChild(1).GetComponent<TrailRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Captain/matCaptainTracerTrail.mat").WaitForCompletion();
             coinProjectileGhost.transform.GetChild(1).GetComponent<TrailRenderer>().material.SetColor("_TintColor", Color.magenta);
 
+#pragma warning disable CS0618 // Type or member is obsolete
             coinScepterProjectile.GetComponent<ProjectileController>().ghostPrefab = coinProjectileGhost;
+#pragma warning restore CS0618 // Type or member is obsolete
             var ctrl = coinScepterProjectile.GetComponent<CoinController>();
             ctrl.color = Color.magenta;
             ctrl.scepter = true;
@@ -384,8 +417,10 @@ namespace RobDriver.Modules
                 ghost.transform.GetChild(0).Find("Smoke").gameObject.AddComponent<DetachOnDestroy>();
                 ghost.transform.GetChild(0).Find("Smoke").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matDustDirectional.mat").WaitForCompletion();
                 ghost.transform.GetChild(0).Find("Flame").GetComponent<ParticleSystemRenderer>().material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Golem/matVFXFlame1.mat").WaitForCompletion();
-
+                rocketController.ghostPrefabAddress = null;
+#pragma warning disable CS0618 // Type or member is obsolete
                 rocketController.ghostPrefab = ghost;
+#pragma warning restore CS0618 // Type or member is obsolete
                 rocketController.startSound = "";
             }
 

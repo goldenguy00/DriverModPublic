@@ -1,6 +1,6 @@
 {
     "name": "Driver",
-    "version_number": "2.3.5",
+    "version_number": "2.4.1",
     "website_url": "https://discord.gg/xqp5CQM8Cs",
     "description": "Adds the Driver, a mostly grounded survivor focused on driving.",
     "dependencies": [
@@ -17,6 +17,7 @@
         "RiskofThunder-R2API_Skills-1.0.1",
         "RiskofThunder-R2API_Skins-1.2.0",
         "RiskofThunder-R2API_Sound-1.0.3",
-        "KingEnderBrine-ScrollableLobbyUI-1.9.1"
+        "KingEnderBrine-ScrollableLobbyUI-1.9.1",
+        "pseudopulse-SoundFixer-1.0.1"
     ]
 }

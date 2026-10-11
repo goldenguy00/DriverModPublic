@@ -1,5 +1,16 @@
 ## Changelog
 
+`2.4.1`
+- Fixed soundbank
+- Added SoundFixer dependency
+
+`2.4.0`
+
+- Updated for DLC4
+- Fixed bugs relating to default weapons being overwritten incorrectly
+- Fixed CSS
+- Fixed some arsenal skills always being unlocked
+
 `2.3.5`
 - Beyblade mode removed
 

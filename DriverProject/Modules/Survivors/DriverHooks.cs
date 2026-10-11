@@ -20,6 +20,7 @@ using RoR2.Orbs;
 using RobDriver.Modules.Components.UI;
 using RoR2.Skills;
 using RobDriver.Modules.Survivors;
+using RoR2.Navigation;
 
 namespace RobDriver.Modules.Misc
 {
@@ -66,7 +67,7 @@ namespace RobDriver.Modules.Misc
                 On.RoR2.UI.LoadoutPanelController.Row.UpdateHighlightedChoice += Row_UpdateHighlightedChoice;
                 On.RoR2.UI.CharacterSelectController.BuildSkillStripDisplayData += CharacterSelectController_BuildSkillStripDisplayData;
             }
-            GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            GlobalEventManager.onDeathProcServer += GlobalEventManager_onCharacterDeathGlobal;
         }
 
         #region Damage Handling
@@ -492,23 +493,29 @@ namespace RobDriver.Modules.Misc
 
             if (damageInfo.HasModdedDamageType(DriverDamageTypes.Hemorrhage) && Util.CheckRoll(procChance, attackerBody.master))
             {
-                DotController.InflictDot(
-                    victim,
-                    damageInfo.attacker,
-                    null,
-                    DotController.DotIndex.SuperBleed,
-                    15f * damageInfo.procCoefficient);
+                var dotInfo = new InflictDotInfo
+                {
+                    victimObject = victim,
+                    attackerObject = damageInfo.attacker,
+                    hitHurtBox = damageInfo.inflictedHurtbox,
+                    dotIndex = DotController.DotIndex.SuperBleed,
+                    duration = 15f * damageInfo.procCoefficient
+                };
+                DotController.InflictDot(ref dotInfo);
             } // end superbleed
 
             if (damageInfo.HasModdedDamageType(DriverDamageTypes.Gouge) && Util.CheckRoll(procChance, attackerBody.master))
             {
-                DotController.InflictDot(
-                    victim,
-                    damageInfo.attacker,
-                    null,
-                    DriverDamageTypes.GougeDotIndex,
-                    4f,
-                    1.5f);
+                var dotInfo = new InflictDotInfo
+                {
+                    victimObject = victim,
+                    attackerObject = damageInfo.attacker,
+                    hitHurtBox = damageInfo.inflictedHurtbox,
+                    dotIndex = DriverDamageTypes.GougeDotIndex,
+                    duration = 4f,
+                    damageMultiplier = 1.5f
+                };
+                DotController.InflictDot(ref dotInfo);
             } // end gouge
 
             if (damageInfo.HasModdedDamageType(DriverDamageTypes.BetterBurn) && Util.CheckRoll(procChance, attackerBody.master))
@@ -547,15 +554,16 @@ namespace RobDriver.Modules.Misc
             {
                 damageInfo.procChainMask.AddProc(ProcType.FractureOnHit);
 
-                DotController.InflictDot(
-                    duration: DotController.GetDotDef(DotController.DotIndex.Fracture).interval,
-                    victimObject: victim,
-                    hitHurtBox: damageInfo.inflictedHurtbox,
-                    attackerObject: damageInfo.attacker,
-                    dotIndex: DotController.DotIndex.Fracture,
-                    damageMultiplier: 1f,
-                    maxStacksFromAttacker: null);
-
+                var dotInfo = new InflictDotInfo
+                {
+                    victimObject = victim,
+                    attackerObject = damageInfo.attacker,
+                    hitHurtBox = damageInfo.inflictedHurtbox,
+                    dotIndex = DotController.DotIndex.Fracture,
+                    duration = DotController.GetDotDef(DotController.DotIndex.Fracture).interval,
+                    damageMultiplier = 1f
+                };
+                DotController.InflictDot(ref dotInfo);
             } // end void bleed
 
             orig(self, damageInfo, victim);
@@ -753,7 +761,7 @@ namespace RobDriver.Modules.Misc
 
             if (self.zoneType == MapZone.ZoneType.OutOfBounds && other.GetComponent<DestroyWeaponOnTimer>())
             {
-                var destination = WeaponPickup.FindSafeTeleportDestination(other.bounds.min);
+                var destination = FindSafeTeleportDestination(other.bounds.min);
 
                 if (destination.HasValue)
                 {
@@ -770,6 +778,36 @@ namespace RobDriver.Modules.Misc
                     GameObject.Destroy(other.gameObject);
                 }
             }
+        }
+
+        private static Vector3? FindSafeTeleportDestination(Vector3 characterFootPosition)
+        {
+            Vector3? result = null;
+            SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
+            spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
+            spawnCard.prefab = LegacyResourcesAPI.Load<GameObject>("SpawnCards/HelperPrefab");
+            GameObject tempObject = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, new DirectorPlacementRule
+            {
+                placementMode = DirectorPlacementRule.PlacementMode.NearestNode,
+                position = characterFootPosition
+            }, RoR2Application.rng));
+            if (!tempObject)
+            {
+                tempObject = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, new DirectorPlacementRule
+                {
+                    placementMode = DirectorPlacementRule.PlacementMode.RandomNormalized,
+                    position = characterFootPosition
+                }, RoR2Application.rng));
+            }
+
+            if (tempObject)
+            {
+                result = tempObject.transform.position;
+                UnityEngine.Object.Destroy(tempObject);
+            }
+
+            UnityEngine.Object.Destroy(spawnCard);
+            return result;
         }
         #endregion
 
@@ -792,8 +830,10 @@ namespace RobDriver.Modules.Misc
 
             if (DriverWeaponCatalog.weaponDefs.Any(def => def.nameToken == unlockableDef.nameToken))
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (unlockableDef.achievementIcon?.texture is Texture icon)
                     destUnlockableStrip.transform.Find("IconImage").GetComponent<RawImage>().texture = icon;
+#pragma warning restore CS0618 // Type or member is obsolete
                 destUnlockableStrip.GetComponent<TooltipProvider>().overrideTitleText = Language.GetString("UNLOCKABLE_ROB_DRIVER_WEAPON_NAME");
                 destUnlockableStrip.GetComponent<TooltipProvider>().overrideBodyText = Language.GetString("UNLOCKABLE_ROB_DRIVER_WEAPON_DESC"); ;
             }

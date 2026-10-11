@@ -223,7 +223,9 @@ namespace RobDriver.Modules
 
             arsenalSkillDef.icon = icon;
             if (unlockableDef != null)
+#pragma warning disable CS0618 // Type or member is obsolete
                 unlockableDef.achievementIcon = icon;
+#pragma warning restore CS0618 // Type or member is obsolete
 
             DriverArsenal.passiveSkills.Add(arsenalSkillDef);
             AddSkillToFamily(driverArsenal.weaponSkillSlot.skillFamily, new SkillDefPair

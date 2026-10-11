@@ -35,7 +35,7 @@ namespace RobDriver
     {
         public const string MODUID = "com.rob.Driver";
         public const string MODNAME = "Driver";
-        public const string MODVERSION = "2.3.5";
+        public const string MODVERSION = "2.4.1";
 
         public const string developerPrefix = "ROB";
 
@@ -67,7 +67,6 @@ namespace RobDriver
             Modules.States.RegisterStates();
             Modules.Projectiles.RegisterProjectiles();
             Modules.Tokens.AddTokens();
-            Modules.ItemDisplays.PopulateDisplays();
             Modules.NetMessages.RegisterNetworkMessages();
             Modules.Unlockables.Init();
 

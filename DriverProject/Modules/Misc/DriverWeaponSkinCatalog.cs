@@ -18,6 +18,7 @@ namespace RobDriver
 
         public static DriverWeaponDef.ModelSwapInfo[] GetModelSwapInfoForWeapon(ModelSkinController skinController, DriverWeaponDef weaponDef)
         {
+            weaponDef ??= DriverWeaponCatalog.Pistol;
             if (skinController?.skins?.Length == 0)
                 return weaponDef.modelSwapInfo;
 
@@ -26,6 +27,7 @@ namespace RobDriver
 
         public static DriverWeaponDef.ModelSwapInfo[] GetModelSwapInfoForWeapon(SkinDef[] skins, int skinIndex, DriverWeaponDef weaponDef)
         {
+            weaponDef ??= DriverWeaponCatalog.Pistol;
             var mainSkin = HG.ArrayUtils.GetSafe(skins, skinIndex);
             if (mainSkin == null || !driverSkinDefs.ContainsKey(mainSkin.skinIndex))
                 return weaponDef.modelSwapInfo;

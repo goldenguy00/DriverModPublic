@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using R2API;
+using UnityEngine;
 
 namespace RobDriver.Modules.Weapons
 {
@@ -7,7 +8,8 @@ namespace RobDriver.Modules.Weapons
         public override void LoadWeaponFromBundle()
         {
             this.weaponDef = Assets.mainAssetBundle.LoadAsset<DriverWeaponDef>("FalsePistol");
-            this.weaponDef.unlockableDef ??= Unlockables.CreateAndAddWeaponUnlockableDef("FALSE_PISTOL");
+            this.weaponDef.arsenalSkillDef = Skills.CreateAndAddWeaponSkillDef(this.weaponNameToken, this.weaponDescToken);
+            this.weaponDef.unlockableDef = Unlockables.CreateAndAddWeaponUnlockableDef(this.weaponNameToken, this.weaponDescToken);
 
             this.weaponDef.primarySkillDef = Skills.CreateAndAddPrimarySkillDef(
                 new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.FalsePistol.Shoot)),
@@ -24,8 +26,8 @@ namespace RobDriver.Modules.Weapons
                 skillIcon = Assets.mainAssetBundle.LoadAsset<Sprite>("texPistolSecondaryIcon"),
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.FalsePistol.SteadyAim)),
                 activationStateMachineName = "Weapon",
-                baseMaxStock = 3,
-                baseRechargeInterval = 6f,
+                baseMaxStock = 6,
+                baseRechargeInterval = 4f,
                 beginSkillCooldownOnSkillEnd = false,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
@@ -40,6 +42,17 @@ namespace RobDriver.Modules.Weapons
                 stockToConsume = 0,
                 autoHandleLuminousShot = false
             });
+        }
+
+        protected override void CreateLang()
+        {
+            base.CreateLang();
+            LanguageAPI.Add("ROB_DRIVER_BODY_PRIMARY_FALSE_PISTOL_NAME", "Shoot");
+            LanguageAPI.Add("ROB_DRIVER_BODY_PRIMARY_FALSE_PISTOL_DESCRIPTION", $"Fire your pistol for <style=cIsDamage>{100f * SkillStates.Driver.FalsePistol.Shoot._damageCoefficient}% damage</style>.\n<style=cIsDamage>Critical hits shoot twice.</style>");
+
+            LanguageAPI.Add("ROB_DRIVER_BODY_SECONDARY_FALSE_PISTOL_NAME", "Focus");
+            LanguageAPI.Add("ROB_DRIVER_BODY_SECONDARY_FALSE_PISTOL_DESCRIPTION", $"Take aim and charge a shot for up to <style=cIsDamage>{100f * SkillStates.Driver.FalsePistol.SteadyAim._damageCoefficient}% damage</style>. <style=cIsUtility>Boosts rate of fire and accuracy.</style>");
+
         }
     }
 }

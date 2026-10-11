@@ -129,23 +129,10 @@ namespace RobDriver.Modules
         internal static void PopulateAssets()
         {
             var path = System.IO.Path.GetDirectoryName(DriverPlugin.instance.Info.Location);
-            if (mainAssetBundle == null)
-            {
-                mainAssetBundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(path, "robdriver"));
-            }
-
-            Hunk.heartCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.heartCostDef);
-            Hunk.spadeCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.spadeCostDef);
-            Hunk.clubCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.clubCostDef);
-            Hunk.diamondCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.diamondCostDef);
-            Hunk.starCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.starCostDef);
-            Hunk.wristbandCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.wristbandCostDef);
-            Hunk.starsBadgeCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.starsBadgeCostDef);
-            Hunk.sampleCostTypeIndex = System.Array.IndexOf(CostTypeCatalog.costTypeDefs, Hunk.sampleCostDef);
+            mainAssetBundle ??= AssetBundle.LoadFromFile(System.IO.Path.Combine(path, "robdriver"));
+            mainAssetBundle.SwapAllShaders();
 
             Modules.Config.InitROO(Assets.mainAssetBundle.LoadAsset<Sprite>("texDriverIcon"), "Literally me");
-
-            SwapAllShaders();
 
             jammedEffectPrefab = CreateTextPopupEffect("DriverGunJammedEffect", "ROB_DRIVER_JAMMED_POPUP");
             damageBuffEffectPrefab = CreateTextPopupEffect("DriverDamageBuffEffect", "DAMAGE!", new Color(1f, 70f / 255f, 75f / 255f));
@@ -1176,9 +1163,9 @@ namespace RobDriver.Modules
             return material;
         }
 
-        private static void SwapAllShaders()
+        private static void SwapAllShaders(this AssetBundle assetBundle)
         {
-            foreach (var material in mainAssetBundle.LoadAllAssets<Material>())
+            foreach (var material in assetBundle.LoadAllAssets<Material>())
             {
                 TrySwapShader(material);
             }

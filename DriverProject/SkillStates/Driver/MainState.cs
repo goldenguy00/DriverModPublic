@@ -89,9 +89,9 @@ namespace RobDriver.SkillStates.Driver
 
             if (this.modelAnimator)
             {
-                bool cock = false;
-                if (!this.characterBody.outOfDanger || !this.characterBody.outOfCombat) cock = true;
-                this.modelAnimator.SetBool("inCombat", cock);
+                bool inCombat = false;
+                if (!this.characterBody.outOfDanger || !this.characterBody.outOfCombat) inCombat = true;
+                this.modelAnimator.SetBool("inCombat", inCombat);
 
 				if (this.isGrounded) this.modelAnimator.SetFloat("airBlend", 0f);
 				else this.modelAnimator.SetFloat("airBlend", 1f);

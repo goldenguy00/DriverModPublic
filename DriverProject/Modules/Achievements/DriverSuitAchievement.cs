@@ -20,14 +20,14 @@ namespace RobDriver.Modules.Achievements
         {
             base.OnBodyRequirementMet();
 
-            GlobalEventManager.onCharacterDeathGlobal += this.GlobalEventManager_onCharacterDeathGlobal;
+            GlobalEventManager.onDeathProcServer += this.GlobalEventManager_onCharacterDeathGlobal;
         }
 
         public override void OnBodyRequirementBroken()
         {
             base.OnBodyRequirementBroken();
 
-            GlobalEventManager.onCharacterDeathGlobal -= this.GlobalEventManager_onCharacterDeathGlobal;
+            GlobalEventManager.onDeathProcServer -= this.GlobalEventManager_onCharacterDeathGlobal;
         }
 
         private void GlobalEventManager_onCharacterDeathGlobal(DamageReport damageReport)

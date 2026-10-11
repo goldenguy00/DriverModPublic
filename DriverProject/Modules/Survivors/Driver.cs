@@ -1,17 +1,19 @@
 ﻿using BepInEx.Configuration;
-using R2API;
-using RoR2;
-using System.Collections.Generic;
-using UnityEngine;
-using RoR2.CharacterAI;
-using UnityEngine.AddressableAssets;
-using System.Linq;
-using RobDriver.Modules.Components;
 using HG;
-using RoR2.ContentManagement;
+using R2API;
+using RobDriver.Modules.Components;
 using RobDriver.Modules.Misc;
-using System.Runtime.CompilerServices;
 using RobDriver.SkillStates.Driver;
+using RoR2;
+using RoR2.AddressableAssets;
+using RoR2.CharacterAI;
+using RoR2.ContentManagement;
+using RoR2BepInExPack.GameAssetPathsBetter;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace RobDriver.Modules.Survivors
 {
@@ -35,10 +37,6 @@ namespace RobDriver.Modules.Survivors
 
         internal static BodyIndex bodyIndex => BodyCatalog.FindBodyIndex(bodyName);
 
-        // item display stuffs
-        internal static ItemDisplayRuleSet itemDisplayRuleSet;
-        internal static List<ItemDisplayRuleSet.KeyAssetRuleGroup> itemDisplayRules;
-
         internal void CreateCharacter()
         {
             instance = this;
@@ -57,8 +55,6 @@ namespace RobDriver.Modules.Survivors
                 DriverWeaponCatalog.InitWeaponDefs();
                 DriverBulletCatalog.InitBulletDefs();
                 DriverHooks.Init();
-
-                ContentManager.onContentPacksAssigned += SetItemDisplays;
             }
         }
 
@@ -256,7 +252,7 @@ namespace RobDriver.Modules.Survivors
             SetupHurtboxes(bodyPrefab);
             CreateSkills(bodyPrefab);
             CreateSkins(bodyPrefab);
-            InitializeItemDisplays(bodyPrefab);
+            ItemDisplays.InitializeItemDisplays(bodyPrefab);
 
             return bodyPrefab;
         }
@@ -1723,7 +1719,35 @@ namespace RobDriver.Modules.Survivors
                 AncientScepter.AncientScepterItem.instance.RegisterScepterSkill(Skills.scepterCoinSkillDef, bodyName, SkillSlot.Special, 4);
             }
         }
-
+        private static void CreateGup()
+        {
+            var prefab = Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_Gup.GupBody_prefab).WaitForCompletion();
+            GameObject model = prefab.GetComponent<ModelLocator>().modelTransform.gameObject;
+            CharacterModel characterModel = model.GetComponent<CharacterModel>();
+            ModelSkinController skinController = model.EnsureComponent<ModelSkinController>();
+            SkinDef defaultSkin = R2API.Skins.CreateNewSkinDef(new SkinDefParamsInfo
+            {
+                Name = "GUP_BODY_DEFAULT_SKIN_NAME",
+                NameToken = "GUP_BODY_DEFAULT_SKIN_NAME",
+                RootObject = model,
+                MeshReplacements = 
+                [
+                    // stuff here
+                ],
+                RendererInfos = 
+                [
+                    new CharacterModel.RendererInfo
+                    {
+                        renderer = characterModel.transform.Find("mdlGup").GetComponent<SkinnedMeshRenderer>(),
+                        defaultMaterial = null,//idk
+                    }
+                ],
+                MinionSkinReplacements = null,
+                ProjectileGhostReplacements = null,
+                SkinDefParams = null,
+                UnlockableDef = null
+            });
+        }
         private static void CreateSkins(GameObject prefab)
         {
             GameObject model = prefab.GetComponent<ModelLocator>().modelTransform.gameObject;
@@ -2004,344 +2028,5 @@ namespace RobDriver.Modules.Survivors
 
             skinController.skins = [.. skins];
         }
-
-        #region Item Displays
-        private static void InitializeItemDisplays(GameObject prefab)
-        {
-            CharacterModel characterModel = prefab.GetComponentInChildren<CharacterModel>();
-
-            if (itemDisplayRuleSet == null)
-            {
-                itemDisplayRuleSet = ScriptableObject.CreateInstance<ItemDisplayRuleSet>();
-                itemDisplayRuleSet.name = "idrs" + bodyName;
-            }
-
-            characterModel.itemDisplayRuleSet = itemDisplayRuleSet;
-            characterModel.itemDisplayRuleSet.keyAssetRuleGroups = Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody")
-                .GetComponentInChildren<CharacterModel>().itemDisplayRuleSet.keyAssetRuleGroups;// itemDisplayRuleSet;
-            itemDisplayRules = itemDisplayRuleSet.keyAssetRuleGroups.ToList();
-        }
-
-        internal static void SetItemDisplays(ReadOnlyArray<ReadOnlyContentPack> _)
-        {
-            // uhh
-            ItemDisplays.PopulateDisplays();
-
-            ReplaceItemDisplay(RoR2Content.Items.SecondarySkillMagazine,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayDoubleMag"),
-                    limbMask = LimbFlags.None,
-                    childName = "GunR",
-                    localPos = new Vector3(0.00888F, -0.03648F, -0.20898F),
-                    localAngles = new Vector3(39.35415F, 348.9445F, 164.0792F),
-                    localScale = new Vector3(0.06F, 0.06F, 0.06F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.CritGlasses,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayGlasses"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0.0006F, 0.25054F, 0.04672F),
-                    localAngles = new Vector3(314.7648F, 358.1459F, 0.48047F),
-                    localScale = new Vector3(0.30902F, 0.09537F, 0.30934F)
-                }
-            ]);
-
-            if (Config.predatoryOnHead.Value)
-            {
-                ReplaceItemDisplay(RoR2Content.Items.AttackSpeedOnCrit,
-                [
-                    new ItemDisplayRule
-                    {
-                        ruleType = ItemDisplayRuleType.ParentedPrefab,
-                        followerPrefab = ItemDisplays.LoadDisplay("DisplayWolfPelt"),
-                        limbMask = LimbFlags.None,
-                        childName = "Head",
-                        localPos = new Vector3(0F, 0.18766F, -0.11041F),
-                        localAngles = new Vector3(302.566F, 0F, 0F),
-                        localScale = new Vector3(0.47332F, 0.47332F, 0.47332F)
-                    }
-                ]);
-            }
-            else
-            {
-                ReplaceItemDisplay(RoR2Content.Items.AttackSpeedOnCrit,
-                [
-                    new ItemDisplayRule
-                    {
-                        ruleType = ItemDisplayRuleType.ParentedPrefab,
-                        followerPrefab = ItemDisplays.LoadDisplay("DisplayWolfPelt"),
-                        limbMask = LimbFlags.None,
-                        childName = "UpperArmR",
-                        localPos = new Vector3(-0.01092F, 0.02048F, -0.00403F),
-                        localAngles = new Vector3(309.4066F, 250.1116F, 175.7708F),
-                        localScale = new Vector3(0.363F, 0.363F, 0.363F)
-                    }
-                ]);
-            }
-
-            ReplaceItemDisplay(DLC1Content.Items.CritGlassesVoid,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayGlassesVoid"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0F, 0.1555F, 0.11598F),
-                    localAngles = new Vector3(340.0668F, 0F, 0F),
-                    localScale = new Vector3(0.30387F, 0.39468F, 0.46147F)
-                }
-            ]);
-
-            ReplaceItemDisplay(DLC1Content.Items.LunarSun,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplaySunHeadNeck"),
-                    limbMask = LimbFlags.None,
-                    childName = "Chest",
-                    localPos = new Vector3(-0.02605F, 0.38179F, -0.0112F),
-                    localAngles = new Vector3(-0.00001F, 262.1551F, 0.00001F),
-                    localScale = new Vector3(1.76594F, 1.84475F, 1.84475F)
-                },
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.LimbMask,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplaySunHead"),
-                    limbMask = LimbFlags.Head,
-                    childName = "Head",
-                    localPos = new Vector3(0F, 0.10143F, -0.01147F),
-                    localAngles = new Vector3(0F, 0F, 0F),
-                    localScale = new Vector3(0.90836F, 0.90836F, 0.90836F)
-                },
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplaySunHead"),
-                    limbMask = LimbFlags.Head,
-                    childName = "Head",
-                    localPos = new Vector3(0F, 0.10143F, -0.01147F),
-                    localAngles = new Vector3(0F, 0F, 0F),
-                    localScale = new Vector3(0.90836F, 0.90836F, 0.90836F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.GhostOnKill,
-[
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayMask"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0.0029F, 0.15924F, 0.07032F),
-                    localAngles = new Vector3(355.7367F, 0.15F, 0F),
-                    localScale = new Vector3(0.6F, 0.6F, 0.6F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.GoldOnHit,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayBoneCrown"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0F, 0.15159F, -0.0146F),
-                    localAngles = new Vector3(8.52676F, 0F, 0F),
-                    localScale = new Vector3(0.90509F, 0.90509F, 0.90509F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.JumpBoost,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayWaxBird"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0F, -0.228F, -0.108F),
-                    localAngles = new Vector3(0F, 0F, 0F),
-                    localScale = new Vector3(0.79857F, 0.79857F, 0.79857F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.KillEliteFrenzy,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayBrainstalk"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0F, 0.12823F, 0.035F),
-                    localAngles = new Vector3(0F, 0F, 0F),
-                    localScale = new Vector3(0.17982F, 0.17982F, 0.17982F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.LunarPrimaryReplacement,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayBirdEye"),
-                    limbMask = LimbFlags.None,
-                    childName = "Head",
-                    localPos = new Vector3(0F, 0.18736F, 0.08896F),
-                    localAngles = new Vector3(306.9798F, 180F, 180F),
-                    localScale = new Vector3(0.31302F, 0.31302F, 0.31302F)
-                }
-            ]);
-
-            ReplaceItemDisplay(DLC1Content.Items.FragileDamageBonus,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayDelicateWatch"),
-                    limbMask = LimbFlags.None,
-                    childName = "HandL",
-                    localPos = new Vector3(0.001145094f, -0.01941454f, 0.001435831f),
-                    localAngles = new Vector3(84.24088f, 213.1651f, 131.5774f),
-                    localScale = new Vector3(0.5f, 0.5f, 0.5f)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.BarrierOnOverHeal,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayAegis"),
-                    limbMask = LimbFlags.None,
-                    childName = "LowerArmL",
-                    localPos = new Vector3(0.01781F, 0.11702F, 0.01516F),
-                    localAngles = new Vector3(90F, 270F, 0F),
-                    localScale = new Vector3(0.3F, 0.3F, 0.3F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.SprintArmor,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayBuckler"),
-                    limbMask = LimbFlags.None,
-                    childName = "LowerArmL",
-                    localPos = new Vector3(-0.012F, 0.171F, -0.027F),
-                    localAngles = new Vector3(0F, 90F, 0F),
-                    localScale = new Vector3(0.3F, 0.3F, 0.3F)
-                }
-            ]);
-
-            ReplaceItemDisplay(RoR2Content.Items.ArmorPlate,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayRepulsionArmorPlate"),
-                    limbMask = LimbFlags.None,
-                    childName = "CalfR",
-                    localPos = new Vector3(-0.02573F, 0.22602F, 0.0361F),
-                    localAngles = new Vector3(90F, 180F, 0F),
-                    localScale = new Vector3(-0.2958F, 0.2958F, 0.29581F)
-                }
-            ]);
-
-            ReplaceItemDisplay(DLC1Content.Items.CritDamage,
-            [
-                new ItemDisplayRule
-                {
-                    ruleType = ItemDisplayRuleType.ParentedPrefab,
-                    followerPrefab = ItemDisplays.LoadDisplay("DisplayLaserSight"),
-                    limbMask = LimbFlags.None,
-                    childName = "Pistol",
-                    localPos = new Vector3(-0.01876F, 0.26245F, 0.11694F),
-                    localAngles = new Vector3(0F, 0F, 270F),
-                    localScale = new Vector3(0.05261F, 0.05261F, 0.05261F)
-                }
-            ]);
-
-            //if (DriverPlugin.LitInstalled) SetLITDisplays();
-
-            itemDisplayRuleSet.keyAssetRuleGroups = itemDisplayRules.ToArray();
-            //itemDisplayRuleSet.GenerateRuntimeValues();
-        }
-        
-        internal static void SetLITDisplays()
-        {
-            /*
-            itemDisplayRules.Add(new ItemDisplayRuleSet.KeyAssetRuleGroup
-            {
-                keyAsset = LostInTransit.LITContent.Items.Lopper,
-                displayRuleGroup = new DisplayRuleGroup
-                {
-                    rules = new ItemDisplayRule[]
-                    {
-                        new ItemDisplayRule
-                        {
-                            ruleType = ItemDisplayRuleType.ParentedPrefab,
-                            followerPrefab = ItemDisplays.LoadDisplay("DisplayLopper"),
-                            limbMask = LimbFlags.None,
-                            childName = "Chest",
-                            localPos = new Vector3(0F, 0.20282F, -0.19089F),
-                            localAngles = new Vector3(0F, 0F, 0F),
-                            localScale = new Vector3(0.19059F, 0.19059F, 0.19059F)
-                        }
-                    }
-                }
-            });
-
-            itemDisplayRules.Add(new ItemDisplayRuleSet.KeyAssetRuleGroup
-            {
-                keyAsset = LostInTransit.LITContent.Items.Chestplate,
-                displayRuleGroup = new DisplayRuleGroup
-                {
-                    rules = new ItemDisplayRule[]
-                    {
-                        new ItemDisplayRule
-                        {
-                            ruleType = ItemDisplayRuleType.ParentedPrefab,
-                            followerPrefab = ItemDisplays.LoadDisplay("DisplayBackPlate"),
-                            limbMask = LimbFlags.None,
-                            childName = "Chest",
-                            localPos = new Vector3(0F, 0.23366F, 0.01011F),
-                            localAngles = new Vector3(349.1311F, 0F, 0F),
-                            localScale = new Vector3(0.13457F, 0.19557F, 0.19557F)
-                        }
-                    }
-                }
-            });
-            */
-        }
-
-        internal static void ReplaceItemDisplay(UnityEngine.Object keyAsset, ItemDisplayRule[] newDisplayRules)
-        {
-            ItemDisplayRuleSet.KeyAssetRuleGroup[] cock = itemDisplayRules.ToArray();
-            for (int i = 0; i < cock.Length; i++)
-            {
-                if (cock[i].keyAsset == keyAsset)
-                {
-                    // replace the item display rule
-                    cock[i].displayRuleGroup.rules = newDisplayRules;
-                }
-            }
-            itemDisplayRules = cock.ToList();
-        }
-        #endregion
     }
 }

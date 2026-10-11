@@ -15,7 +15,6 @@ namespace RobDriver.Modules.Components
 
         private DriverWeaponDef weaponDef;
         private BodyIndex driverBodyIndex;
-        private DriverWeaponDef.ModelSwapInfo modelSwapInfo;
 
         private void Awake()
         {
@@ -28,6 +27,7 @@ namespace RobDriver.Modules.Components
 
             this.driverBodyIndex = Driver.bodyIndex;
             this.currentLoadout = Loadout.RequestInstance();
+            this.weaponDef = DriverWeaponCatalog.Pistol;
         }
 
         private new void OnEnable()
