@@ -21,6 +21,7 @@ using RobDriver.Modules.Components.UI;
 using RoR2.Skills;
 using RobDriver.Modules.Survivors;
 using RoR2.Navigation;
+using System.Runtime.CompilerServices;
 
 namespace RobDriver.Modules.Misc
 {
@@ -110,6 +111,14 @@ namespace RobDriver.Modules.Misc
 
             if (NetworkServer.active && self.body && self.alive)
             {
+                if (damageInfo.HasModdedDamageType(DriverDamageTypes.SetStateOnHurt))
+                {
+                    if (self.TryGetComponent<SetStateOnHurt>(out var ssoh))
+                    {
+                        ssoh.SetPain();
+                    }
+                }
+
                 if (damageInfo.HasModdedDamageType(DriverDamageTypes.StunGrenadeDazed))
                     self.body.AddTimedBuff(Buffs.dazedDebuff, 10f);
 
@@ -143,8 +152,11 @@ namespace RobDriver.Modules.Misc
 
             orig(self, damageInfo);
 
-            if (applyGouge && self.alive && !damageInfo.rejected)
-                GlobalEventManager.instance.OnHitEnemy(damageInfo, self.gameObject);
+            if (self.alive && !damageInfo.rejected)
+            {
+                if (applyGouge)
+                    GlobalEventManager.instance.OnHitEnemy(damageInfo, self.gameObject);
+            }
         }
         #endregion
 
@@ -992,32 +1004,35 @@ namespace RobDriver.Modules.Misc
         {
             var childLoc = hud.GetComponent<ChildLocator>();
             var skillsContainer = childLoc.FindChild("SkillDisplayRoot") ?? hud.equipmentIcons[0].transform.parent;
+            var extrasContainer = skillsContainer.Find("ExtraButtonPanels");
+            var r = extrasContainer.GetComponent<RectTransform>();
+            r.sizeDelta = new Vector2(360f, r.sizeDelta.y);
 
             if (!DriverPlugin.CleanerHudInstalled)
             {
                 // no one will notice these missing
-                skillsContainer.Find("SprintCluster")?.gameObject.SetActive(false);
-                skillsContainer.Find("InventoryCluster")?.gameObject.SetActive(false);
+                //skillsContainer.Find("SprintCluster")?.gameObject.SetActive(false);
+                //skillsContainer.Find("InventoryCluster")?.gameObject.SetActive(false);
             }
 
             #region weapon slot
-            var weaponSlot = skillsContainer.Find("WeaponSlot")?.gameObject;
+            var weaponSlot = extrasContainer.Find("WeaponSlot")?.gameObject;
             if (weaponSlot)
                 GameObject.DestroyImmediate(weaponSlot);
 
-            weaponSlot = GameObject.Instantiate(hud.equipmentIcons[0].gameObject, skillsContainer);
+            weaponSlot = GameObject.Instantiate(hud.equipmentIcons[0].gameObject, extrasContainer);
             weaponSlot.name = "WeaponSlot";
-            weaponSlot.GetComponent<RectTransform>().anchoredPosition = new Vector2(-480f, -17.1797f);
-
-            var keyText = weaponSlot.GetComponentInChildren<InputBindingDisplayController>();
-            keyText.enabled = false;
-            keyText.transform.parent.gameObject.SetActive(false);
+            weaponSlot.transform.Find("TUTORIAL: Equipment")?.gameObject.SetActive(false);
 
             var equipmentIcon = weaponSlot.GetComponent<EquipmentIcon>();
+            equipmentIcon.displayRoot.transform.Find("EquipmentStack").gameObject.SetActive(false);
+            equipmentIcon.displayRoot.transform.Find("EquipmentTextBackgroundPanel").gameObject.SetActive(false);
+            equipmentIcon.displayRoot.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -5f);
             equipmentIcon.stockText.gameObject.SetActive(false);
             equipmentIcon.cooldownText.gameObject.SetActive(false);
 
             var weaponIcon = weaponSlot.AddComponent<WeaponIcon>();
+            weaponIcon.GetComponentInChildren<InputBindingDisplayController>(true).enabled = false;
             weaponIcon.iconImage = equipmentIcon.iconImage;
             weaponIcon.displayRoot = equipmentIcon.displayRoot;
             weaponIcon.flashPanelObject = equipmentIcon.stockFlashPanelObject;
@@ -1037,9 +1052,9 @@ namespace RobDriver.Modules.Misc
             rect.anchorMin = new Vector2(0f, 0f);
             rect.anchorMax = new Vector2(0f, 0f);
             rect.pivot = new Vector2(0.5f, 0f);
-            rect.anchoredPosition = new Vector2(-10f, 13f);
-            rect.localPosition = new Vector3(-30f, 0f, 0f);
-            rect.localEulerAngles = new Vector3(0f, 0f, 90f);
+            rect.anchoredPosition = new Vector2(-2f, 23f);
+            rect.localPosition = new Vector3(-25f, 0f, 0f);
+            rect.localEulerAngles = new Vector3(0f, 354f, 90f);
 
             weaponIcon.durationDisplay = chargeBar;
             weaponIcon.durationBar = chargeBar.transform.GetChild(1).gameObject.GetComponent<Image>();
@@ -1058,9 +1073,6 @@ namespace RobDriver.Modules.Misc
             var ammoDisplay = ammoTracker.AddComponent<AmmoDisplay>();
             weaponIcon = ammoTracker.GetComponent<WeaponIcon>();
 
-            keyText = weaponSlot.GetComponentInChildren<InputBindingDisplayController>(true);
-            keyText.transform.parent.gameObject.SetActive(true);
-
             rect = ammoTracker.GetComponent<RectTransform>();
             rect.localScale = new Vector3(1f, 1f, 1f);
             rect.localPosition = new Vector3(150f, 0f, 0f);
@@ -1069,7 +1081,8 @@ namespace RobDriver.Modules.Misc
             ammoDisplay.durationDisplay = weaponIcon.durationDisplay;
             ammoDisplay.durationBar = weaponIcon.durationBar;
             ammoDisplay.durationBarRed = weaponIcon.durationBarRed;
-            ammoDisplay.targetText = weaponSlot.GetComponentInChildren<InputBindingDisplayController>(true).GetComponent<HGTextMeshProUGUI>();
+            ammoDisplay.targetText = weaponIcon.GetComponentInChildren<InputBindingDisplayController>(true).GetComponent<HGTextMeshProUGUI>();
+            ammoDisplay.textParent = ammoDisplay.targetText.transform.parent.gameObject;
 
             weaponIcon.iconImage.gameObject.SetActive(false);
             weaponIcon.flashPanelObject.SetActive(false);
@@ -1079,9 +1092,11 @@ namespace RobDriver.Modules.Misc
             weaponIcon.displayRoot.transform.Find("BGPanel").gameObject.SetActive(false);
 
             MonoBehaviour.DestroyImmediate(weaponIcon);
+            ammoTracker.SetActive(true);
             #endregion
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void RiskUIHudSetup(HUD hud)
         {
             // Get rid of old hud, im tired of fighting this
@@ -1163,6 +1178,7 @@ namespace RobDriver.Modules.Misc
             weaponIcon.durationBarRed = chargeBar.transform.GetChild(0).gameObject.GetComponent<Image>();
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void HunkHudSetup(HUD hud, GameObject weaponSlot, WeaponIcon weaponIconComponent)
         {
             var childLoc = hud.GetComponent<ChildLocator>();
@@ -1188,6 +1204,7 @@ namespace RobDriver.Modules.Misc
             weaponIconComponent.durationBarRed.sprite = biomassBar.Find("BiomassBackground").GetComponent<Image>().sprite;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static void HunkHudSetupNew(HUD hud)
         {
             var hpBar = HunkHud.Components.UI.CustomHealthBar.instance;

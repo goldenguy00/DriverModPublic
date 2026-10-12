@@ -767,26 +767,22 @@ namespace RobDriver.Modules.Components
 
         private void TrySetDefault(DriverWeaponDef newWeapon)
         {
-            // force hammer over anything else fuck it
-            if (this.defaultWeaponDef == DriverWeaponCatalog.LunarHammer)
-            {
-                return;
-            }
-
-            if (newWeapon == DriverWeaponCatalog.LunarHammer)
-            {
-                this.defaultWeaponDef = DriverWeaponCatalog.LunarHammer;
-                return;
-            }
-
-            if (newWeapon == DriverWeaponCatalog.Needler && inventory.GetItemCountTotal(RoR2Content.Items.LunarPrimaryReplacement) > 0)
+            // dont pick up visions you idiot
+            if (inventory.GetItemCountTotal(RoR2Content.Items.LunarPrimaryReplacement) > 0)
             {
                 this.defaultWeaponDef = DriverWeaponCatalog.Needler;
                 return;
             }
 
-            // pistol upgrades
-            if (DriverWeaponCatalog.IsWeaponPistol(newWeapon) && this.defaultWeaponDef == DriverWeaponCatalog.Pistol)
+            // force hammer over anything else fuck it
+            if (newWeapon == DriverWeaponCatalog.LunarHammer || this.defaultWeaponDef == DriverWeaponCatalog.LunarHammer)
+            {
+                this.defaultWeaponDef = DriverWeaponCatalog.LunarHammer;
+                return;
+            }
+
+            // pistol upgrades, pistol < beetle < pyrite < false < lunar < void
+            if (DriverWeaponCatalog.IsWeaponPistol(newWeapon) && DriverWeaponCatalog.IsWeaponPistol(this.defaultWeaponDef) && newWeapon.index > this.defaultWeaponDef.index)
                 this.defaultWeaponDef = newWeapon;
         }
         #endregion

@@ -27,7 +27,7 @@ namespace RobDriver.Modules.Weapons
                 activationState = new EntityStates.SerializableEntityStateType(typeof(SkillStates.Driver.FalsePistol.SteadyAim)),
                 activationStateMachineName = "Weapon",
                 baseMaxStock = 6,
-                baseRechargeInterval = 4f,
+                baseRechargeInterval = 3f,
                 beginSkillCooldownOnSkillEnd = false,
                 canceledFromSprinting = false,
                 forceSprintDuringState = false,
@@ -37,7 +37,7 @@ namespace RobDriver.Modules.Weapons
                 isCombatSkill = true,
                 mustKeyPress = false,
                 cancelSprintingOnActivation = true,
-                rechargeStock = 1,
+                rechargeStock = 2,
                 requiredStock = 0,
                 stockToConsume = 0,
                 autoHandleLuminousShot = false

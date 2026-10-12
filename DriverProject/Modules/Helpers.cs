@@ -49,5 +49,16 @@ namespace RobDriver.Modules
             DriverWeaponTier.Lunar => Assets.lunarPickupModel,
             _ => Assets.uniquePickupModel,
         };
+
+        internal static Sprite GetIconForTier(DriverWeaponTier tier) => tier switch
+        {
+            DriverWeaponTier.Common => Assets.commonAmmoIcon,
+            DriverWeaponTier.Uncommon => Assets.uncommonAmmoIcon,
+            DriverWeaponTier.Legendary => Assets.legendaryAmmoIcon,
+            DriverWeaponTier.Unique => Assets.uniqueAmmoIcon,
+            DriverWeaponTier.Void => Assets.voidAmmoIcon,
+            DriverWeaponTier.Lunar => Assets.lunarAmmoIcon,
+            _ => Assets.uniqueAmmoIcon,
+        };
     }
 }

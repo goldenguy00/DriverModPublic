@@ -60,7 +60,10 @@ namespace RobDriver.Modules.Components.UI
                     this.currentNotification.descriptionText.token = bulletDef.bulletName;
                     this.currentNotification.iconImage.texture = Assets.bulletSprite.texture;
                     this.currentNotification.iconImage.color = bulletDef.trailColor;
-                    this.currentNotification.titleTMP.color = Helpers.GetColorForTier(bulletDef.tier);
+                    this.currentNotification.titleTMP.color = bulletDef.trailColor;
+                    var backImage = this.currentNotification.GetComponent<WeaponNotification>().backgroundImage;
+                    backImage.texture = Helpers.GetIconForTier(bulletDef.tier).texture;
+                    backImage.gameObject.SetActive(true);
                 }
 
                 this.currentNotification.GetComponent<RectTransform>().SetParent(GetComponent<RectTransform>(), false);

@@ -1,14 +1,12 @@
 ﻿using HG;
-using R2API;
 using RobDriver.Modules.Survivors;
 using RoR2;
 using RoR2BepInExPack.GameAssetPathsBetter;
-using SS2;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
 
 namespace RobDriver.Modules
 {
@@ -25,18 +23,53 @@ namespace RobDriver.Modules
             var itemDisplayRuleSet = ScriptableObject.CreateInstance<ItemDisplayRuleSet>();
             itemDisplayRuleSet.name = "idrs" + Driver.bodyName;
 
-            characterModel.itemDisplayRuleSet = itemDisplayRuleSet;
-            characterModel.itemDisplayRuleSet.keyAssetRuleGroups = Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody")
-                .GetComponentInChildren<CharacterModel>().itemDisplayRuleSet.keyAssetRuleGroups;// itemDisplayRuleSet;
-
-            itemDisplayRules = itemDisplayRuleSet.keyAssetRuleGroups.ToList();
+            itemDisplayRules = Addressables.LoadAssetAsync<ItemDisplayRuleSet>(RoR2_Base_Commando.idrsCommando_asset).WaitForCompletion().keyAssetRuleGroups.ToList();
+            
             SetItemDisplays();
+            
             itemDisplayRuleSet.keyAssetRuleGroups = itemDisplayRules.ToArray();
+            characterModel.itemDisplayRuleSet = itemDisplayRuleSet;
+
+            // modded support
+            // RoR2.ContentManagement.ContentManager.onContentPacksAssigned += ContentManager_onContentPacksAssigned;
+
+        }
+
+        internal static void ReplaceItemDisplay(string keyAsset, ItemDisplayRule[] newDisplayRules)
+        {
+            var assetRef = new RoR2.AddressableAssets.IDRSKeyAssetReference(keyAsset);
+            var asset = assetRef.LoadAssetAsync<ScriptableObject>().WaitForCompletion();
+
+            for (int i = 0; i < itemDisplayRules.Count; i++)
+            {
+                if (itemDisplayRules[i].keyAsset == asset)
+                {
+                    // replace the item display rule
+                    var newRuleGroup = new ItemDisplayRuleSet.KeyAssetRuleGroup
+                    {
+                        keyAsset = asset,
+                        keyAssetAddress = assetRef,
+                        displayRuleGroup = itemDisplayRules[i].displayRuleGroup
+                    };
+                    newRuleGroup.displayRuleGroup.rules = newDisplayRules;
+
+                    itemDisplayRules[i] = newRuleGroup;
+                    return;
+                }
+            }
+            Log.Error($"IDRS for GUID {keyAsset} not found");
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static void ContentManager_onContentPacksAssigned(ReadOnlyArray<RoR2.ContentManagement.ReadOnlyContentPack> obj)
+        {
+
+            if (DriverPlugin.LitInstalled)
+                SetLITDisplays();
         }
 
         private static void SetItemDisplays()
         {
-
             ReplaceItemDisplay(RoR2_Base_SecondarySkillMagazine.SecondarySkillMagazine_asset,
             [
                 new ItemDisplayRule
@@ -286,10 +319,9 @@ namespace RobDriver.Modules
                 }
             ]);
 
-            //if (DriverPlugin.LitInstalled) SetLITDisplays();
-            //itemDisplayRuleSet.GenerateRuntimeValues();
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         internal static void SetLITDisplays()
         {
             /*
@@ -335,26 +367,6 @@ namespace RobDriver.Modules
                 }
             });
             */
-        }
-
-        internal static void ReplaceItemDisplay(string keyAsset, ItemDisplayRule[] newDisplayRules)
-        {
-            for (int i = 0; i < itemDisplayRules.Count; i++)
-            {
-                if (itemDisplayRules[i].keyAssetAddress.AssetGUID == keyAsset)
-                {
-                    // replace the item display rule
-                    var newRuleGroup = new ItemDisplayRuleSet.KeyAssetRuleGroup
-                    {
-                        keyAsset = itemDisplayRules[i].keyAsset,
-                        keyAssetAddress = itemDisplayRules[i].keyAssetAddress,
-                        displayRuleGroup = itemDisplayRules[i].displayRuleGroup
-                    };
-                    newRuleGroup.displayRuleGroup.rules = newDisplayRules;
-
-                    itemDisplayRules[i] = newRuleGroup;
-                }
-            }
         }
     }
 }

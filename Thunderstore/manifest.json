@@ -1,6 +1,6 @@
 {
   "name": "Driver",
-  "version_number": "2.4.2",
+  "version_number": "2.4.4",
   "website_url": "https://github.com/goldenguy00/DriverModPublic",
   "description": "Adds the Driver, a mostly grounded survivor focused on driving.",
   "dependencies": [

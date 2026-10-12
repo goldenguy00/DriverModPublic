@@ -1,5 +1,19 @@
 ## Changelog
 
+`2.4.4`
+- Fixed custom IDRS entries
+- Updated ammo drop model and icons
+- SS2 Nemmando now drops the Murasama
+- VideoGameMod2 Nemmando now drops the Worn SMG 
+	- sword is cooler and most people play SS2 
+- Murasama's primary can now be cancelled by the secondary skill
+- Slightly nerfed Murasama's stun on hit
+- Minor tweaks to pistol upgrade progression
+	- Each pistol gives slightly more power, and more powerful pistols replace the lesser ones
+
+`2.4.3`
+- Fixed hud
+
 `2.4.2`
 - Disabled white screen flashbang until i make it less bad
 - Update Github link

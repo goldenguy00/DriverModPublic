@@ -33,6 +33,7 @@ namespace RobDriver.Modules.Components
         private new void OnEnable()
         {
             NetworkUser.onLoadoutChangedGlobal += this.OnLoadoutChangedGlobal;
+            OnLoadoutChangedGlobal(this.networkUser);
         }
 
         private new void OnDisable()

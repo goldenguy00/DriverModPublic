@@ -27,36 +27,6 @@ namespace RobDriver.Modules.Components
         private LocalUser localUser;
         private DriverPassive targetBodyPassive;
 
-        internal static Vector3? FindSafeTeleportDestination(Vector3 characterFootPosition)
-        {
-            Vector3? result = null;
-            SpawnCard spawnCard = ScriptableObject.CreateInstance<SpawnCard>();
-            spawnCard.nodeGraphType = MapNodeGroup.GraphType.Ground;
-            spawnCard.prefab = LegacyResourcesAPI.Load<GameObject>("SpawnCards/HelperPrefab");
-            GameObject gameObject = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, new DirectorPlacementRule
-            {
-                placementMode = DirectorPlacementRule.PlacementMode.NearestNode,
-                position = characterFootPosition
-            }, RoR2Application.rng));
-            if (!gameObject)
-            {
-                gameObject = DirectorCore.instance.TrySpawnObject(new DirectorSpawnRequest(spawnCard, new DirectorPlacementRule
-                {
-                    placementMode = DirectorPlacementRule.PlacementMode.RandomNormalized,
-                    position = characterFootPosition
-                }, RoR2Application.rng));
-            }
-
-            if (gameObject)
-            {
-                result = gameObject.transform.position;
-                UnityEngine.Object.Destroy(gameObject);
-            }
-
-            UnityEngine.Object.Destroy(spawnCard);
-            return result;
-        }
-
         private void Awake()
         {
             weaponDef ??= DriverWeaponCatalog.Pistol;
@@ -129,11 +99,15 @@ namespace RobDriver.Modules.Components
             // make sure this is called before handling the collider logic
             this.alive = true;
 
+            float duration = 60f;
+            float blinkDelay = 15f;
             if (this.weaponDef.tier > DriverWeaponTier.Uncommon || this.bulletDef.tier > DriverWeaponTier.Uncommon)
             {
-                this.blinker.delayBeforeBeginningBlinking = 285f;
-                this.destroyOnTimer.duration = 300f;
+                duration = 180f;
+                blinkDelay = 30f;
             }
+            this.blinker.delayBeforeBeginningBlinking = duration - blinkDelay;
+            this.destroyOnTimer.duration = duration;
 
             UpdateVisuals();
         }
@@ -150,23 +124,31 @@ namespace RobDriver.Modules.Components
             // ammo pickup visuals
             if (this.targetBodyPassive && (this.targetBodyPassive.isPistolOnly || this.targetBodyPassive.isBullets || (this.targetBodyPassive.isRyan && this.isNewAmmoType)))
             {
-                CreateModel(Assets.ammoPickupModel, this.bulletDef.bulletName, this.bulletDef.trailColor, this.bulletDef.tier);
-
-                if (this.targetBodyPassive.isPistolOnly)
-                    this.textComponent.gameObject.SetActive(false);
+                CreateModel(Assets.ammoModel, this.bulletDef.bulletName, this.bulletDef.trailColor, this.bulletDef.tier, true);
             }
             else
             {
-                CreateModel(this.weaponDef.pickupPrefab, this.weaponDef.nameToken, this.weaponDef.color, this.weaponDef.tier);
+                CreateModel(this.weaponDef.pickupPrefab, this.weaponDef.nameToken, this.weaponDef.color, this.weaponDef.tier, false);
             }
         }
 
-        private void CreateModel(GameObject baseAsset, string nameToken, Color textColor, DriverWeaponTier tier)
+        private void CreateModel(GameObject baseAsset, string nameToken, Color textColor, DriverWeaponTier tier, bool isBullet)
         {
             var pickupModelInstance = GameObject.Instantiate(baseAsset, this.modelParent);
             pickupModelInstance.name = "DriverVisuals";
 
-            this.textComponent = pickupModelInstance.GetComponentInChildren<LanguageTextMeshController>();
+            if (isBullet)
+            {
+                if (this.targetBodyPassive && this.targetBodyPassive.isPistolOnly)
+                {
+                    this.textComponent.gameObject.SetActive(false);
+                }
+                else
+                {
+                    pickupModelInstance.transform.Find("ammoBox/meshShellsColored").GetComponent<MeshRenderer>().material.color = textColor;
+                }
+            }
+
             this.textComponent.token = nameToken;
             this.textComponent.textMeshPro.color = textColor;
             this.textComponent.textMeshPro.isOverlay = true;

@@ -74,14 +74,17 @@ namespace RobDriver.Modules
         public static Material knifeMat;
         public static Material timbsMat;
 
+        // base object
         public static GameObject weaponPickup;
+
+        // weapon visuals
         public static GameObject commonPickupModel;
         public static GameObject uncommonPickupModel;
         public static GameObject legendaryPickupModel;
         public static GameObject uniquePickupModel;
         public static GameObject voidPickupModel;
         public static GameObject lunarPickupModel;
-        public static GameObject ammoPickupModel;
+        public static GameObject ammoModel;
 
         public static GameObject weaponPickupEffect;
         public static GameObject discardedWeaponEffect;
@@ -98,6 +101,13 @@ namespace RobDriver.Modules
         public static Sprite uniqueWeaponIcon;
         public static Sprite voidWeaponIcon;
         public static Sprite lunarWeaponIcon;
+
+        public static Sprite commonAmmoIcon;
+        public static Sprite uncommonAmmoIcon;
+        public static Sprite legendaryAmmoIcon;
+        public static Sprite uniqueAmmoIcon;
+        public static Sprite voidAmmoIcon;
+        public static Sprite lunarAmmoIcon;
 
         public static Sprite bulletSprite;
         
@@ -195,7 +205,31 @@ namespace RobDriver.Modules
             voidWeaponIcon = mainAssetBundle.LoadAsset<Sprite>("texGenericWeaponPurple");
             lunarWeaponIcon = mainAssetBundle.LoadAsset<Sprite>("texGenericWeaponBlue");
 
+            commonPickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlWeaponPickup");
+            legendaryPickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlWeaponPickupLegendary");
+            lunarPickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlWeaponPickupLunar");
+            uncommonPickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlWeaponPickupUncommon");
+            uniquePickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlWeaponPickupUnique");
+            voidPickupModel = mainAssetBundle.LoadAsset<GameObject>("mdlWeaponPickupVoid");
+            ammoModel = mainAssetBundle.LoadAsset<GameObject>("mdlAmmoPickup");
+
+            commonAmmoIcon = mainAssetBundle.LoadAsset<Sprite>("texBulletWhite");
+            uncommonAmmoIcon = mainAssetBundle.LoadAsset<Sprite>("texBulletGreen");
+            legendaryAmmoIcon = mainAssetBundle.LoadAsset<Sprite>("texBulletRed");
+            uniqueAmmoIcon = mainAssetBundle.LoadAsset<Sprite>("texBulletYellow");
+            voidAmmoIcon = mainAssetBundle.LoadAsset<Sprite>("texBulletVoid");
+            lunarAmmoIcon = mainAssetBundle.LoadAsset<Sprite>("texBulletLunar");
+            bulletSprite = mainAssetBundle.LoadAsset<Sprite>("texBulletOverlay");
+
             weaponNotificationPrefab = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/NotificationPanel2.prefab").WaitForCompletion().InstantiateClone("WeaponNotification", false);
+            var noti = weaponNotificationPrefab.AddComponent<WeaponNotification>();
+            var image = weaponNotificationPrefab.GetComponent<GenericNotification>().iconImage.gameObject;
+            var backImage = GameObject.Instantiate(image, image.transform.parent);
+            backImage.transform.MoveAfterSibling(image.transform, false);
+            image.transform.MoveAfterSibling(backImage.transform, false);
+            backImage.GetComponent<RawImage>().texture = commonAmmoIcon.texture;
+            backImage.SetActive(false);
+            noti.backgroundImage = backImage.GetComponent<RawImage>();
 
             CreateVfx();
             CreateCrosshair();
@@ -291,7 +325,6 @@ namespace RobDriver.Modules
             trail.material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Common/VFX/matSmokeTrail.mat").WaitForCompletion();
             trail.startColor = Color.white;
             trail.endColor = Color.gray;
-            bulletSprite = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texSniperBulletIndicator");
 
             lunarShardMuzzleFlash = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/MuzzleflashLunarShard.prefab").WaitForCompletion().InstantiateClone("DriverMuzzleflashLunarShard", false);
             lunarShardMuzzleFlash.transform.GetChild(0).transform.localScale = Vector3.one * 0.35f;
@@ -935,28 +968,17 @@ namespace RobDriver.Modules
             weaponPickupEffect.AddComponent<NetworkIdentity>();
             AddNewEffectDef(weaponPickupEffect, "sfx_driver_pickup");
 
-            CreateDefaultPickupObject();
-
-            ammoPickupModel = CreatePickupVisuals("mdlAmmoPickup");
-            commonPickupModel = CreatePickupVisuals("mdlWeaponPickup");
-            uncommonPickupModel = CreatePickupVisuals("mdlWeaponPickupUncommon");
-            legendaryPickupModel = CreatePickupVisuals("mdlWeaponPickupLegendary");
-            uniquePickupModel = CreatePickupVisuals("mdlWeaponPickupUnique");
-            voidPickupModel = CreatePickupVisuals("mdlWeaponPickupVoid");
-            lunarPickupModel = CreatePickupVisuals("mdlWeaponPickupLunar");
-        }
-
-        internal static void CreateDefaultPickupObject()
-        {
             weaponPickup = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Bandolier/AmmoPack.prefab").WaitForCompletion().InstantiateClone("DriverWeaponPickup", true);
             var pickupTrigger = weaponPickup.transform.Find("PickupTrigger");
             var gravitationController = weaponPickup.transform.Find("GravitationController");
             var visuals = weaponPickup.transform.Find("Visuals");
             var pointLight = weaponPickup.transform.Find("Point light");
 
-            weaponPickup.GetComponent<BoxCollider>().size = new Vector3(1.8f, 1f, 0.8f);
+            weaponPickup.GetComponent<BoxCollider>().size = new Vector3(1.53f, 1f, 0.8f);
 
             visuals.localPosition = new Vector3(0f, -0.45f, 0f);
+            visuals.localScale = new Vector3(0.85f, 1f, 1f);
+            pickupTrigger.GetComponent<BoxCollider>().size = new Vector3(1.53f, 1f, 0.8f);
 
             pointLight.parent = visuals;
             pointLight.localPosition = Vector3.zero;
@@ -973,7 +995,7 @@ namespace RobDriver.Modules
             weaponPickupComponent.light = light;
             weaponPickupComponent.systems = visuals.GetComponentsInChildren<ParticleSystem>();
             weaponPickupComponent.blinker = weaponPickup.GetComponent<BeginRapidlyActivatingAndDeactivating>();
-            weaponPickupComponent.blinker.delayBeforeBeginningBlinking = 55f;
+            weaponPickupComponent.blinker.delayBeforeBeginningBlinking = 45f;
             weaponPickupComponent.destroyOnTimer = weaponPickup.AddComponent<DestroyWeaponOnTimer>();
             weaponPickup.AddComponent<SyncPickup>().weaponPickup = weaponPickupComponent;
 
@@ -986,19 +1008,8 @@ namespace RobDriver.Modules
             MonoBehaviour.Destroy(weaponPickup.GetComponent<DestroyOnTimer>());
             MonoBehaviour.Destroy(pickupTrigger.GetComponent<AmmoPickup>());
             MonoBehaviour.Destroy(gravitationController.GetComponent<GravitatePickup>());
-        }
 
-        internal static GameObject CreatePickupVisuals(string baseAssetName) => CreatePickupVisuals(mainAssetBundle.LoadAsset<GameObject>(baseAssetName));
-        internal static GameObject CreatePickupVisuals(GameObject pickupModel)
-        {
-            if (pickupModel.GetComponentInChildren<LanguageTextMeshController>())
-                return pickupModel;
-
-            pickupModel.transform.localPosition = Vector3.zero;
-            pickupModel.transform.localRotation = Quaternion.identity;
-
-            GameObject textShit = GameObject.Instantiate(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/BearProc"));
-            textShit.transform.parent = pickupModel.transform;
+            GameObject textShit = GameObject.Instantiate(LegacyResourcesAPI.Load<GameObject>("Prefabs/Effects/BearProc"), visuals);
             textShit.transform.localPosition = Vector3.zero;
             textShit.transform.localRotation = Quaternion.identity;
             textShit.transform.Find("TextCamScaler/TextRiser/TextMeshPro").localPosition = Vector3.zero;
@@ -1011,7 +1022,8 @@ namespace RobDriver.Modules
             MonoBehaviour.DestroyImmediate(whatTheFuckIsThis);
             helpMe.transform.localScale = Vector3.one * 1.25f;
 
-            return pickupModel;
+            weaponPickupComponent.textComponent = visuals.GetComponentInChildren<LanguageTextMeshController>();
+
         }
         #endregion
 

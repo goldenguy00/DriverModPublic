@@ -28,6 +28,7 @@ namespace RobDriver.Modules
         public static DamageAPI.ModdedDamageType BloodExplosionIdentifier = DamageAPI.ReserveDamageType();
         public static DamageAPI.ModdedDamageType StunGrenadeDazed = DamageAPI.ReserveDamageType();
         public static DamageAPI.ModdedDamageType KnifeWound = DamageAPI.ReserveDamageType();
+        public static DamageAPI.ModdedDamageType SetStateOnHurt = DamageAPI.ReserveDamageType();
 
         public static DotController.DotIndex GougeDotIndex;
 

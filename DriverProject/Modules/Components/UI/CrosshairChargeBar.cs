@@ -14,6 +14,7 @@ namespace RobDriver.Modules.Components.UI
         private void Awake()
         {
             this.fillBar = this.GetComponent<Image>();
+            this.fillBar.fillMethod = Image.FillMethod.Vertical;
             this.fillBar.fillAmount = 0f;
         }
 

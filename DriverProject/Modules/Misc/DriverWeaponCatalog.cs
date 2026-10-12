@@ -88,6 +88,70 @@ namespace RobDriver
                 dropBodyName = ""
             });
 
+            DriverWeaponCatalog.BeetleShield = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
+            {
+                name = "Chitin Shield",
+                nameToken = "ROB_DRIVER_BEETLESHIELD_NAME",
+                description = "An offhand shield to protect you while you use your pistol.",
+                descriptionToken = "ROB_DRIVER_BEETLESHIELD_DESC",
+
+                icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBeetleShieldWeaponIcon"),
+                tier = DriverWeaponTier.Unique,
+                animationSet = DriverWeaponDef.AnimationSet.Default,
+                buffType = DriverWeaponDef.BuffType.Crit,
+                shotCount = 32,
+
+                primarySkillDef = Skills.beetleShieldPrimarySkillDef,
+                secondarySkillDef = Skills.beetleShieldSecondarySkillDef,
+                arsenalSkillDef = Skills.CreateAndAddWeaponSkillDef("BEETLESHIELD"),
+                unlockableDef = Unlockables.CreateAndAddWeaponUnlockableDef("BEETLESHIELD"),
+
+                mesh = Modules.Assets.LoadMesh("meshBeetleShield"),
+                material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Beetle/matBeetle.mat").WaitForCompletion(),
+                crosshairPrefab = Modules.Assets.defaultCrosshairPrefab,
+                pickupPrefabOverride = Modules.Assets.uniquePickupModel,
+                colorOveride = Helpers.uniqueItemColor,
+
+                reloadAnimationString = "ReloadPistol",
+                equipAnimationString = "EquipPistol",
+                calloutSoundString = "",
+                dropChance = 0.1f,
+                disableHolster = false
+            });
+
+            DriverWeaponCatalog.PyriteGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
+            {
+                name = "Pyrite Gun",
+                nameToken = "ROB_DRIVER_PYRITEGUN_NAME",
+                description = "A mockery of the real thing.",
+                descriptionToken = "ROB_DRIVER_PYRITEGUN_DESC",
+
+                icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPyriteGunWeaponIcon"),
+                tier = DriverWeaponTier.NoTier,
+                animationSet = DriverWeaponDef.AnimationSet.Default,
+                buffType = DriverWeaponDef.BuffType.Crit,
+                shotCount = 18,
+
+                primarySkillDef = Skills.pyriteGunPrimarySkillDef,
+                secondarySkillDef = Skills.pyriteGunSecondarySkillDef,
+                arsenalSkillDef = Skills.CreateAndAddWeaponSkillDef("PYRITEGUN"),
+                unlockableDef = Unlockables.CreateAndAddWeaponUnlockableDef("PYRITEGUN"),
+
+                mesh = Modules.Assets.LoadMesh("meshGoldenGun"),
+                material = Modules.Assets.LoadMaterial("matPyriteGun"),
+                crosshairPrefab = Modules.Assets.defaultCrosshairPrefab,
+                pickupPrefabOverride = Modules.Assets.uniquePickupModel,
+                colorOveride = Helpers.uniqueItemColor,
+
+                reloadAnimationString = "ReloadPistol",
+                equipAnimationString = "EquipPistol",
+                calloutSoundString = "",
+                dropChance = 0f,
+                disableHolster = false
+            });
+
+            new Modules.Weapons.FalsePistol();
+
             DriverWeaponCatalog.LunarPistol = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
             {
                 name = "Lunar Pistol",
@@ -149,70 +213,6 @@ namespace RobDriver
                 calloutSoundString = "",
                 dropChance = 0f,
                 disableHolster = false,
-            });
-
-            new Modules.Weapons.FalsePistol();
-
-            DriverWeaponCatalog.PyriteGun = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
-            {
-                name = "Pyrite Gun",
-                nameToken = "ROB_DRIVER_PYRITEGUN_NAME",
-                description = "A mockery of the real thing.",
-                descriptionToken = "ROB_DRIVER_PYRITEGUN_DESC",
-
-                icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texPyriteGunWeaponIcon"),
-                tier = DriverWeaponTier.NoTier,
-                animationSet = DriverWeaponDef.AnimationSet.Default,
-                buffType = DriverWeaponDef.BuffType.Crit,
-                shotCount = 18,
-
-                primarySkillDef = Skills.pyriteGunPrimarySkillDef,
-                secondarySkillDef = Skills.pyriteGunSecondarySkillDef,
-                arsenalSkillDef = Skills.CreateAndAddWeaponSkillDef("PYRITEGUN"),
-                unlockableDef = Unlockables.CreateAndAddWeaponUnlockableDef("PYRITEGUN"),
-
-                mesh = Modules.Assets.LoadMesh("meshGoldenGun"),
-                material = Modules.Assets.LoadMaterial("matPyriteGun"),
-                crosshairPrefab = Modules.Assets.defaultCrosshairPrefab,
-                pickupPrefabOverride = Modules.Assets.uniquePickupModel,
-                colorOveride = Helpers.uniqueItemColor,
-
-                reloadAnimationString = "ReloadPistol",
-                equipAnimationString = "EquipPistol",
-                calloutSoundString = "",
-                dropChance = 0f,
-                disableHolster = false
-            });
-
-            DriverWeaponCatalog.BeetleShield = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo
-            {
-                name = "Chitin Shield",
-                nameToken = "ROB_DRIVER_BEETLESHIELD_NAME",
-                description = "An offhand shield to protect you while you use your pistol.",
-                descriptionToken = "ROB_DRIVER_BEETLESHIELD_DESC",
-
-                icon = Modules.Assets.mainAssetBundle.LoadAsset<Sprite>("texBeetleShieldWeaponIcon"),
-                tier = DriverWeaponTier.Unique,
-                animationSet = DriverWeaponDef.AnimationSet.Default,
-                buffType = DriverWeaponDef.BuffType.Crit,
-                shotCount = 32,
-
-                primarySkillDef = Skills.beetleShieldPrimarySkillDef,
-                secondarySkillDef = Skills.beetleShieldSecondarySkillDef,
-                arsenalSkillDef = Skills.CreateAndAddWeaponSkillDef("BEETLESHIELD"),
-                unlockableDef = Unlockables.CreateAndAddWeaponUnlockableDef("BEETLESHIELD"),
-
-                mesh = Modules.Assets.LoadMesh("meshBeetleShield"),
-                material = Addressables.LoadAssetAsync<Material>("RoR2/Base/Beetle/matBeetle.mat").WaitForCompletion(),
-                crosshairPrefab = Modules.Assets.defaultCrosshairPrefab,
-                pickupPrefabOverride = Modules.Assets.uniquePickupModel,
-                colorOveride = Helpers.uniqueItemColor,
-
-                reloadAnimationString = "ReloadPistol",
-                equipAnimationString = "EquipPistol",
-                calloutSoundString = "",
-                dropChance = 0.1f,
-                disableHolster = false
             });
 
             DriverWeaponCatalog.Needler = DriverWeaponCatalog.CreateAndAddWeapon(new DriverWeaponDefInfo

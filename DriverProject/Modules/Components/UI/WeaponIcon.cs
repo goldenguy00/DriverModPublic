@@ -97,6 +97,11 @@ namespace RobDriver.Modules.Components.UI
             if (this.displayRoot)
             {
                 this.displayRoot.SetActive(true);
+
+                if (this.iDrive.maxWeaponTimer <= 0f)
+                    displayRoot.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, -5f);
+                else
+                    displayRoot.GetComponent<RectTransform>().anchoredPosition = new Vector2(4.5f, -5f);
             }
 
             if (this.isReadyPanelObject)

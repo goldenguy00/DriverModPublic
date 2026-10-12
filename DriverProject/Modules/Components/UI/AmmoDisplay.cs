@@ -11,6 +11,7 @@ namespace RobDriver.Modules.Components.UI
         public DriverController iDrive;
 
         public HGTextMeshProUGUI targetText;
+        public GameObject textParent;
         public GameObject durationDisplay;
         public Image durationBar;
         public Image durationBarRed;
@@ -19,12 +20,17 @@ namespace RobDriver.Modules.Components.UI
         {
             this.iDrive = this.targetHUD?.targetBodyObject?.GetComponent<DriverController>();
 
-            if (this.iDrive && !this.iDrive.passive.isDefault) 
+            if (this.iDrive) 
                 this.iDrive.onConsumeAmmo += SetDisplay;
 
-            this.targetText.text = string.Empty;
-            this.targetText.gameObject.SetActive(false);
-            this.durationDisplay.SetActive(false);
+            if (this.targetText)
+            {
+                this.targetText.text = string.Empty;
+                this.textParent = this.targetText.transform.parent.gameObject;
+                this.textParent.SetActive(false);
+            }
+
+            this.durationDisplay?.SetActive(false);
         }
 
         private void OnDestroy()
@@ -45,63 +51,81 @@ namespace RobDriver.Modules.Components.UI
                     this.durationBarRed.fillAmount = Mathf.Lerp(this.durationBarRed.fillAmount, fill, Time.deltaTime * 2f);
                 }
 
-                this.durationBar.fillAmount = fill;
+                if (this.durationBar)
+                    this.durationBar.fillAmount = fill;
             }
         }
 
         private void SetDisplay()
         {
-            if (this.targetText && this.iDrive)
+            if (this.iDrive.maxWeaponTimer <= 0f)
             {
-                if (this.iDrive.maxWeaponTimer <= 0f)
+                if (this.targetText)
                 {
                     this.targetText.text = string.Empty;
-                    this.targetText.gameObject.SetActive(false);
-                    this.durationDisplay.SetActive(false);
-                    return;
+                    this.textParent.SetActive(false);
                 }
+                this.durationDisplay?.SetActive(false);
+                return;
+            }
 
-                // pistol only, text and no bar
-                if (this.iDrive.passive.isPistolOnly)
+            // pistol only, text and no bar
+            if (this.iDrive.passive.isPistolOnly)
+            {
+                if (this.iDrive.weaponTimer <= 0f)
                 {
-                    this.targetText.gameObject.SetActive(true);
-                    if (this.iDrive.weaponTimer <= 0f)
-                    {
-                        this.targetText.text = "<color=#C80000>0 / " + Mathf.CeilToInt(this.iDrive.maxWeaponTimer).ToString() + Helpers.colorSuffix;
-                    }
-                    else
-                    {
-                        this.targetText.text = Mathf.CeilToInt(this.iDrive.weaponTimer).ToString() + " / " + Mathf.CeilToInt(this.iDrive.maxWeaponTimer).ToString();
-                    }
-                    return;
-                }
-
-                // ammo passives, bar and text
-                if (this.iDrive.HasSpecialBullets)
-                {
-                    if (this.iDrive.weaponTimer <= 0)
-                    {
-                        this.targetText.text = string.Empty;
-                        this.targetText.gameObject.SetActive(false);
-                        return;
-                    }
-                    this.durationDisplay.SetActive(true);
-                    this.targetText.gameObject.SetActive(true);
-
-                    this.durationBar.color = this.iDrive.AmmoPercent < 0.2f ? Helpers.badColor : this.iDrive.currentBulletDef.trailColor;
-                    this.targetText.text = $"<color=#{ColorUtility.ToHtmlStringRGBA(this.iDrive.currentBulletDef.trailColor)}>" + this.iDrive.currentBulletDef.bulletName + Helpers.colorSuffix;
-                }
-                else if (this.iDrive.weaponTimer == this.iDrive.maxWeaponTimer)
-                {
-                    this.durationDisplay.SetActive(false);
-                    this.targetText.gameObject.SetActive(false);
+                    const string txtFormat = "<color=#C80000>0 / {0}</color>";
+                    SetText(string.Format(txtFormat, Mathf.CeilToInt(this.iDrive.maxWeaponTimer)));
                 }
                 else
                 {
-                    this.durationDisplay.SetActive(false);
-                    this.targetText.gameObject.SetActive(false);
+                    const string txtFormat = "{0} / {1}";
+                    SetText(string.Format(txtFormat, Mathf.CeilToInt(this.iDrive.weaponTimer), Mathf.CeilToInt(this.iDrive.maxWeaponTimer)));
                 }
+                return;
             }
+
+            // ammo passives, bar and text
+            if (this.iDrive.HasSpecialBullets)
+            {
+                // disable text first, let the empty bar linger for a bit
+                if (this.iDrive.weaponTimer <= 0)
+                {
+                    SetText(string.Empty);
+                    return;
+                }
+
+                this.durationDisplay?.SetActive(true);
+
+                if (this.durationBar)
+                    this.durationBar.color = this.iDrive.AmmoPercent < 0.2f ? Helpers.badColor : this.iDrive.currentBulletDef.trailColor;
+
+                const string txtFormat = "<color=#{0}>{1}</color>";
+                SetText(string.Format(txtFormat, ColorUtility.ToHtmlStringRGBA(this.iDrive.currentBulletDef.trailColor), this.iDrive.currentBulletDef.bulletName));
+            }
+
+            // infinite ammo
+            else if (this.iDrive.weaponTimer == this.iDrive.maxWeaponTimer)
+            {
+                this.durationDisplay?.SetActive(false);
+                SetText(string.Empty);
+            }
+
+            // default weapon
+            else
+            {
+                this.durationDisplay?.SetActive(false);
+                SetText(string.Empty);
+            }
+        }
+
+        private void SetText(string text)
+        {
+            if (!this.targetText)
+                return;
+
+            this.targetText.text = text;
+            this.textParent.SetActive(!string.IsNullOrEmpty(text));
         }
     }
 }

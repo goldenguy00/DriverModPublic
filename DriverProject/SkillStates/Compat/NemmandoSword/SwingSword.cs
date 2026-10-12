@@ -38,8 +38,8 @@ namespace RobDriver.SkillStates.Driver.NemmandoSword
             this.impactSound = Modules.Assets.knifeImpactSoundDef.index;
 
             this.damageType = this.iDrive.DamageType;
-            this.damageType.damageType |= DamageType.Stun1s;
             this.damageType.AddModdedDamageType(DriverDamageTypes.Gouge);
+            this.damageType.AddModdedDamageType(DriverDamageTypes.SetStateOnHurt);
 
             base.OnEnter();
         }
