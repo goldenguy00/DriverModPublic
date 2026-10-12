@@ -14,7 +14,8 @@ namespace RobDriver.Modules.Components
         private SkillLocator skillLocator;
 
         private DriverWeaponDef weaponDef;
-        private BodyIndex driverBodyIndex;
+        private BodyIndex driverBodyIndex => Driver.bodyIndex;
+        private DriverWeaponDef.ModelSwapInfo[] modelSwapInfos;
 
         private void Awake()
         {
@@ -25,30 +26,39 @@ namespace RobDriver.Modules.Components
             this.driverArsenal = Driver.characterPrefab.GetComponent<DriverArsenal>();
             this.skillLocator = Driver.characterPrefab.GetComponent<SkillLocator>();
 
-            this.driverBodyIndex = Driver.bodyIndex;
-            this.currentLoadout = Loadout.RequestInstance();
             this.weaponDef = DriverWeaponCatalog.Pistol;
         }
 
         private new void OnEnable()
         {
-            NetworkUser.onLoadoutChangedGlobal += this.OnLoadoutChangedGlobal;
-            OnLoadoutChangedGlobal(this.networkUser);
+            currentLoadout = Loadout.RequestInstance();
+            NetworkUser.onLoadoutChangedGlobal += OnLoadoutChanged;
+            RoR2Application.onNextUpdate += RefreshLoadout;
+            RunDefaultResponses();
+        }
+
+        private void Update()
+        {
+            SetModelVisuals();
         }
 
         private new void OnDisable()
         {
-            NetworkUser.onLoadoutChangedGlobal -= this.OnLoadoutChangedGlobal;
+            NetworkUser.onLoadoutChangedGlobal -= OnLoadoutChanged;
+            currentLoadout = Loadout.ReturnInstance(currentLoadout);
         }
 
-        private void OnDestroy()
+        private void RefreshLoadout()
         {
-            this.currentLoadout = Loadout.ReturnInstance(this.currentLoadout);
+            if (this && networkUser)
+            {
+                OnLoadoutChanged(networkUser);
+            }
         }
 
-        private new void OnLoadoutChangedGlobal(NetworkUser changedNetworkUser)
+        private void OnLoadoutChanged(NetworkUser changedNetworkUser)
         {
-            if (changedNetworkUser != this.networkUser || this.driverBodyIndex == BodyIndex.None)
+            if (changedNetworkUser != this.networkUser || this.driverBodyIndex == BodyIndex.None || this.currentLoadout == null)
                 return;
 
             changedNetworkUser.networkLoadout.CopyLoadout(this.currentLoadout);
@@ -79,36 +89,34 @@ namespace RobDriver.Modules.Components
                     this.animator.SetLayerWeight((int)newWeaponDef.animationSet, 1f);
 
                 this.animator.Play("CSSIdleIn", (int)DriverWeaponDef.AnimationSet.Default);
-            }
-        }
 
-        private void Update()
-        {
+
+                this.childLocator.FindChildGameObject("PistolModel").SetActive(true);
+
+                var active = HasSkillVariantEnabled(this.currentLoadout, this.driverBodyIndex, this.skillLocator.utility.skillFamily, Skills.skateboardSkillDef);
+                this.childLocator.FindChildGameObject("SkateboardBackModel").SetActive(active);
+
+                /*if (Config.enableRevengence.Value)
+                {
+                    active = HasSkillVariantEnabled(this.currentLoadout, this.driverBodyIndex, this.skillLocator.special.skillFamily, Skills.knifeSkillDef);
+                    this.childLocator.FindChildGameObject("BackpackModel").SetActive(active);
+                }*/
+                //this.childLocator.FindChildGameObject("BackpackModel").SetActive(true);
+
+                int skinIndex = (int)this.currentLoadout.bodyLoadoutManager.GetSkinIndex(this.driverBodyIndex);
+                var bodySkins = SkinCatalog.GetBodySkinDefs(this.driverBodyIndex);
+                modelSwapInfos = DriverWeaponSkinCatalog.GetModelSwapInfoForWeapon(bodySkins, skinIndex, this.weaponDef);
+            }
+
             SetModelVisuals();
         }
 
         private void SetModelVisuals()
         {
-            int skinIndex = (int)this.currentLoadout.bodyLoadoutManager.GetSkinIndex(this.driverBodyIndex);
-            var bodySkins = SkinCatalog.GetBodySkinDefs(this.driverBodyIndex);
-            var modelSwapInfos = DriverWeaponSkinCatalog.GetModelSwapInfoForWeapon(bodySkins, skinIndex, this.weaponDef);
-
-            for (int i = 0; i < modelSwapInfos.Length; i++)
+            for (int i = 0; i < modelSwapInfos?.Length; i++)
             {
                 SetMeshRenderer(modelSwapInfos[i].childName, modelSwapInfos[i].material, modelSwapInfos[i].mesh);
             }
-
-            this.childLocator.FindChildGameObject("PistolModel").SetActive(true);
-
-            var active = HasSkillVariantEnabled(this.currentLoadout, this.driverBodyIndex, this.skillLocator.utility.skillFamily, Skills.skateboardSkillDef);
-            this.childLocator.FindChildGameObject("SkateboardBackModel").SetActive(active);
-
-            /*if (Config.enableRevengence.Value)
-            {
-                active = HasSkillVariantEnabled(this.currentLoadout, this.driverBodyIndex, this.skillLocator.special.skillFamily, Skills.knifeSkillDef);
-                this.childLocator.FindChildGameObject("BackpackModel").SetActive(active);
-            }*/
-            //this.childLocator.FindChildGameObject("BackpackModel").SetActive(true);
         }
 
         private void SetMeshRenderer(string childName, Material material, Mesh mesh)
